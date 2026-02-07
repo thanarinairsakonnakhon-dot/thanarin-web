@@ -1,11 +1,14 @@
 "use client";
 
 import { CompareProvider } from '@/context/CompareContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <CompareProvider>
-            {children}
-        </CompareProvider>
+        <AuthProvider>
+            <CompareProvider>
+                {children}
+            </CompareProvider>
+        </AuthProvider>
     );
 }

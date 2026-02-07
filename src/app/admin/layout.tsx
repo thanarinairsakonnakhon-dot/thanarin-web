@@ -1,20 +1,74 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { AdminProvider } from '@/context/AdminContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const pathname = usePathname();
+
+    // Don't wrap login page with auth check
+    if (pathname === '/admin/login') {
+        return <>{children}</>;
+    }
+
     return (
         <AdminProvider>
-            <AdminLayoutContent>{children}</AdminLayoutContent>
+            <AuthGuard>
+                <AdminLayoutContent>{children}</AdminLayoutContent>
+            </AuthGuard>
         </AdminProvider>
     );
+}
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+    const { user, isLoading } = useAuth();
+    const router = useRouter();
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    useEffect(() => {
+        if (!isLoading && !user && !isRedirecting) {
+            setIsRedirecting(true);
+            router.replace('/admin/login');
+        }
+    }, [user, isLoading, router, isRedirecting]);
+
+    // Show loading while checking auth or redirecting
+    if (isLoading || isRedirecting || !user) {
+        return (
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#f1f5f9'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{
+                        width: '50px',
+                        height: '50px',
+                        border: '4px solid #e2e8f0',
+                        borderTopColor: '#2563EB',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 1rem'
+                    }} />
+                    <p style={{ color: '#64748b' }}>
+                        {isLoading ? 'กำลังตรวจสอบสิทธิ์...' : 'กำลังนำทาง...'}
+                    </p>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                </div>
+            </div>
+        );
+    }
+
+    return <>{children}</>;
 }
 
 function AdminLayoutContent({
@@ -100,20 +154,7 @@ function AdminLayoutContent({
                 </nav>
 
                 <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #1e293b' }}>
-                    <Link href="/" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '1rem',
-                        padding: '0.8rem',
-                        color: '#f87171',
-                        textDecoration: 'none',
-                        justifyContent: isSidebarOpen ? 'flex-start' : 'center',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden'
-                    }}>
-                        <span style={{ minWidth: '24px', textAlign: 'center' }}>🚪</span>
-                        {isSidebarOpen && <span>Logout</span>}
-                    </Link>
+                    <LogoutButton isSidebarOpen={isSidebarOpen} />
                 </div>
             </aside>
 
@@ -145,5 +186,39 @@ function AdminLayoutContent({
                 </div>
             </main>
         </div>
+    );
+}
+
+function LogoutButton({ isSidebarOpen }: { isSidebarOpen: boolean }) {
+    const { logout } = useAuth();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await logout();
+        router.push('/admin/login');
+    };
+
+    return (
+        <button
+            onClick={handleLogout}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '0.8rem',
+                color: '#f87171',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                justifyContent: isSidebarOpen ? 'flex-start' : 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                fontSize: '0.9rem'
+            }}
+        >
+            <span style={{ minWidth: '24px', textAlign: 'center' }}>🚪</span>
+            {isSidebarOpen && <span>ออกจากระบบ</span>}
+        </button>
     );
 }
