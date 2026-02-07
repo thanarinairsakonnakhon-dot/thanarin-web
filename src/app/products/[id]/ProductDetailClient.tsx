@@ -1,0 +1,160 @@
+"use client";
+
+import Navbar from '@/components/Navbar';
+import Link from 'next/link';
+import { useCompare } from '@/context/CompareContext';
+import { Product } from '@/data/products';
+
+interface ProductDetailClientProps {
+    product: Product;
+}
+
+export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+    const { addToCompare, isInCompare, removeFromCompare } = useCompare();
+    const isSelected = isInCompare(product.id);
+
+    return (
+        <main className="bg-aurora" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
+            <Navbar />
+
+            {/* Breadcrumb Area */}
+            <div className="container" style={{ paddingTop: '100px', marginBottom: '2rem' }}>
+                <div style={{ fontSize: '0.9rem', color: 'var(--color-text-sub)' }}>
+                    <Link href="/products" style={{ textDecoration: 'none', color: 'inherit' }}>สินค้าทั้งหมด</Link>
+                    {' > '}
+                    <span style={{ color: 'var(--color-primary-blue)', fontWeight: 600 }}>{product.brand}</span>
+                    {' > '}
+                    {product.name}
+                </div>
+            </div>
+
+            <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
+
+                {/* Left: Image Gallery */}
+                <div className="card-glass animate-float" style={{
+                    padding: '0',
+                    overflow: 'hidden',
+                    background: 'white',
+                    position: 'sticky',
+                    top: '120px'
+                }}>
+                    <div style={{
+                        height: '400px',
+                        background: 'radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative'
+                    }}>
+                        <span style={{ fontSize: '6rem', opacity: 0.2 }}>❄️</span>
+                        {product.inverter && (
+                            <div style={{
+                                position: 'absolute', top: '20px', left: '20px',
+                                background: '#22c55e', color: 'white',
+                                padding: '0.5rem 1rem', borderRadius: '50px',
+                                fontWeight: 700
+                            }}>
+                                INVERTER SYSTEM
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right: Product Info */}
+                <div className="reveal">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                        <span style={{
+                            background: '#eff6ff', color: 'var(--color-primary-blue)',
+                            padding: '0.4rem 1rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem'
+                        }}>
+                            {product.brand}
+                        </span>
+                        <span style={{
+                            background: '#f1f5f9', color: 'var(--color-text-sub)',
+                            padding: '0.4rem 1rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem'
+                        }}>
+                            {product.type}
+                        </span>
+                    </div>
+
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', lineHeight: 1.2 }}>
+                        {product.name}
+                    </h1>
+
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '2rem' }}>
+                        <span style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>
+                            ฿{product.price.toLocaleString()}
+                        </span>
+                        <span style={{ fontSize: '1.2rem', color: 'var(--color-text-sub)' }}>
+                            (รวมติดตั้งฟรี)
+                        </span>
+                    </div>
+
+                    {/* Key Specs Grid */}
+                    <div style={{
+                        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem'
+                    }}>
+                        <div style={{ background: 'rgba(255,255,255,0.6)', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <div style={{ fontSize: '0.9rem', color: '#64748b' }}>ขนาดทำความเย็น</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: 700 }}>{product.btu.toLocaleString()} <span style={{ fontSize: '1rem' }}>BTU</span></div>
+                        </div>
+                        <div style={{ background: 'rgba(255,255,255,0.6)', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                            <div style={{ fontSize: '0.9rem', color: '#64748b' }}>ประสิทธิภาพ (SEER)</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#22c55e' }}>{product.seer}</div>
+                        </div>
+                    </div>
+
+                    {/* Features List */}
+                    <div style={{ marginBottom: '3rem' }}>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem' }}>คุณสมบัติเด่น</h3>
+                        <ul style={{ listStyle: 'none', padding: 0 }}>
+                            {product.features.map((feature: string, index: number) => (
+                                <li key={index} style={{
+                                    display: 'flex', alignItems: 'center', gap: '0.8rem',
+                                    marginBottom: '0.8rem', fontSize: '1.1rem'
+                                }}>
+                                    <span style={{
+                                        width: '24px', height: '24px', background: '#dbeafe',
+                                        borderRadius: '50%', color: 'var(--color-primary-blue)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
+                                    }}>✓</span>
+                                    {feature}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Link href="/booking" className="btn-wow" style={{ flex: 2, textAlign: 'center', fontSize: '1.2rem', padding: '1rem' }}>
+                                จองคิวติดตั้งแอร์รุ่นนี้ 📅
+                            </Link>
+                            <button
+                                className="btn"
+                                onClick={() => isSelected ? removeFromCompare(product.id) : addToCompare(product)}
+                                style={{
+                                    flex: 1, border: '2px solid',
+                                    borderColor: isSelected ? 'var(--color-primary-blue)' : '#e2e8f0',
+                                    borderRadius: '99px',
+                                    background: isSelected ? '#eff6ff' : 'white',
+                                    color: isSelected ? 'var(--color-primary-blue)' : 'inherit',
+                                    fontWeight: 600, fontSize: '1.1rem',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {isSelected ? '✓ เลือกแล้ว' : '+ เปรียบเทียบ'}
+                            </button>
+                        </div>
+                        <div style={{ textAlign: 'center', fontSize: '0.9rem', color: '#94a3b8' }}>
+                            *ยังไม่รวมลูกค้าเก่าที่มีส่วนลด
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    );
+}

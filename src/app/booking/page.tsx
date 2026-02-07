@@ -1,0 +1,401 @@
+"use client";
+
+import { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import { bookingSlots } from '@/data/bookings';
+
+export default function BookingPage() {
+    const [step, setStep] = useState(1);
+    const [formData, setFormData] = useState({
+        serviceType: 'installation', // installation, cleaning, repair
+        selectedDate: '',
+        selectedTime: '',
+        name: '',
+        phone: '',
+        addressDetails: {
+            houseNo: '',
+            village: '',
+            subdistrict: '', // Tambon
+            district: '',    // Amphoe
+            province: '',    // Changwat
+            lat: null as number | null,
+            lng: null as number | null
+        },
+        note: ''
+    });
+
+    const steps = [
+        { id: 1, title: 'เลือกบริการ' },
+        { id: 2, title: 'วัน-เวลา' },
+        { id: 3, title: 'ข้อมูลติดต่อ' },
+        { id: 4, title: 'ยืนยัน' }
+    ];
+
+    const handleSelectSlot = (date: string, time: string) => {
+        setFormData({ ...formData, selectedDate: date, selectedTime: time });
+    };
+
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            addressDetails: {
+                ...prev.addressDetails,
+                [name]: value
+            }
+        }));
+    };
+
+    const formatPhoneNumber = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length <= 3) return cleaned;
+        if (cleaned.length <= 6) return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+        return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = formatPhoneNumber(e.target.value);
+        if (formatted.replace(/-/g, '').length <= 10) {
+            setFormData({ ...formData, phone: formatted });
+        }
+    };
+
+    const handleGetLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setFormData(prev => ({
+                        ...prev,
+                        addressDetails: {
+                            ...prev.addressDetails,
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        }
+                    }));
+                    alert("ดึงพิกัดตำแหน่งเรียบร้อย! 📍");
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                    alert("ไม่สามารถดึงตำแหน่งได้ กรุณาเปิด Location Service");
+                }
+            );
+        } else {
+            alert("Browser ของคุณไม่รองรับการระบุตำแหน่ง");
+        }
+    };
+
+    const nextStep = () => {
+        if (step === 1 && !formData.serviceType) return;
+        if (step === 2 && (!formData.selectedDate || !formData.selectedTime)) return;
+        if (step === 3) {
+            const { name, phone, addressDetails } = formData;
+            if (!name || phone.replace(/-/g, '').length !== 10 || !addressDetails.houseNo || !addressDetails.subdistrict || !addressDetails.district || !addressDetails.province) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง (เบอร์โทร 10 หลัก)");
+                return;
+            }
+        }
+        setStep(step + 1);
+    };
+
+    const prevStep = () => {
+        setStep(step - 1);
+    };
+
+    // Group slots by date for easier display
+    const slotsByDate = bookingSlots.reduce((acc, slot) => {
+        if (!acc[slot.date]) acc[slot.date] = [];
+        acc[slot.date].push(slot);
+        return acc;
+    }, {} as Record<string, typeof bookingSlots>);
+
+    const sortedDates = Object.keys(slotsByDate).sort();
+
+    return (
+        <main className="bg-aurora" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
+            <Navbar />
+
+            <div className="container" style={{ paddingTop: '120px' }}>
+                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+
+                    <h1 style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '2.5rem' }}>จองคิวบริการ</h1>
+
+                    {/* Progress Bar */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4rem', position: 'relative' }}>
+                        {/* Line */}
+                        <div style={{
+                            position: 'absolute', top: '50%', left: '0', right: '0',
+                            height: '2px', background: '#e2e8f0', zIndex: 0, transform: 'translateY(-50%)'
+                        }}></div>
+
+                        {steps.map((s) => (
+                            <div key={s.id} style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+                                <div style={{
+                                    width: '40px', height: '40px',
+                                    background: step >= s.id ? 'var(--color-primary-blue)' : 'white',
+                                    border: step >= s.id ? 'none' : '2px solid #e2e8f0',
+                                    borderRadius: '50%',
+                                    color: step >= s.id ? 'white' : '#94a3b8',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontWeight: 700, margin: '0 auto 0.5rem',
+                                    transition: 'all 0.3s'
+                                }}>
+                                    {s.id}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: step >= s.id ? 'var(--color-text-main)' : '#cbd5e1', fontWeight: 600 }}>
+                                    {s.title}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="card-glass" style={{ padding: '3rem' }}>
+
+                        {/* Step 1: Service Type */}
+                        {step === 1 && (
+                            <div className="animate-fade-in">
+                                <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>คุณต้องการรับบริการอะไร?</h2>
+                                <div className="grid-responsive" style={{ gap: '1.5rem', alignItems: 'stretch' }}>
+                                    {[
+                                        { id: 'installation', icon: '❄️', title: 'ติดตั้งแอร์ใหม่', desc: 'รวมเดินท่อและอุปกรณ์' },
+                                        { id: 'cleaning', icon: '✨', title: 'ล้างแอร์', desc: 'ล้างใหญ่ 15 ขั้นตอน' },
+                                        { id: 'repair', icon: '🔧', title: 'ซ่อมแซม', desc: 'ตรวจเช็คละเอียด' }
+                                    ].map((service) => (
+                                        <div
+                                            key={service.id}
+                                            onClick={() => setFormData({ ...formData, serviceType: service.id })}
+                                            style={{
+                                                padding: '2rem',
+                                                border: '2px solid',
+                                                borderColor: formData.serviceType === service.id ? 'var(--color-primary-blue)' : '#e2e8f0',
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                background: formData.serviceType === service.id ? '#eff6ff' : 'white',
+                                                transition: 'all 0.2s',
+                                                textAlign: 'center'
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{service.icon}</div>
+                                            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{service.title}</h3>
+                                            <p style={{ color: 'var(--color-text-sub)', fontSize: '0.9rem' }}>{service.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 2: Date & Time */}
+                        {step === 2 && (
+                            <div className="animate-fade-in">
+                                <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>เลือกวันและเวลาที่สะดวก</h2>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
+                                    {sortedDates.map((date) => (
+                                        <div key={date}>
+                                            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--color-text-sub)' }}>
+                                                {new Date(date).toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                            </h3>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                                                {slotsByDate[date].map((slot) => (
+                                                    <button
+                                                        key={slot.id}
+                                                        disabled={!slot.available}
+                                                        onClick={() => handleSelectSlot(slot.date, slot.time)}
+                                                        style={{
+                                                            padding: '0.8rem 1.5rem',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid',
+                                                            borderColor:
+                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
+                                                                    ? 'var(--color-primary-blue)'
+                                                                    : '#e2e8f0',
+                                                            background:
+                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
+                                                                    ? 'var(--color-primary-blue)'
+                                                                    : slot.available ? 'white' : '#f1f5f9',
+                                                            color:
+                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
+                                                                    ? 'white'
+                                                                    : slot.available ? 'var(--color-text-main)' : '#cbd5e1',
+                                                            cursor: slot.available ? 'pointer' : 'not-allowed',
+                                                            fontWeight: 600,
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        {slot.time}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Contact Info */}
+                        {step === 3 && (
+                            <div className="animate-fade-in">
+                                <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>ข้อมูลการติดต่อ</h2>
+                                <div style={{ display: 'grid', gap: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
+
+                                    {/* Name & Phone */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                placeholder="กรอกชื่อของคุณ"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>เบอร์โทรศัพท์ <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="tel"
+                                                value={formData.phone}
+                                                onChange={handlePhoneChange}
+                                                maxLength={12}
+                                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                placeholder="0xx-xxx-xxxx"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Detailed Address */}
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                            <label style={{ fontWeight: 600 }}>ที่อยู่หน้างาน</label>
+                                            <button
+                                                onClick={handleGetLocation}
+                                                style={{
+                                                    fontSize: '0.9rem', color: 'var(--color-primary-blue)',
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    display: 'flex', alignItems: 'center', gap: '0.3rem'
+                                                }}
+                                            >
+                                                📍 ปักหมุดตำแหน่งปัจจุบัน
+                                            </button>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gap: '1rem' }}>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                                <input
+                                                    type="text" name="houseNo" placeholder="บ้านเลขที่"
+                                                    value={formData.addressDetails.houseNo} onChange={handleAddressChange}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                />
+                                                <input
+                                                    type="text" name="village" placeholder="หมู่บ้าน / อาคาร"
+                                                    value={formData.addressDetails.village} onChange={handleAddressChange}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                />
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                                                <input
+                                                    type="text" name="subdistrict" placeholder="ตำบล/แขวง"
+                                                    value={formData.addressDetails.subdistrict} onChange={handleAddressChange}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                />
+                                                <input
+                                                    type="text" name="district" placeholder="อำเภอ/เขต"
+                                                    value={formData.addressDetails.district} onChange={handleAddressChange}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                />
+                                                <input
+                                                    type="text" name="province" placeholder="จังหวัด"
+                                                    value={formData.addressDetails.province} onChange={handleAddressChange}
+                                                    style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                                                />
+                                            </div>
+                                            {formData.addressDetails.lat && (
+                                                <div style={{
+                                                    background: '#f0fdf4', color: '#166534', padding: '0.8rem',
+                                                    borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                                }}>
+                                                    ✅ พิกัด GPS: {formData.addressDetails.lat.toFixed(6)}, {formData.addressDetails.lng?.toFixed(6)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Confirmation */}
+                        {step === 4 && (
+                            <div className="animate-fade-in" style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+                                <h2 style={{ marginBottom: '1rem' }}>ยืนยันการจอง?</h2>
+                                <p style={{ color: 'var(--color-text-sub)', marginBottom: '2rem' }}>
+                                    โปรดตรวจสอบข้อมูลของคุณ ทีมงานจะติดต่อกลับเพื่อยืนยันภายใน 15 นาที
+                                </p>
+
+                                <div style={{
+                                    background: '#f8fafc', padding: '2rem', borderRadius: '20px',
+                                    maxWidth: '500px', margin: '0 auto 2rem', textAlign: 'left'
+                                }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+                                        <div style={{ color: '#64748b' }}>บริการ:</div>
+                                        <div style={{ fontWeight: 600 }}>
+                                            {formData.serviceType === 'installation' && 'ติดตั้งแอร์ใหม่'}
+                                            {formData.serviceType === 'cleaning' && 'ล้างแอร์'}
+                                            {formData.serviceType === 'repair' && 'ซ่อมแอร์'}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+                                        <div style={{ color: '#64748b' }}>วัน-เวลา:</div>
+                                        <div style={{ fontWeight: 600 }}>
+                                            {new Date(formData.selectedDate).toLocaleDateString('th-TH')} เวลา {formData.selectedTime}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+                                        <div style={{ color: '#64748b' }}>ชื่อ:</div>
+                                        <div style={{ fontWeight: 600 }}>{formData.name}</div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+                                        <div style={{ color: '#64748b' }}>เบอร์โทร:</div>
+                                        <div style={{ fontWeight: 600 }}>{formData.phone}</div>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem' }}>
+                                        <div style={{ color: '#64748b' }}>ที่อยู่:</div>
+                                        <div style={{ fontWeight: 600 }}>
+                                            {formData.addressDetails.houseNo} {formData.addressDetails.village}<br />
+                                            {formData.addressDetails.subdistrict} {formData.addressDetails.district}<br />
+                                            {formData.addressDetails.province}
+                                            {formData.addressDetails.lat && (
+                                                <div style={{ fontSize: '0.8rem', color: '#166534', marginTop: '4px' }}>
+                                                    (แนบพิกัด GPS แล้ว)
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button className="btn-wow" style={{ padding: '1rem 3rem' }}>
+                                    ยืนยันการจอง ✅
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Navigation Buttons */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem' }}>
+                            {step > 1 && (
+                                <button onClick={prevStep} className="btn" style={{ background: 'transparent', border: '1px solid #cbd5e1' }}>
+                                    ← ย้อนกลับ
+                                </button>
+                            )}
+                            <div style={{ flex: 1 }}></div>
+                            {step < 4 && (
+                                <button onClick={nextStep} className="btn-wow">
+                                    ถัดไป →
+                                </button>
+                            )}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+}
