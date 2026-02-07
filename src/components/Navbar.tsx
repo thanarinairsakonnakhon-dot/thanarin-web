@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Navbar() {
     return (
@@ -15,8 +16,15 @@ export default function Navbar() {
             }}>
             <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px' }}>
                 {/* Logo Area */}
-                <Link href="/" style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--color-primary-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--color-action-orange)' }}>⚡</span> TH.AIR
+                <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+                    <Image
+                        src="/logo.png"
+                        alt="Thanarin Air"
+                        width={150}
+                        height={50}
+                        style={{ objectFit: 'contain' }}
+                        priority
+                    />
                 </Link>
 
                 {/* Desktop Menu */}
