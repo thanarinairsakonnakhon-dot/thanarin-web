@@ -38,7 +38,9 @@ export default function ProductsPage() {
                         seer: p.seer || 0,
                         image: p.image_url || '/images/placeholder.png', // Map image_url to image
                         stock: p.stock,
-                        status: p.status
+                        status: p.status,
+                        minStock: p.min_stock || 0,
+                        cost: p.cost || 0
                     }));
                     setProducts(mappedProducts);
                 }
