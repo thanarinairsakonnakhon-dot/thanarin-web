@@ -249,6 +249,18 @@ export default function AdminProducts() {
                                     />
                                 </div>
                                 <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>SEER (ประหยัดไฟ)</label>
+                                    <input
+                                        type="number" required step="0.01"
+                                        value={formData.seer}
+                                        onChange={e => setFormData({ ...formData, seer: parseFloat(e.target.value) })}
+                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ราคาขาย</label>
                                     <input
                                         type="number" required
@@ -257,18 +269,73 @@ export default function AdminProducts() {
                                         style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                                     />
                                 </div>
+                                {/* Inverter Toggle */}
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.inverter}
+                                            onChange={e => setFormData({ ...formData, inverter: e.target.checked })}
+                                            style={{ width: '20px', height: '20px' }}
+                                        />
+                                        <span style={{ fontWeight: 600 }}>⚡ ระบบ Inverter</span>
+                                    </label>
+                                </div>
                             </div>
 
-                            {/* Inverter Toggle */}
+                            {/* Features Management */}
                             <div>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>คุณสมบัติเด่น (Features)</label>
+                                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                     <input
-                                        type="checkbox"
-                                        checked={formData.inverter}
-                                        onChange={e => setFormData({ ...formData, inverter: e.target.checked })}
+                                        type="text"
+                                        id="featureInput"
+                                        placeholder="พิมพ์คุณสมบัติ เช่น กรองฝุ่น PM 2.5"
+                                        style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                const val = (e.target as HTMLInputElement).value.trim();
+                                                if (val) {
+                                                    setFormData({ ...formData, features: [...(formData.features || []), val] });
+                                                    (e.target as HTMLInputElement).value = '';
+                                                }
+                                            }
+                                        }}
                                     />
-                                    <span style={{ fontWeight: 600 }}>⚡ Inverter</span>
-                                </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const input = document.getElementById('featureInput') as HTMLInputElement;
+                                            const val = input.value.trim();
+                                            if (val) {
+                                                setFormData({ ...formData, features: [...(formData.features || []), val] });
+                                                input.value = '';
+                                            }
+                                        }}
+                                        style={{ padding: '0.8rem 1.2rem', background: '#0F172A', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        เพิ่ม
+                                    </button>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                    {formData.features?.map((feat, index) => (
+                                        <span key={index} style={{ background: '#f1f5f9', padding: '0.3rem 0.8rem', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }}>
+                                            {feat}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newFeatures = [...(formData.features || [])];
+                                                    newFeatures.splice(index, 1);
+                                                    setFormData({ ...formData, features: newFeatures });
+                                                }}
+                                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444', fontWeight: 'bold' }}
+                                            >
+                                                ×
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Image Upload */}

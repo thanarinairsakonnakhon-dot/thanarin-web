@@ -3,7 +3,7 @@
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { useCompare } from '@/context/CompareContext';
-import { Product } from '@/data/products';
+import { Product } from '@/types';
 
 interface ProductDetailClientProps {
     product: Product;

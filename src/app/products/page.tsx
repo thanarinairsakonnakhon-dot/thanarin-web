@@ -1,14 +1,56 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
-import { products } from '@/data/products';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { Product } from '@/types';
 
 export default function ProductsPage() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedBrand, setSelectedBrand] = useState<string>('All');
     const [selectedType, setSelectedType] = useState<string>('All');
     const [minBtu, setMinBtu] = useState<number>(0);
+
+    // Fetch Products
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                setLoading(true);
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (data) {
+                    const mappedProducts: Product[] = data.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        brand: p.brand,
+                        type: p.type,
+                        btu: p.btu,
+                        price: p.price,
+                        inverter: p.inverter,
+                        features: p.features || [],
+                        seer: p.seer || 0,
+                        image: p.image_url || '/images/placeholder.png', // Map image_url to image
+                        stock: p.stock,
+                        status: p.status
+                    }));
+                    setProducts(mappedProducts);
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     // Filter Logic
     const filteredProducts = useMemo(() => {
@@ -18,9 +60,9 @@ export default function ProductsPage() {
             const matchBtu = p.btu >= minBtu;
             return matchBrand && matchType && matchBtu;
         });
-    }, [selectedBrand, selectedType, minBtu]);
+    }, [products, selectedBrand, selectedType, minBtu]);
 
-    const brands = ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier'];
+    const brands = ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX'];
 
     // Mapping for Category Types to Thai
     const typeMapping: { [key: string]: string } = {
@@ -28,6 +70,7 @@ export default function ProductsPage() {
         'Wall': 'แอร์ติดผนัง (Wall Type)',
         'Cassette': 'แอร์สี่ทิศทาง (Cassette)',
         'Ceiling': 'แอร์แขวน (Ceiling)',
+        'Floor': 'แอร์ตั้งพื้น (Floor Standing)',
         'Portable': 'แอร์เคลื่อนที่ (Portable)'
     };
 
@@ -97,68 +140,85 @@ export default function ProductsPage() {
 
                     {/* Product Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
-                        {filteredProducts.map((p) => (
-                            <div key={p.id} className="card-glass" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                {/* Image Area */}
-                                <div style={{
-                                    height: '200px',
-                                    background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    position: 'relative'
-                                }}>
-                                    {p.inverter && (
-                                        <span style={{
-                                            position: 'absolute', top: '10px', right: '10px',
-                                            background: '#22c55e', color: 'white', padding: '0.2rem 0.8rem',
-                                            borderRadius: '50px', fontSize: '0.75rem', fontWeight: 700
-                                        }}>INVERTER</span>
-                                    )}
-                                    <span style={{ fontSize: '3rem', opacity: 0.2 }}>❄️</span>
-                                </div>
-
-                                {/* Content Area */}
-                                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                    <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.2rem' }}>
-                                        {p.brand} | {typeMapping[p.type].split(' (')[0]}
-                                    </div>
-                                    <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', lineHeight: 1.4 }}>{p.name}</h3>
-
-                                    {/* Features Pucks */}
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
-                                        {p.features.slice(0, 2).map((feat, idx) => (
-                                            <span key={idx} style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#64748b' }}>
-                                                {feat}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                                        <span style={{ fontSize: '0.8rem', background: '#eff6ff', color: 'var(--color-primary-blue)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                                            {p.btu.toLocaleString()} BTU
-                                        </span>
-                                        <span style={{ fontSize: '0.8rem', background: '#fff7ed', color: 'var(--color-action-orange)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                                            SEER {p.seer}
-                                        </span>
-                                    </div>
-
-                                    <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
-                                            ฿{p.price.toLocaleString()}
-                                        </div>
-                                        <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
-                                            ดูรายละเอียด
-                                        </Link>
-                                    </div>
-                                </div>
+                        {loading ? (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem', animation: 'spin 1s linear infinite' }}>⏳</div>
+                                <h3>กำลังโหลดข้อมูลสินค้า...</h3>
+                                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
                             </div>
-                        ))}
-
-                        {filteredProducts.length === 0 && (
+                        ) : filteredProducts.length === 0 ? (
                             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '4rem', color: '#94a3b8' }}>
                                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>😕</div>
                                 <h3>ไม่พบสินค้าตามเงื่อนไข</h3>
                                 <p>ลองปรับตัวกรองค้นหาดูใหม่นะครับ</p>
                             </div>
+                        ) : (
+                            filteredProducts.map((p) => (
+                                <div key={p.id} className="card-glass" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                                    {/* Image Area */}
+                                    <div style={{
+                                        height: '200px',
+                                        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        position: 'relative'
+                                    }}>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={p.image}
+                                            alt={p.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }}
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = '/images/placeholder.png';
+                                                (e.target as HTMLImageElement).style.opacity = '0.5';
+                                            }}
+                                        />
+                                        {p.inverter && (
+                                            <span style={{
+                                                position: 'absolute', top: '10px', right: '10px',
+                                                background: '#22c55e', color: 'white', padding: '0.2rem 0.8rem',
+                                                borderRadius: '50px', fontSize: '0.75rem', fontWeight: 700
+                                            }}>INVERTER</span>
+                                        )}
+                                    </div>
+
+                                    {/* Content Area */}
+                                    <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.2rem' }}>
+                                            {p.brand} | {typeMapping[p.type]?.split(' (')[0] || p.type}
+                                        </div>
+                                        <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', lineHeight: 1.4 }}>{p.name}</h3>
+
+                                        {/* Features Pucks */}
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
+                                            {p.features?.slice(0, 2).map((feat, idx) => (
+                                                <span key={idx} style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#64748b' }}>
+                                                    {feat}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                                            <span style={{ fontSize: '0.8rem', background: '#eff6ff', color: 'var(--color-primary-blue)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                                {p.btu.toLocaleString()} BTU
+                                            </span>
+                                            {(p.seer || 0) > 0 && (
+                                                <span style={{ fontSize: '0.8rem', background: '#fff7ed', color: 'var(--color-action-orange)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                                    SEER {p.seer}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
+                                                ฿{p.price.toLocaleString()}
+                                            </div>
+                                            <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                                                ดูรายละเอียด
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
                         )}
                     </div>
 
