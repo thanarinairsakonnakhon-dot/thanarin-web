@@ -36,7 +36,7 @@ export default function ProductsPage() {
                         inverter: p.inverter,
                         features: p.features || [],
                         seer: p.seer || 0,
-                        image: p.image_url || '/images/placeholder.png', // Map image_url to image
+                        image: p.image || p.image_url || '/images/placeholder.png', // Map image or image_url to image
                         stock: p.stock,
                         status: p.status,
                         minStock: p.min_stock || 0,
