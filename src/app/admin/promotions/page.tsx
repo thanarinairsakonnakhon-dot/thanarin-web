@@ -81,7 +81,10 @@ export default function AdminPromotions() {
     };
 
     const handleSave = async () => {
-        if (!formData.title) return;
+        if (!formData.title) {
+            alert('กรุณาใส่ชื่อโปรโมชั่น');
+            return;
+        }
 
         const payload = {
             ...formData,
@@ -89,14 +92,24 @@ export default function AdminPromotions() {
             end_date: formData.end_date || null
         };
 
-        if (editingPromo) {
-            await supabase.from('promotions').update(payload).eq('id', editingPromo.id);
-        } else {
-            await supabase.from('promotions').insert(payload);
-        }
+        try {
+            if (editingPromo) {
+                const { error } = await supabase.from('promotions').update(payload).eq('id', editingPromo.id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from('promotions').insert(payload);
+                if (error) throw error;
+            }
 
-        setShowModal(false);
-        loadPromotions();
+            setShowModal(false);
+            loadPromotions();
+        } catch (error: unknown) {
+            console.error('Error saving promotion:', error);
+            const errorMessage = error && typeof error === 'object' && 'message' in error
+                ? (error as { message: string }).message
+                : 'Unknown error';
+            alert(`บันทึกไม่สำเร็จ: ${errorMessage}\n\nกรุณาตรวจสอบว่าได้สร้างตาราง promotions ใน Supabase แล้ว`);
+        }
     };
 
     const handleDelete = async (id: string) => {
