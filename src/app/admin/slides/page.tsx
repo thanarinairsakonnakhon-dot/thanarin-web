@@ -73,19 +73,69 @@ export default function AdminSlides() {
         setShowModal(true);
     };
 
+    // Resize image before upload
+    const resizeImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+
+                // Calculate new dimensions
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                // Create canvas and draw resized image
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                if (!ctx) {
+                    reject(new Error('Could not get canvas context'));
+                    return;
+                }
+
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to blob
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error('Could not create blob'));
+                        }
+                    },
+                    'image/jpeg',
+                    quality
+                );
+            };
+            img.onerror = () => reject(new Error('Could not load image'));
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         setUploading(true);
-        const fileExt = file.name.split('.').pop();
-        const fileName = `slide_${Date.now()}.${fileExt}`;
-        const filePath = `slides/${fileName}`;
 
         try {
+            // Resize image: max 1920x800, quality 85%
+            const resizedBlob = await resizeImage(file, 1920, 800, 0.85);
+
+            const fileName = `slide_${Date.now()}.jpg`;
+            const filePath = `slides/${fileName}`;
+
             const { error: uploadError } = await supabase.storage
                 .from('images')
-                .upload(filePath, file);
+                .upload(filePath, resizedBlob, {
+                    contentType: 'image/jpeg'
+                });
 
             if (uploadError) throw uploadError;
 
