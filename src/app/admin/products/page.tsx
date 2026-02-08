@@ -100,7 +100,7 @@ export default function AdminProducts() {
                 features: formData.features || [],
                 image: formData.image || '/images/products/placeholder.jpg',
                 status: (formData.stock || 0) > 0 ? 'In Stock' : 'Out of Stock',
-                cost: (formData.price || 0) * 0.7
+                cost: Math.round((formData.price || 0) * 0.7)
             };
             await addProduct(newProduct);
         }
