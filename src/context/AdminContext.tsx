@@ -111,7 +111,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 price: product.price,
                 inverter: product.inverter,
                 features: product.features,
-                image_url: product.image,
+                image: product.image,
                 stock: product.stock,
                 min_stock: product.minStock,
                 cost: product.cost,
@@ -134,8 +134,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             // Prepare DB updates
             const dbUpdates: any = { ...updates };
             if (updates.image) {
-                dbUpdates.image_url = updates.image;
-                delete dbUpdates.image;
+                dbUpdates.image = updates.image;
             }
             if (updates.minStock !== undefined) {
                 dbUpdates.min_stock = updates.minStock;
