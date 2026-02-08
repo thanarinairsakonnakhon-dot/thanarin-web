@@ -15,6 +15,7 @@ export type Product = {
     features: string[];
     seer: number;
     image: string;
+    image_url?: string; // For compatibility with other parts of the app that might expect this
     // Inventory fields
     stock: number;
     minStock: number;
@@ -69,27 +70,31 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             if (error) throw error;
 
             if (data) {
-                // Map DB snake_case to app camelCase if needed, or adjust types. 
-                // For simplicity, assuming direct mapping or keeping field names consistent.
-                // Note: The schema uses snake_case keys (min_stock) but type uses camelCase (minStock).
-                // We need to map them.
-                const mappedProducts: Product[] = data.map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    brand: p.brand,
-                    type: p.type,
-                    btu: p.btu,
-                    price: p.price,
-                    inverter: p.inverter,
-                    features: p.features || [],
-                    seer: p.seer,
-                    image: p.image || p.image_url || '', // Schema is image, older schemas might use image_url
-                    stock: p.stock,
-                    minStock: p.min_stock, // Schema: min_stock
-                    cost: p.cost,
-                    status: p.status as any, // Cast status
-                    lastUpdate: new Date(p.created_at).toLocaleDateString()
-                }));
+                const mappedProducts: Product[] = data.map(p => {
+                    // Logic to ensure robust image handling
+                    const officialImage = p.image || '';
+                    const fallbackImage = p.image_url || '';
+                    const finalImage = officialImage || fallbackImage;
+
+                    return {
+                        id: p.id,
+                        name: p.name,
+                        brand: p.brand,
+                        type: p.type,
+                        btu: p.btu,
+                        price: p.price,
+                        inverter: p.inverter,
+                        features: p.features || [],
+                        seer: p.seer,
+                        image: finalImage,
+                        image_url: finalImage, // Populate both for compatibility
+                        stock: p.stock,
+                        minStock: p.min_stock, // Schema: min_stock
+                        cost: p.cost,
+                        status: p.status as any,
+                        lastUpdate: new Date(p.created_at).toLocaleDateString()
+                    };
+                });
                 setProducts(mappedProducts);
             }
         } catch (error) {
@@ -103,7 +108,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const addProduct = async (product: Product): Promise<{ success: boolean; error?: string }> => {
         try {
             // Map to DB Schema
-            // Use 'image' as per schema, fallback to 'image_url' if needed logic changes
             const dbProduct = {
                 name: product.name,
                 brand: product.brand,
@@ -150,9 +154,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 dbUpdates.cost = Math.round(updates.price * 0.7);
             }
 
-            // Remove app-only fields if any leak through (like lastUpdate)
+            // Remove app-only fields
             delete dbUpdates.lastUpdate;
-            delete dbUpdates.id; // Don't update ID
+            delete dbUpdates.image_url; // Don't try to update this non-existent column
+            delete dbUpdates.id;
 
             const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
 

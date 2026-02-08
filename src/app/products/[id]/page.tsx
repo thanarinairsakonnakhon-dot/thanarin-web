@@ -28,7 +28,7 @@ async function getProduct(id: string): Promise<Product | null> {
         inverter: product.inverter,
         features: product.features || [],
         seer: product.seer || 0,
-        image: product.image_url || '/images/placeholder.png', // Map image_url
+        image: product.image || product.image_url || '/images/placeholder.png', // Map image/image_url
         stock: product.stock,
         status: product.status
     };
