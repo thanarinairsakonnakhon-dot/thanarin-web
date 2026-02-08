@@ -21,3 +21,24 @@ export type Product = {
     lastUpdate?: string; // For AdminContext compatibility
 };
 
+export type Booking = {
+    id: string;
+    service_type: string;
+    date: string;
+    time: string;
+    customer_name: string;
+    customer_phone: string;
+    address_details: {
+        houseNo: string;
+        village?: string;
+        subdistrict: string;
+        district: string;
+        province: string;
+        lat?: number | null;
+        lng?: number | null;
+    };
+    location_lat?: number;
+    location_lng?: number;
+    status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+    created_at?: string;
+};

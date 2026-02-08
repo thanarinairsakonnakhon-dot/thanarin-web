@@ -2,19 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Product } from '@/types'; // Import standardized type
-
-
-export type Booking = {
-    id: string;
-    customer: string;
-    phone: string;
-    service: string;
-    date: string;
-    time: string;
-    status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
-    technician: string;
-};
+import { Product, Booking } from '@/types'; // Import standardized type
 
 type AdminContextType = {
     products: Product[];
@@ -23,8 +11,8 @@ type AdminContextType = {
     updateProduct: (id: string, updates: Partial<Product>) => Promise<{ success: boolean; error?: string }>;
     deleteProduct: (id: string) => Promise<void>;
     updateStock: (id: string, qty: number, type: 'IN' | 'OUT', reason: string) => Promise<void>;
-    updateBookingStatus: (id: string, status: Booking['status']) => void;
-    assignTechnician: (id: string, technician: string) => void;
+    updateBookingStatus: (id: string, status: Booking['status']) => Promise<void>;
+    assignTechnician: (id: string, technician: string) => Promise<void>;
     isLoading: boolean;
 };
 
@@ -37,12 +25,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
     // Fetch Initial Data from Supabase
     useEffect(() => {
-        fetchProducts();
+        const fetchData = async () => {
+            setIsLoading(true);
+            await Promise.all([fetchProducts(), fetchBookings()]);
+            setIsLoading(false);
+        };
+        fetchData();
     }, []);
 
     const fetchProducts = async () => {
         try {
-            setIsLoading(true);
             const { data, error } = await supabase
                 .from('products')
                 .select('*')
@@ -81,8 +73,23 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             }
         } catch (error) {
             console.error('Error fetching products:', error);
-        } finally {
-            setIsLoading(false);
+        }
+    };
+
+    const fetchBookings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('bookings')
+                .select('*')
+                .order('date', { ascending: true }) // Upcoming first
+                .order('time', { ascending: true });
+
+            if (error) throw error;
+            if (data) {
+                setBookings(data as Booking[]);
+            }
+        } catch (err) {
+            console.error('Error fetching bookings:', err);
         }
     };
 
@@ -178,12 +185,25 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         await updateProduct(id, { stock: newStock, status: newStatus as any });
     };
 
-    const updateBookingStatus = (id: string, status: Booking['status']) => {
-        setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    const updateBookingStatus = async (id: string, status: Booking['status']) => {
+        try {
+            const { error } = await supabase.from('bookings').update({ status }).eq('id', id);
+            if (error) throw error;
+            fetchBookings();
+        } catch (err) {
+            console.error('Error updating booking status:', err);
+        }
     };
 
-    const assignTechnician = (id: string, technician: string) => {
-        setBookings(prev => prev.map(b => b.id === id ? { ...b, technician } : b));
+    const assignTechnician = async (id: string, technician: string) => {
+        // Note: 'technician' column assumes it exists or we handle it in future
+        try {
+            // For now, update local state to reflect change immediately in UI if needed
+            // await supabase.from('bookings').update({ technician }).eq('id', id);
+            setBookings(prev => prev.map(b => b.id === id ? { ...b, technician } as any : b));
+        } catch (err) {
+            console.error('Error assigning technician:', err);
+        }
     };
 
     return (

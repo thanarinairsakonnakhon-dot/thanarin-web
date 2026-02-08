@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import { bookingSlots } from '@/data/bookings';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+
+// Define available time slots
+const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
 
 export default function BookingPage() {
+    const router = useRouter();
     const [step, setStep] = useState(1);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [bookedSlots, setBookedSlots] = useState<string[]>([]); // Format: "YYYY-MM-DD-HH:mm"
+
     const [formData, setFormData] = useState({
         serviceType: 'installation', // installation, cleaning, repair
         selectedDate: '',
@@ -30,6 +38,32 @@ export default function BookingPage() {
         { id: 3, title: 'ข้อมูลติดต่อ' },
         { id: 4, title: 'ยืนยัน' }
     ];
+
+    // Fetch existing bookings to determine availability
+    useEffect(() => {
+        fetchBookedSlots();
+    }, []);
+
+    const fetchBookedSlots = async () => {
+        try {
+            // Fetch bookings for the next 30 days
+            const today = new Date().toISOString().split('T')[0];
+            const { data, error } = await supabase
+                .from('bookings')
+                .select('date, time')
+                .gte('date', today)
+                .neq('status', 'cancelled');
+
+            if (error) throw error;
+
+            if (data) {
+                const slots = data.map((b: any) => `${b.date}-${b.time}`);
+                setBookedSlots(slots);
+            }
+        } catch (error) {
+            console.error('Error fetching availability:', error);
+        }
+    };
 
     const handleSelectSlot = (date: string, time: string) => {
         setFormData({ ...formData, selectedDate: date, selectedTime: time });
@@ -101,14 +135,57 @@ export default function BookingPage() {
         setStep(step - 1);
     };
 
-    // Group slots by date for easier display
-    const slotsByDate = bookingSlots.reduce((acc, slot) => {
-        if (!acc[slot.date]) acc[slot.date] = [];
-        acc[slot.date].push(slot);
-        return acc;
-    }, {} as Record<string, typeof bookingSlots>);
+    const handleSubmitBooking = async () => {
+        try {
+            setIsSubmitting(true);
 
-    const sortedDates = Object.keys(slotsByDate).sort();
+            // Double check availability
+            const slotKey = `${formData.selectedDate}-${formData.selectedTime}`;
+            if (bookedSlots.includes(slotKey)) {
+                alert('ขออภัย! ช่วงเวลานี้ถูกจองไปแล้วในระหว่างที่คุณกำลังทำรายการ กรุณาเลือกเวลาใหม่');
+                setIsSubmitting(false);
+                setStep(2); // Go back to date selection
+                fetchBookedSlots(); // Refresh
+                return;
+            }
+
+            const { error } = await supabase.from('bookings').insert([{
+                service_type: formData.serviceType,
+                date: formData.selectedDate,
+                time: formData.selectedTime,
+                customer_name: formData.name,
+                customer_phone: formData.phone,
+                address_details: formData.addressDetails,
+                location_lat: formData.addressDetails.lat,
+                location_lng: formData.addressDetails.lng,
+                status: 'pending'
+            }]);
+
+            if (error) throw error;
+
+            alert('จองคิวสำเร็จ! 🎉 เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันภายใน 15 นาที');
+            router.push('/'); // Redirect home
+        } catch (error) {
+            console.error('Booking failed:', error);
+            alert('เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Generate next 7 days
+    const generateDates = () => {
+        const dates = [];
+        const today = new Date();
+        for (let i = 1; i <= 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            dates.push(date.toISOString().split('T')[0]);
+        }
+        return dates;
+    };
+
+    const dates = generateDates();
 
     return (
         <main className="bg-aurora" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
@@ -188,41 +265,36 @@ export default function BookingPage() {
                             <div className="animate-fade-in">
                                 <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>เลือกวันและเวลาที่สะดวก</h2>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
-                                    {sortedDates.map((date) => (
+                                    {dates.map((date) => (
                                         <div key={date}>
                                             <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--color-text-sub)' }}>
                                                 {new Date(date).toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' })}
                                             </h3>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                                                {slotsByDate[date].map((slot) => (
-                                                    <button
-                                                        key={slot.id}
-                                                        disabled={!slot.available}
-                                                        onClick={() => handleSelectSlot(slot.date, slot.time)}
-                                                        style={{
-                                                            padding: '0.8rem 1.5rem',
-                                                            borderRadius: '12px',
-                                                            border: '1px solid',
-                                                            borderColor:
-                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
-                                                                    ? 'var(--color-primary-blue)'
-                                                                    : '#e2e8f0',
-                                                            background:
-                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
-                                                                    ? 'var(--color-primary-blue)'
-                                                                    : slot.available ? 'white' : '#f1f5f9',
-                                                            color:
-                                                                formData.selectedDate === slot.date && formData.selectedTime === slot.time
-                                                                    ? 'white'
-                                                                    : slot.available ? 'var(--color-text-main)' : '#cbd5e1',
-                                                            cursor: slot.available ? 'pointer' : 'not-allowed',
-                                                            fontWeight: 600,
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                    >
-                                                        {slot.time}
-                                                    </button>
-                                                ))}
+                                                {TIME_SLOTS.map((time) => {
+                                                    const slotKey = `${date}-${time}`;
+                                                    const isBooked = bookedSlots.includes(slotKey);
+                                                    const isSelected = formData.selectedDate === date && formData.selectedTime === time;
+
+                                                    return (
+                                                        <button
+                                                            key={time}
+                                                            disabled={isBooked}
+                                                            onClick={() => handleSelectSlot(date, time)}
+                                                            className={`
+                                                                px-6 py-3 rounded-xl border font-semibold transition-all
+                                                                ${isSelected
+                                                                    ? 'bg-blue-600 text-white border-blue-600'
+                                                                    : isBooked
+                                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:text-blue-600'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     ))}
@@ -372,8 +444,13 @@ export default function BookingPage() {
                                     </div>
                                 </div>
 
-                                <button className="btn-wow" style={{ padding: '1rem 3rem' }}>
-                                    ยืนยันการจอง ✅
+                                <button
+                                    className="btn-wow"
+                                    style={{ padding: '1rem 3rem' }}
+                                    onClick={handleSubmitBooking}
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? 'กำลังบันทึก...' : 'ยืนยันการจอง ✅'}
                                 </button>
                             </div>
                         )}
