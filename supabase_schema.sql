@@ -83,6 +83,24 @@ CREATE POLICY "Public Update Chat Sessions" ON chat_sessions FOR UPDATE USING (t
 CREATE POLICY "Public Read Chat Messages" ON chat_messages FOR SELECT USING (true);
 CREATE POLICY "Public Insert Chat Messages" ON chat_messages FOR INSERT WITH CHECK (true);
 
--- 8. Enable Realtime for Chat
+-- 8. Create Stock Logs Table for Inventory Tracking
+CREATE TABLE stock_logs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  action_type TEXT NOT NULL, -- 'IN' or 'OUT'
+  quantity INTEGER NOT NULL,
+  reason TEXT,
+  cost_per_unit INTEGER DEFAULT 0,
+  previous_stock INTEGER DEFAULT 0,
+  new_stock INTEGER DEFAULT 0,
+  created_by TEXT DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE stock_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Stock Logs" ON stock_logs FOR SELECT USING (true);
+CREATE POLICY "Public Insert Stock Logs" ON stock_logs FOR INSERT WITH CHECK (true);
+
+-- 9. Enable Realtime for Chat
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_messages;
