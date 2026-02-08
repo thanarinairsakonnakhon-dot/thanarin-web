@@ -230,6 +230,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             updateProduct,
             deleteProduct,
             updateStock,
+            createBooking,
             updateBookingStatus,
             assignTechnician,
             isLoading
