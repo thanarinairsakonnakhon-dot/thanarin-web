@@ -2,8 +2,9 @@
 
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
+import { useSearchParams } from "next/navigation";
 
 interface Portfolio {
     id: string;
@@ -14,19 +15,26 @@ interface Portfolio {
     size: string;
 }
 
-export default function GalleryPage() {
+function PortfolioContent() {
     const [projects, setProjects] = useState<Portfolio[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState("ทั้งหมด");
+    const searchParams = useSearchParams();
 
+    // Handle URL search params
     useEffect(() => {
-        const searchParams = new URLSearchParams(window.location.search);
         const categoryParam = searchParams.get('category');
         if (categoryParam) {
             setFilter(categoryParam);
+        } else {
+            setFilter("ทั้งหมด");
         }
+    }, [searchParams]);
 
+    // Initial data load
+    useEffect(() => {
         const loadProjects = async () => {
+            setIsLoading(true);
             const { data } = await supabase
                 .from('portfolios')
                 .select('*')
@@ -140,11 +148,11 @@ export default function GalleryPage() {
                                     display: 'block',
                                     textDecoration: 'none'
                                 }}
-                                onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-10px)";
+                                onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                                    e.currentTarget.style.transform = "translateY(-10px)";
                                 }}
-                                onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
+                                onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
                                 }}
                             >
                                 {/* Image Background */}
@@ -193,5 +201,13 @@ export default function GalleryPage() {
 
             </div>
         </main>
+    );
+}
+
+export default function GalleryPage() {
+    return (
+        <Suspense fallback={<div style={{ paddingTop: '100px', textAlign: 'center' }}>กำลังโหลดหน้าผลงาน...</div>}>
+            <PortfolioContent />
+        </Suspense>
     );
 }
