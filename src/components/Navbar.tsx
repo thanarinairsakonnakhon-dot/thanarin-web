@@ -71,6 +71,8 @@ export default function Navbar() {
                                 <Link href="/products" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>สินค้า</Link>
                                 <Link href="/prices" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ตารางราคาแอร์</Link>
                                 <Link href="/calculator" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>คำนวณ BTU</Link>
+                                <Link href="/about?category=งานซ่อม" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>งานซ่อม</Link>
+                                <Link href="/about?category=อะไหล่" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>อะไหล่</Link>
 
                                 {/* Portfolio Dropdown */}
                                 <div
@@ -96,10 +98,8 @@ export default function Navbar() {
                                             {[
                                                 { label: 'ล้างแอร์', icon: '🧼', img: 'https://images.unsplash.com/photo-1581094288338-2314dddb7ec3?auto=format&fit=crop&q=80&w=400' },
                                                 { label: 'ซ่อมแอร์', icon: '🔧', img: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400' },
-                                                { label: 'งานซ่อม', icon: '🛠️', img: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=400' },
                                                 { label: 'ติดตั้งแอร์', icon: '❄️', img: 'https://images.unsplash.com/photo-1599933310631-89ce0d22079f?auto=format&fit=crop&q=80&w=400' },
                                                 { label: 'งานโครงการ', icon: '🏢', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=400' },
-                                                { label: 'อะไหล่', icon: '⚙️', img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400' },
                                                 { label: 'ขายส่ง', icon: '📦', img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400' }
                                             ].map((item) => (
                                                 <Link
@@ -333,6 +333,40 @@ export default function Navbar() {
                         >
                             🧮 คำนวณ BTU
                         </Link>
+                        <Link
+                            href="/about?category=งานซ่อม"
+                            onClick={() => setIsMenuOpen(false)}
+                            style={{
+                                padding: '1rem 1.25rem',
+                                fontWeight: 500,
+                                color: '#475569',
+                                borderRadius: '12px',
+                                textDecoration: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            🛠️ งานซ่อม
+                        </Link>
+                        <Link
+                            href="/about?category=อะไหล่"
+                            onClick={() => setIsMenuOpen(false)}
+                            style={{
+                                padding: '1rem 1.25rem',
+                                fontWeight: 500,
+                                color: '#475569',
+                                borderRadius: '12px',
+                                textDecoration: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            ⚙️ อะไหล่
+                        </Link>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#f8fafc', borderRadius: '12px', padding: '0.5rem' }}>
                             <Link
                                 href="/about"
@@ -354,10 +388,8 @@ export default function Navbar() {
                                 {[
                                     { label: 'ล้างแอร์', icon: '🧼' },
                                     { label: 'ซ่อมแอร์', icon: '🔧' },
-                                    { label: 'งานซ่อม', icon: '🛠️' },
                                     { label: 'ติดตั้งแอร์', icon: '❄️' },
                                     { label: 'งานโครงการ', icon: '🏢' },
-                                    { label: 'อะไหล่', icon: '⚙️' },
                                     { label: 'ขายส่ง', icon: '📦' }
                                 ].map((item) => (
                                     <Link
