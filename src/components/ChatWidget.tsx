@@ -36,9 +36,10 @@ export default function ChatWidget() {
     const [customerName, setCustomerName] = useState('');
     const [showNameInput, setShowNameInput] = useState(false);
     const [nameInput, setNameInput] = useState('');
+    const [sessionExists, setSessionExists] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Initialize session
+    // Initialize session (only check if exists, don't create yet)
     useEffect(() => {
         const sid = getSessionId();
         setSessionId(sid);
@@ -50,33 +51,31 @@ export default function ChatWidget() {
             setShowNameInput(true);
         }
 
-        // Ensure chat session exists
-        const initSession = async () => {
+        // Check if session already exists (for returning users)
+        const checkSession = async () => {
             const { data: existing } = await supabase
                 .from('chat_sessions')
                 .select('session_id, customer_name')
                 .eq('session_id', sid)
                 .single();
 
-            if (existing && existing.customer_name && existing.customer_name !== 'Guest') {
-                setCustomerName(existing.customer_name);
-                setShowNameInput(false);
-                localStorage.setItem('chat_customer_name', existing.customer_name);
-            } else if (!existing) {
-                await supabase.from('chat_sessions').insert({
-                    session_id: sid,
-                    customer_name: savedName || 'Guest',
-                    is_active: true
-                });
+            if (existing) {
+                setSessionExists(true);
+                if (existing.customer_name && existing.customer_name !== 'Guest') {
+                    setCustomerName(existing.customer_name);
+                    setShowNameInput(false);
+                    localStorage.setItem('chat_customer_name', existing.customer_name);
+                }
             }
+            // Don't create session here - wait until first message
         };
 
-        initSession();
+        checkSession();
     }, []);
 
-    // Load messages
+    // Load messages (only if session exists)
     useEffect(() => {
-        if (!sessionId) return;
+        if (!sessionId || !sessionExists) return;
 
         const loadMessages = async () => {
             const { data } = await supabase
@@ -108,7 +107,7 @@ export default function ChatWidget() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [sessionId]);
+    }, [sessionId, sessionExists]);
 
     const toggleChat = () => setIsOpen(!isOpen);
 
@@ -129,10 +128,12 @@ export default function ChatWidget() {
         setShowNameInput(false);
         localStorage.setItem('chat_customer_name', name);
 
-        // Update session with name
-        await supabase.from('chat_sessions').update({
-            customer_name: name
-        }).eq('session_id', sessionId);
+        // If session exists, update name; otherwise just save locally
+        if (sessionExists) {
+            await supabase.from('chat_sessions').update({
+                customer_name: name
+            }).eq('session_id', sessionId);
+        }
     };
 
     const handleSendMessage = async (e?: React.FormEvent) => {
@@ -144,20 +145,33 @@ export default function ChatWidget() {
         setInputValue('');
 
         try {
+            // Create session if it doesn't exist (first message)
+            if (!sessionExists) {
+                await supabase.from('chat_sessions').insert({
+                    session_id: sessionId,
+                    customer_name: customerName || 'Guest',
+                    is_active: true,
+                    last_message: messageText,
+                    last_message_at: new Date().toISOString(),
+                    unread_count: 1
+                });
+                setSessionExists(true);
+            } else {
+                // Update session's last message
+                await supabase.from('chat_sessions').update({
+                    last_message: messageText,
+                    last_message_at: new Date().toISOString(),
+                    unread_count: 1,
+                    is_active: true
+                }).eq('session_id', sessionId);
+            }
+
             // Insert message
             await supabase.from('chat_messages').insert({
                 session_id: sessionId,
                 sender: 'user',
                 message: messageText
             });
-
-            // Update session's last message
-            await supabase.from('chat_sessions').update({
-                last_message: messageText,
-                last_message_at: new Date().toISOString(),
-                unread_count: 1,
-                is_active: true
-            }).eq('session_id', sessionId);
 
         } catch (error) {
             console.error('Error sending message:', error);
