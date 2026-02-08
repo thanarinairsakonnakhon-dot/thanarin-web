@@ -14,6 +14,12 @@ const getSessionId = () => {
     return sessionId;
 };
 
+// Get saved customer name
+const getSavedName = () => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem('chat_customer_name') || '';
+};
+
 interface Message {
     id: string;
     message: string;
@@ -27,6 +33,9 @@ export default function ChatWidget() {
     const [inputValue, setInputValue] = useState('');
     const [sessionId, setSessionId] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [customerName, setCustomerName] = useState('');
+    const [showNameInput, setShowNameInput] = useState(false);
+    const [nameInput, setNameInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Initialize session
@@ -34,18 +43,29 @@ export default function ChatWidget() {
         const sid = getSessionId();
         setSessionId(sid);
 
+        const savedName = getSavedName();
+        if (savedName) {
+            setCustomerName(savedName);
+        } else {
+            setShowNameInput(true);
+        }
+
         // Ensure chat session exists
         const initSession = async () => {
             const { data: existing } = await supabase
                 .from('chat_sessions')
-                .select('session_id')
+                .select('session_id, customer_name')
                 .eq('session_id', sid)
                 .single();
 
-            if (!existing) {
+            if (existing && existing.customer_name && existing.customer_name !== 'Guest') {
+                setCustomerName(existing.customer_name);
+                setShowNameInput(false);
+                localStorage.setItem('chat_customer_name', existing.customer_name);
+            } else if (!existing) {
                 await supabase.from('chat_sessions').insert({
                     session_id: sid,
-                    customer_name: 'Guest User',
+                    customer_name: savedName || 'Guest',
                     is_active: true
                 });
             }
@@ -100,6 +120,21 @@ export default function ChatWidget() {
         scrollToBottom();
     }, [messages, isOpen]);
 
+    const handleSetName = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!nameInput.trim()) return;
+
+        const name = nameInput.trim();
+        setCustomerName(name);
+        setShowNameInput(false);
+        localStorage.setItem('chat_customer_name', name);
+
+        // Update session with name
+        await supabase.from('chat_sessions').update({
+            customer_name: name
+        }).eq('session_id', sessionId);
+    };
+
     const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault();
         if (!inputValue.trim() || isLoading || !sessionId) return;
@@ -120,7 +155,7 @@ export default function ChatWidget() {
             await supabase.from('chat_sessions').update({
                 last_message: messageText,
                 last_message_at: new Date().toISOString(),
-                unread_count: supabase.rpc ? 1 : 1,
+                unread_count: 1,
                 is_active: true
             }).eq('session_id', sessionId);
 
@@ -185,80 +220,122 @@ export default function ChatWidget() {
                     >✕</button>
                 </div>
 
-                {/* Messages Area */}
-                <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {messages.length === 0 && (
-                        <div style={{ textAlign: 'center', color: '#94a3b8', padding: '2rem' }}>
-                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👋</div>
-                            <div>สวัสดีครับ! มีอะไรให้ช่วยไหมครับ?</div>
+                {/* Name Input Form */}
+                {showNameInput ? (
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: '#f8fafc' }}>
+                        <form onSubmit={handleSetName} style={{ textAlign: 'center', width: '100%' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👋</div>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.5rem' }}>
+                                สวัสดีครับ!
+                            </h3>
+                            <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                                กรุณาบอกชื่อเล่นของคุณ<br />เพื่อให้เราบริการได้ดียิ่งขึ้น
+                            </p>
+                            <input
+                                type="text"
+                                placeholder="ชื่อของคุณ..."
+                                value={nameInput}
+                                onChange={(e) => setNameInput(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    borderRadius: '12px',
+                                    border: '2px solid #e2e8f0',
+                                    fontSize: '1rem',
+                                    textAlign: 'center',
+                                    marginBottom: '1rem',
+                                    outline: 'none'
+                                }}
+                                autoFocus
+                            />
+                            <button
+                                type="submit"
+                                className="btn-wow"
+                                style={{ width: '100%', padding: '1rem', borderRadius: '12px', fontSize: '1rem' }}
+                            >
+                                เริ่มแชท 💬
+                            </button>
+                        </form>
+                    </div>
+                ) : (
+                    <>
+                        {/* Messages Area */}
+                        <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {messages.length === 0 && (
+                                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '2rem' }}>
+                                    <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👋</div>
+                                    <div>สวัสดี{customerName ? ` คุณ${customerName}` : ''}!</div>
+                                    <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>มีอะไรให้ช่วยไหมครับ?</div>
+                                </div>
+                            )}
+                            {messages.map(msg => (
+                                <div key={msg.id} style={{
+                                    alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                                    maxWidth: '80%',
+                                }}>
+                                    <div style={{
+                                        padding: '0.8rem 1rem',
+                                        borderRadius: '16px',
+                                        borderTopLeftRadius: msg.sender === 'user' ? '16px' : '4px',
+                                        borderTopRightRadius: msg.sender === 'user' ? '4px' : '16px',
+                                        background: msg.sender === 'user' ? 'var(--color-primary-blue)' : 'white',
+                                        color: msg.sender === 'user' ? 'white' : '#1e293b',
+                                        boxShadow: msg.sender === 'user' ? '0 4px 6px -1px rgba(10, 132, 255, 0.2)' : '0 2px 4px -1px rgba(0,0,0,0.05)',
+                                        fontSize: '0.95rem',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        {msg.message}
+                                    </div>
+                                    <div style={{
+                                        fontSize: '0.7rem',
+                                        color: '#94a3b8',
+                                        marginTop: '4px',
+                                        textAlign: msg.sender === 'user' ? 'right' : 'left'
+                                    }}>
+                                        {formatTime(msg.created_at)}
+                                    </div>
+                                </div>
+                            ))}
+                            <div ref={messagesEndRef} />
                         </div>
-                    )}
-                    {messages.map(msg => (
-                        <div key={msg.id} style={{
-                            alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                            maxWidth: '80%',
-                        }}>
-                            <div style={{
-                                padding: '0.8rem 1rem',
-                                borderRadius: '16px',
-                                borderTopLeftRadius: msg.sender === 'user' ? '16px' : '4px',
-                                borderTopRightRadius: msg.sender === 'user' ? '4px' : '16px',
-                                background: msg.sender === 'user' ? 'var(--color-primary-blue)' : 'white',
-                                color: msg.sender === 'user' ? 'white' : '#1e293b',
-                                boxShadow: msg.sender === 'user' ? '0 4px 6px -1px rgba(10, 132, 255, 0.2)' : '0 2px 4px -1px rgba(0,0,0,0.05)',
-                                fontSize: '0.95rem',
-                                lineHeight: '1.5'
-                            }}>
-                                {msg.message}
-                            </div>
-                            <div style={{
-                                fontSize: '0.7rem',
-                                color: '#94a3b8',
-                                marginTop: '4px',
-                                textAlign: msg.sender === 'user' ? 'right' : 'left'
-                            }}>
-                                {formatTime(msg.created_at)}
-                            </div>
-                        </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </div>
 
-                {/* Input Area */}
-                <form onSubmit={handleSendMessage} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '0.5rem' }}>
-                    <input
-                        type="text"
-                        placeholder="พิมพ์ข้อความ..."
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        disabled={isLoading}
-                        style={{
-                            flex: 1,
-                            padding: '0.8rem',
-                            borderRadius: '99px',
-                            border: '1px solid #e2e8f0',
-                            outline: 'none',
-                            background: '#f8fafc'
-                        }}
-                    />
-                    <button
-                        type="submit"
-                        className="btn-wow"
-                        disabled={isLoading}
-                        style={{
-                            padding: '0.8rem',
-                            borderRadius: '50%',
-                            width: '45px',
-                            height: '45px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: 'none'
-                        }}
-                    >
-                        ➤
-                    </button>
-                </form>
+                        {/* Input Area */}
+                        <form onSubmit={handleSendMessage} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '0.5rem' }}>
+                            <input
+                                type="text"
+                                placeholder="พิมพ์ข้อความ..."
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                disabled={isLoading}
+                                style={{
+                                    flex: 1,
+                                    padding: '0.8rem',
+                                    borderRadius: '99px',
+                                    border: '1px solid #e2e8f0',
+                                    outline: 'none',
+                                    background: '#f8fafc'
+                                }}
+                            />
+                            <button
+                                type="submit"
+                                className="btn-wow"
+                                disabled={isLoading}
+                                style={{
+                                    padding: '0.8rem',
+                                    borderRadius: '50%',
+                                    width: '45px',
+                                    height: '45px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: 'none'
+                                }}
+                            >
+                                ➤
+                            </button>
+                        </form>
+                    </>
+                )}
             </div>
 
             {/* Floating Button */}
