@@ -1,5 +1,4 @@
 import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
 import HeroSlider from '@/components/HeroSlider';
 import Link from 'next/link';
 import Testimonials from '@/components/Testimonials';
@@ -14,8 +13,6 @@ export default function Home() {
             <Navbar />
 
             <HeroSlider />
-
-            <HeroSection />
 
             <PromotionBanner />
 
