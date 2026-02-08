@@ -5,34 +5,45 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-interface Brand {
+interface Product {
     id: string;
     name: string;
-    logo_url: string;
-    color: string;
-    is_active: boolean;
-}
-
-interface Series {
-    id: string;
-    brand_id: string;
-    name: string;
-    is_active: boolean;
-}
-
-interface Model {
-    id: string;
-    series_id: string;
-    model_name: string;
-    btu: string;
+    brand: string;
+    btu: number;
     price: number;
-    is_active: boolean;
+    inverter: boolean;
+    image: string;
 }
+
+interface BrandGroup {
+    brand: string;
+    products: Product[];
+    color: string;
+    logo_url?: string;
+}
+
+// Brand colors mapping
+const brandColors: { [key: string]: string } = {
+    'Mitsubishi': '#E60012',
+    'Daikin': '#007DC5',
+    'Carrier': '#003087',
+    'Haier': '#C41230',
+    'Midea': '#00A0E9',
+    'AUX': '#FF6600',
+    'Samsung': '#1428A0',
+    'LG': '#A50034',
+    'Panasonic': '#0066CC',
+    'Fujitsu': '#E60027',
+    'Toshiba': '#FF0000',
+    'Sharp': '#FF0000',
+    'TCL': '#009CDE',
+    'Hisense': '#66BB6A',
+    'default': '#0A84FF'
+};
 
 export default function PriceTablePage() {
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [seriesMap, setSeriesMap] = useState<{ [key: string]: Series[] }>({});
-    const [modelsMap, setModelsMap] = useState<{ [key: string]: Model[] }>({});
+    const [brandGroups, setBrandGroups] = useState<BrandGroup[]>([]);
+    const [brandLogos, setBrandLogos] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -42,49 +53,47 @@ export default function PriceTablePage() {
     const loadData = async () => {
         setIsLoading(true);
 
-        // Load brands
-        const { data: brandsData } = await supabase
-            .from('ac_brands')
+        // Load products from products table
+        const { data: products } = await supabase
+            .from('products')
             .select('*')
-            .eq('is_active', true)
-            .order('display_order');
+            .order('brand')
+            .order('btu');
 
-        if (brandsData && brandsData.length > 0) {
-            setBrands(brandsData);
+        // Load brand logos from ac_brands table (optional enhancement)
+        const { data: acBrands } = await supabase
+            .from('ac_brands')
+            .select('name, logo_url, color');
 
-            // Load series for all brands
-            const seriesObj: { [key: string]: Series[] } = {};
-            const modelsObj: { [key: string]: Model[] } = {};
+        if (acBrands) {
+            const logoMap: { [key: string]: string } = {};
+            acBrands.forEach(b => {
+                if (b.logo_url) logoMap[b.name] = b.logo_url;
+                if (b.color) brandColors[b.name] = b.color;
+            });
+            setBrandLogos(logoMap);
+        }
 
-            for (const brand of brandsData) {
-                const { data: seriesData } = await supabase
-                    .from('ac_series')
-                    .select('*')
-                    .eq('brand_id', brand.id)
-                    .eq('is_active', true)
-                    .order('display_order');
+        if (products && products.length > 0) {
+            // Group products by brand
+            const grouped: { [key: string]: Product[] } = {};
+            products.forEach(product => {
+                const brand = product.brand || 'อื่นๆ';
+                if (!grouped[brand]) grouped[brand] = [];
+                grouped[brand].push(product);
+            });
 
-                if (seriesData) {
-                    seriesObj[brand.id] = seriesData;
+            // Convert to array and sort
+            const groups: BrandGroup[] = Object.keys(grouped).map(brand => ({
+                brand,
+                products: grouped[brand],
+                color: brandColors[brand] || brandColors['default']
+            }));
 
-                    // Load models for each series
-                    for (const series of seriesData) {
-                        const { data: modelsData } = await supabase
-                            .from('ac_models')
-                            .select('*')
-                            .eq('series_id', series.id)
-                            .eq('is_active', true)
-                            .order('display_order');
+            // Sort by number of products (most first)
+            groups.sort((a, b) => b.products.length - a.products.length);
 
-                        if (modelsData) {
-                            modelsObj[series.id] = modelsData;
-                        }
-                    }
-                }
-            }
-
-            setSeriesMap(seriesObj);
-            setModelsMap(modelsObj);
+            setBrandGroups(groups);
         }
 
         setIsLoading(false);
@@ -131,11 +140,11 @@ export default function PriceTablePage() {
                         <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>❄️</div>
                         กำลังโหลดข้อมูล...
                     </div>
-                ) : brands.length === 0 ? (
+                ) : brandGroups.length === 0 ? (
                     <div style={{ textAlign: "center", padding: "4rem", color: "#64748b" }}>
                         <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📋</div>
-                        <p>ยังไม่มีข้อมูลตารางราคา</p>
-                        <p style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>กรุณาติดต่อสอบถามราคาได้</p>
+                        <p>ยังไม่มีสินค้าในระบบ</p>
+                        <p style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>กรุณาเพิ่มสินค้าใน Admin → จัดการสินค้า</p>
                     </div>
                 ) : (
                     /* Price Cards Grid */
@@ -144,9 +153,9 @@ export default function PriceTablePage() {
                         gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
                         gap: "2rem"
                     }}>
-                        {brands.map((brand) => (
+                        {brandGroups.map((group) => (
                             <div
-                                key={brand.id}
+                                key={group.brand}
                                 style={{
                                     background: "white",
                                     borderRadius: "20px",
@@ -165,7 +174,7 @@ export default function PriceTablePage() {
                             >
                                 {/* Brand Header */}
                                 <div style={{
-                                    background: `linear-gradient(135deg, ${brand.color} 0%, ${brand.color}CC 100%)`,
+                                    background: `linear-gradient(135deg, ${group.color} 0%, ${group.color}CC 100%)`,
                                     padding: "1.5rem",
                                     textAlign: "center",
                                     color: "white",
@@ -174,10 +183,10 @@ export default function PriceTablePage() {
                                     justifyContent: "center",
                                     gap: "1rem"
                                 }}>
-                                    {brand.logo_url ? (
+                                    {brandLogos[group.brand] ? (
                                         <img
-                                            src={brand.logo_url}
-                                            alt={brand.name}
+                                            src={brandLogos[group.brand]}
+                                            alt={group.brand}
                                             style={{
                                                 height: "40px",
                                                 maxWidth: "120px",
@@ -196,28 +205,30 @@ export default function PriceTablePage() {
                                         margin: 0,
                                         color: "white"
                                     }}>
-                                        {brand.name}
+                                        {group.brand}
                                     </h2>
                                 </div>
 
-                                {/* Series Tables */}
+                                {/* Products Table */}
                                 <div style={{ padding: "1.5rem" }}>
-                                    {seriesMap[brand.id]?.map((series, sIdx) => (
-                                        <div key={series.id} style={{ marginBottom: sIdx < (seriesMap[brand.id]?.length || 0) - 1 ? "1.5rem" : 0 }}>
-                                            {/* Series Title */}
-                                            <h3 style={{
-                                                fontSize: "1rem",
-                                                fontWeight: 700,
-                                                color: brand.color,
-                                                marginBottom: "0.8rem",
-                                                paddingBottom: "0.5rem",
-                                                borderBottom: `2px solid ${brand.color}20`
-                                            }}>
-                                                {series.name}
-                                            </h3>
+                                    {/* Group by Inverter/Non-Inverter */}
+                                    {[true, false].map(isInverter => {
+                                        const filtered = group.products.filter(p => p.inverter === isInverter);
+                                        if (filtered.length === 0) return null;
 
-                                            {/* Table */}
-                                            {modelsMap[series.id]?.length > 0 ? (
+                                        return (
+                                            <div key={isInverter ? 'inverter' : 'normal'} style={{ marginBottom: "1.5rem" }}>
+                                                <h3 style={{
+                                                    fontSize: "1rem",
+                                                    fontWeight: 700,
+                                                    color: group.color,
+                                                    marginBottom: "0.8rem",
+                                                    paddingBottom: "0.5rem",
+                                                    borderBottom: `2px solid ${group.color}20`
+                                                }}>
+                                                    {isInverter ? '⚡ Inverter' : '🔄 ธรรมดา'}
+                                                </h3>
+
                                                 <table style={{
                                                     width: "100%",
                                                     borderCollapse: "collapse",
@@ -235,24 +246,27 @@ export default function PriceTablePage() {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {modelsMap[series.id]?.map((model) => (
-                                                            <tr key={model.id} style={{
-                                                                borderBottom: "1px solid #f1f5f9"
-                                                            }}>
+                                                        {filtered.map((product) => (
+                                                            <tr key={product.id} style={{
+                                                                borderBottom: "1px solid #f1f5f9",
+                                                                cursor: "pointer"
+                                                            }}
+                                                                onClick={() => window.location.href = `/products/${product.id}`}
+                                                            >
                                                                 <td style={{
                                                                     padding: "0.6rem",
                                                                     fontWeight: 500,
                                                                     color: "#1e293b"
                                                                 }}>
-                                                                    {model.model_name}
+                                                                    {product.name}
                                                                 </td>
                                                                 <td style={{
                                                                     padding: "0.6rem",
                                                                     textAlign: "center",
-                                                                    color: brand.color,
+                                                                    color: group.color,
                                                                     fontWeight: 600
                                                                 }}>
-                                                                    {model.btu}
+                                                                    {product.btu?.toLocaleString()}
                                                                 </td>
                                                                 <td style={{
                                                                     padding: "0.6rem",
@@ -260,28 +274,24 @@ export default function PriceTablePage() {
                                                                     fontWeight: 700,
                                                                     color: "#1e293b"
                                                                 }}>
-                                                                    ฿{Number(model.price).toLocaleString()}
+                                                                    ฿{product.price?.toLocaleString()}
                                                                 </td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
                                                 </table>
-                                            ) : (
-                                                <div style={{ color: "#94a3b8", fontSize: "0.9rem", padding: "1rem 0" }}>
-                                                    ติดต่อสอบถามราคา
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                            </div>
+                                        );
+                                    })}
 
                                     {/* CTA Button */}
                                     <Link
-                                        href="/products"
+                                        href={`/products?brand=${encodeURIComponent(group.brand)}`}
                                         style={{
                                             display: "block",
                                             width: "100%",
                                             padding: "0.8rem",
-                                            background: `linear-gradient(135deg, ${brand.color} 0%, ${brand.color}CC 100%)`,
+                                            background: `linear-gradient(135deg, ${group.color} 0%, ${group.color}CC 100%)`,
                                             color: "white",
                                             textAlign: "center",
                                             borderRadius: "10px",
@@ -297,7 +307,7 @@ export default function PriceTablePage() {
                                             e.currentTarget.style.opacity = '1';
                                         }}
                                     >
-                                        ดูสินค้า →
+                                        ดูสินค้า {group.brand} ทั้งหมด →
                                     </Link>
                                 </div>
                             </div>
@@ -360,8 +370,32 @@ export default function PriceTablePage() {
                     </div>
                 </div>
 
-                {/* CTA */}
-                <div style={{ textAlign: "center", marginTop: "3rem" }}>
+                {/* Calculator CTA */}
+                <div style={{
+                    marginTop: "2rem",
+                    background: "linear-gradient(135deg, #0A84FF 0%, #5856d6 100%)",
+                    borderRadius: "16px",
+                    padding: "2rem",
+                    color: "white",
+                    textAlign: "center"
+                }}>
+                    <h3 style={{ marginBottom: "1rem", color: "white" }}>🧮 ไม่แน่ใจว่าต้องใช้แอร์ขนาดไหน?</h3>
+                    <p style={{ opacity: 0.9, marginBottom: "1.5rem" }}>ใช้เครื่องมือคำนวณ BTU ฟรี คำนวณจากขนาดห้องให้อัตโนมัติ</p>
+                    <Link
+                        href="/calculator"
+                        className="btn-wow"
+                        style={{
+                            background: "white",
+                            color: "#0A84FF",
+                            padding: "0.8rem 2rem"
+                        }}
+                    >
+                        คำนวณ BTU ฟรี →
+                    </Link>
+                </div>
+
+                {/* Main CTA */}
+                <div style={{ textAlign: "center", marginTop: "2rem" }}>
                     <Link
                         href="/booking"
                         className="btn-wow"
