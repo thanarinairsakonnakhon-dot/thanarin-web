@@ -42,23 +42,37 @@ const defaultReviews = [
 
 export default function Testimonials() {
     const [reviews, setReviews] = useState<Review[]>(defaultReviews);
+    const [stats, setStats] = useState({ avg: 4.9, total: 1200 });
 
     useEffect(() => {
         loadReviews();
     }, []);
 
     const loadReviews = async () => {
-        const { data, error } = await supabase
+        // Fetch specific reviews for display
+        const { data: displayData } = await supabase
             .from('reviews')
             .select('*')
             .eq('is_visible', true)
             .order('created_at', { ascending: false })
             .limit(6);
 
-        if (data && data.length > 0) {
-            setReviews(data);
+        if (displayData && displayData.length > 0) {
+            setReviews(displayData);
         }
-        // If error or no data, keep default reviews
+
+        // Fetch all ratings to calculate accurate average and total
+        const { data: allRatings } = await supabase
+            .from('reviews')
+            .select('rating')
+            .eq('is_visible', true);
+
+        if (allRatings && allRatings.length > 0) {
+            const total = allRatings.length;
+            const sum = allRatings.reduce((acc, curr) => acc + curr.rating, 0);
+            const avg = parseFloat((sum / total).toFixed(1));
+            setStats({ avg, total });
+        }
     };
 
     return (
@@ -74,7 +88,10 @@ export default function Testimonials() {
                         ยืนยันคุณภาพ
                     </h2>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginTop: '1rem', fontSize: '1.5rem', color: '#F59E0B' }}>
-                        ★★★★★ <span style={{ fontSize: '1rem', color: 'var(--color-text-sub)', marginLeft: '10px', alignSelf: 'center' }}>(4.9/5 จาก 1,200+ รีวิว)</span>
+                        {'★'.repeat(Math.round(stats.avg))}{'☆'.repeat(5 - Math.round(stats.avg))}
+                        <span style={{ fontSize: '1rem', color: 'var(--color-text-sub)', marginLeft: '10px', alignSelf: 'center' }}>
+                            ({stats.avg}/5 จาก {stats.total > 1000 ? stats.total.toLocaleString() + '+' : stats.total} รีวิว)
+                        </span>
                     </div>
                 </div>
 
