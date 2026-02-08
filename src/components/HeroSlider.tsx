@@ -17,7 +17,14 @@ export default function HeroSlider() {
     const [slides, setSlides] = useState<Slide[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const loadSlides = async () => {
@@ -36,10 +43,10 @@ export default function HeroSlider() {
         loadSlides();
     }, []);
 
-    const itemsPerPage = 4;
+    const itemsPerPage = windowWidth < 768 ? 1 : (windowWidth < 1024 ? 2 : 3);
     const totalPages = Math.ceil(slides.length / itemsPerPage);
 
-    // Auto-scroll every 5 seconds if more than 4 slides
+    // Auto-scroll every 5 seconds if more slides than visible
     useEffect(() => {
         if (slides.length <= itemsPerPage) return;
 
@@ -48,7 +55,7 @@ export default function HeroSlider() {
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [slides.length, totalPages]);
+    }, [slides.length, totalPages, itemsPerPage]);
 
     // Scroll to current page
     useEffect(() => {
@@ -60,7 +67,7 @@ export default function HeroSlider() {
                 behavior: 'smooth'
             });
         }
-    }, [currentPage, totalPages, slides.length]);
+    }, [currentPage, totalPages, slides.length, itemsPerPage]);
 
     const goToPrev = useCallback(() => {
         setCurrentPage(prev => (prev - 1 + totalPages) % totalPages);
@@ -73,21 +80,21 @@ export default function HeroSlider() {
     if (isLoading) {
         return (
             <section style={{
-                paddingTop: '100px',
-                paddingBottom: '2rem',
+                paddingTop: '120px',
+                paddingBottom: '3rem',
                 background: '#F8FAFC'
             }}>
                 <div className="container">
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(4, 1fr)',
-                        gap: '1rem'
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                        gap: '1.5rem'
                     }}>
-                        {[1, 2, 3, 4].map(i => (
+                        {[1, 2, 3].map(i => (
                             <div key={i} style={{
-                                height: '200px',
+                                height: '450px',
                                 background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                                borderRadius: '16px'
+                                borderRadius: '24px'
                             }} />
                         ))}
                     </div>
@@ -102,20 +109,31 @@ export default function HeroSlider() {
 
     return (
         <section style={{
-            paddingTop: '100px',
-            paddingBottom: '2rem',
+            paddingTop: '120px',
+            paddingBottom: '4rem',
             background: '#F8FAFC'
         }}>
             <div className="container" style={{ position: 'relative' }}>
+                {/* Slider Header */}
+                <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', padding: '0 0.5rem' }}>
+                    <div>
+                        <span className="text-gradient-blue" style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Our Works & Updates</span>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginTop: '0.5rem', color: '#1e293b' }}>
+                            ไฮไลท์เด่น <span style={{ color: 'var(--color-primary-blue)' }}>จากธนรินทร์</span>
+                        </h2>
+                    </div>
+                </div>
+
                 {/* Slider Container */}
                 <div
                     ref={scrollRef}
                     style={{
                         display: 'flex',
-                        gap: '1rem',
+                        gap: '1.5rem',
                         overflowX: 'hidden',
                         scrollBehavior: 'smooth',
-                        scrollSnapType: 'x mandatory'
+                        scrollSnapType: 'x mandatory',
+                        padding: '0.5rem'
                     }}
                 >
                     {slides.map((slide) => (
@@ -123,25 +141,25 @@ export default function HeroSlider() {
                             key={slide.id}
                             href={slide.link_url || '/products'}
                             style={{
-                                flex: '0 0 calc(25% - 0.75rem)',
-                                minWidth: 'calc(25% - 0.75rem)',
+                                flex: `0 0 calc(${100 / itemsPerPage}% - ${((itemsPerPage - 1) * 1.5) / itemsPerPage}rem)`,
+                                minWidth: `calc(${100 / itemsPerPage}% - ${((itemsPerPage - 1) * 1.5) / itemsPerPage}rem)`,
                                 position: 'relative',
-                                height: '200px',
-                                borderRadius: '16px',
+                                height: '450px',
+                                borderRadius: '28px',
                                 overflow: 'hidden',
                                 display: 'block',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
-                                transition: 'transform 0.3s, box-shadow 0.3s',
+                                boxShadow: '0 15px 35px rgba(0,0,0,0.1)',
+                                transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
                                 textDecoration: 'none',
                                 scrollSnapAlign: 'start'
                             }}
                             onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                                e.currentTarget.style.transform = 'translateY(-12px)';
+                                e.currentTarget.style.boxShadow = '0 25px 50px rgba(10, 132, 255, 0.25)';
                             }}
                             onMouseOut={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.08)';
+                                e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.1)';
                             }}
                         >
                             {/* Background Image */}
@@ -153,7 +171,8 @@ export default function HeroSlider() {
                                 height: '100%',
                                 backgroundImage: `url(${slide.image_url})`,
                                 backgroundSize: 'cover',
-                                backgroundPosition: 'center'
+                                backgroundPosition: 'center',
+                                transition: 'transform 0.8s ease'
                             }} />
 
                             {/* Gradient Overlay */}
@@ -162,8 +181,8 @@ export default function HeroSlider() {
                                 bottom: 0,
                                 left: 0,
                                 width: '100%',
-                                height: '70%',
-                                background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                                height: '80%',
+                                background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, transparent 100%)',
                                 zIndex: 1
                             }} />
 
@@ -173,67 +192,83 @@ export default function HeroSlider() {
                                 bottom: 0,
                                 left: 0,
                                 right: 0,
-                                padding: '1rem',
+                                padding: '2.5rem 2rem',
                                 zIndex: 10
                             }}>
                                 {slide.title && (
                                     <h3 style={{
-                                        fontSize: '1rem',
-                                        fontWeight: 700,
+                                        fontSize: '1.6rem',
+                                        fontWeight: 800,
                                         color: 'white',
-                                        marginBottom: '0.3rem',
-                                        lineHeight: 1.3
+                                        marginBottom: '0.8rem',
+                                        lineHeight: 1.2
                                     }}>
                                         {slide.title}
                                     </h3>
                                 )}
                                 {slide.subtitle && (
                                     <p style={{
-                                        fontSize: '0.8rem',
-                                        color: 'rgba(255,255,255,0.8)',
-                                        lineHeight: 1.4,
+                                        fontSize: '1rem',
+                                        color: 'rgba(255,255,255,0.9)',
+                                        lineHeight: 1.5,
                                         display: '-webkit-box',
-                                        WebkitLineClamp: 2,
+                                        WebkitLineClamp: 3,
                                         WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden'
+                                        overflow: 'hidden',
+                                        marginBottom: '1.2rem'
                                     }}>
                                         {slide.subtitle}
                                     </p>
                                 )}
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    color: '#0A84FF',
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    background: 'white',
+                                    padding: '0.6rem 1.2rem',
+                                    borderRadius: '50px'
+                                }}>
+                                    {slide.button_text || 'ดูรายละเอียด'} →
+                                </div>
                             </div>
                         </Link>
                     ))}
                 </div>
 
-                {/* Navigation Arrows - Show only if more than 4 slides */}
+                {/* Navigation Arrows */}
                 {slides.length > itemsPerPage && (
                     <>
                         <button
                             onClick={goToPrev}
                             style={{
                                 position: 'absolute',
-                                left: '-20px',
-                                top: '50%',
+                                left: '-25px',
+                                top: '55%',
                                 transform: 'translateY(-50%)',
-                                width: '40px',
-                                height: '40px',
+                                width: '50px',
+                                height: '50px',
                                 borderRadius: '50%',
                                 background: 'white',
                                 border: 'none',
                                 cursor: 'pointer',
-                                fontSize: '1.3rem',
+                                fontSize: '1.5rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
+                                boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
                                 zIndex: 20,
-                                transition: 'transform 0.2s'
+                                transition: 'all 0.3s ease'
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                e.currentTarget.style.boxShadow = '0 12px 30px rgba(10, 132, 255, 0.3)';
                             }}
                             onMouseOut={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-50%)';
+                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
                             }}
                         >
                             ‹
@@ -242,28 +277,30 @@ export default function HeroSlider() {
                             onClick={goToNext}
                             style={{
                                 position: 'absolute',
-                                right: '-20px',
-                                top: '50%',
+                                right: '-25px',
+                                top: '55%',
                                 transform: 'translateY(-50%)',
-                                width: '40px',
-                                height: '40px',
+                                width: '50px',
+                                height: '50px',
                                 borderRadius: '50%',
                                 background: 'white',
                                 border: 'none',
                                 cursor: 'pointer',
-                                fontSize: '1.3rem',
+                                fontSize: '1.5rem',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
+                                boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
                                 zIndex: 20,
-                                transition: 'transform 0.2s'
+                                transition: 'all 0.3s ease'
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                e.currentTarget.style.boxShadow = '0 12px 30px rgba(10, 132, 255, 0.3)';
                             }}
                             onMouseOut={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-50%)';
+                                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
                             }}
                         >
                             ›
@@ -273,21 +310,21 @@ export default function HeroSlider() {
                         <div style={{
                             display: 'flex',
                             justifyContent: 'center',
-                            gap: '8px',
-                            marginTop: '1rem'
+                            gap: '10px',
+                            marginTop: '2rem'
                         }}>
                             {Array.from({ length: totalPages }).map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setCurrentPage(index)}
                                     style={{
-                                        width: index === currentPage ? '24px' : '8px',
-                                        height: '8px',
+                                        width: index === currentPage ? '32px' : '10px',
+                                        height: '10px',
                                         borderRadius: '10px',
                                         background: index === currentPage ? '#0A84FF' : '#CBD5E1',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s ease'
+                                        transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)'
                                     }}
                                 />
                             ))}
