@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
 interface Slide {
@@ -116,6 +117,16 @@ export default function HeroSlider() {
                 {/* Slider Header */}
                 <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', padding: '0 0.5rem' }}>
                     <div>
+                        <div style={{ marginBottom: '1rem' }}>
+                            <Image
+                                src="/logo.png"
+                                alt="Thanarin Air Service Logo"
+                                width={200}
+                                height={200}
+                                style={{ width: 'auto', height: '80px', objectFit: 'contain' }}
+                                priority
+                            />
+                        </div>
                         <span className="text-gradient-blue" style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Our Works & Updates</span>
                         <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginTop: '0.5rem', color: '#1e293b' }}>
                             ไฮไลท์เด่น <span style={{ color: 'var(--color-primary-blue)' }}>จากธนรินทร์</span>
