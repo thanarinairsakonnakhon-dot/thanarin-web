@@ -46,7 +46,22 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         justifyContent: 'center',
                         position: 'relative'
                     }}>
-                        <span style={{ fontSize: '6rem', opacity: 0.2 }}>❄️</span>
+                        {product.image ? (
+                            <img
+                                src={product.image}
+                                alt={product.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2rem' }}
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                    (e.target as HTMLImageElement).nextElementSibling?.setAttribute('style', 'display: flex');
+                                }}
+                            />
+                        ) : (
+                            <span style={{ fontSize: '6rem', opacity: 0.2 }}>❄️</span>
+                        )}
+                        {/* Fallback placeholder if image fails or is missing */}
+                        <span style={{ fontSize: '6rem', opacity: 0.2, display: product.image ? 'none' : 'block', position: 'absolute' }}>❄️</span>
+
                         {product.inverter && (
                             <div style={{
                                 position: 'absolute', top: '20px', left: '20px',
