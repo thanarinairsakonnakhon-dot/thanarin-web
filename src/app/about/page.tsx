@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -121,8 +122,9 @@ export default function GalleryPage() {
                         gridAutoFlow: "dense"
                     }}>
                         {filteredProjects.map((project) => (
-                            <div
+                            <Link
                                 key={project.id}
+                                href={`/about/${project.id}`}
                                 className="animate-fade-in card-glass"
                                 style={{
                                     position: "relative",
@@ -131,13 +133,15 @@ export default function GalleryPage() {
                                     cursor: "pointer",
                                     gridRow: project.size === "large" ? "span 2" : "span 1",
                                     transition: "transform 0.4s ease",
-                                    height: project.size === 'large' ? '500px' : '300px'
+                                    height: project.size === 'large' ? '500px' : '300px',
+                                    display: 'block',
+                                    textDecoration: 'none'
                                 }}
                                 onMouseEnter={(e) => {
-                                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(-10px)";
+                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-10px)";
                                 }}
                                 onMouseLeave={(e) => {
-                                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                                    (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
                                 }}
                             >
                                 {/* Image Background */}
@@ -179,7 +183,7 @@ export default function GalleryPage() {
                                     <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{project.title}</h3>
                                     <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>{project.description}</p>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}

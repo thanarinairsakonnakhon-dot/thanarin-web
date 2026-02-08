@@ -204,3 +204,20 @@ CREATE POLICY "Public Insert Portfolios" ON portfolios FOR INSERT WITH CHECK (tr
 CREATE POLICY "Public Update Portfolios" ON portfolios FOR UPDATE USING (true);
 CREATE POLICY "Public Delete Portfolios" ON portfolios FOR DELETE USING (true);
 
+-- 15. Create Portfolio Images Table (for gallery)
+CREATE TABLE portfolio_images (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  portfolio_id UUID REFERENCES portfolios(id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  caption TEXT,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE portfolio_images ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Portfolio Images" ON portfolio_images FOR SELECT USING (true);
+CREATE POLICY "Public Insert Portfolio Images" ON portfolio_images FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Portfolio Images" ON portfolio_images FOR UPDATE USING (true);
+CREATE POLICY "Public Delete Portfolio Images" ON portfolio_images FOR DELETE USING (true);
+
+

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 interface Portfolio {
@@ -268,7 +269,13 @@ export default function AdminPortfolios() {
                                 </p>
 
                                 {/* Actions */}
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <Link
+                                        href={`/admin/portfolios/${item.id}`}
+                                        style={{ flex: '1 1 100%', padding: '0.4rem', border: '1px solid #0A84FF', borderRadius: '8px', background: '#EFF6FF', color: '#0A84FF', cursor: 'pointer', fontSize: '0.8rem', textAlign: 'center', textDecoration: 'none', marginBottom: '0.3rem' }}
+                                    >
+                                        📸 จัดการภาพ
+                                    </Link>
                                     <button
                                         onClick={() => handleToggleActive(item.id, item.is_active)}
                                         style={{ flex: 1, padding: '0.4rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '0.8rem' }}
