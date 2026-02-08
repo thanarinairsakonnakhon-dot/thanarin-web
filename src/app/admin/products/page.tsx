@@ -91,8 +91,10 @@ export default function AdminProducts() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        let result: { success: boolean; error?: string };
+
         if (editingId) {
-            await updateProduct(editingId, formData);
+            result = await updateProduct(editingId, formData);
         } else {
             const newProduct: Product = {
                 ...formData as Product,
@@ -102,9 +104,14 @@ export default function AdminProducts() {
                 status: (formData.stock || 0) > 0 ? 'In Stock' : 'Out of Stock',
                 cost: Math.round((formData.price || 0) * 0.7)
             };
-            await addProduct(newProduct);
+            result = await addProduct(newProduct);
         }
-        setShowModal(false);
+
+        if (result.success) {
+            setShowModal(false);
+        } else {
+            alert(`เกิดข้อผิดพลาด: ${result.error}`);
+        }
     };
 
     const handleDelete = async (id: string) => {

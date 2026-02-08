@@ -37,8 +37,8 @@ export type Booking = {
 type AdminContextType = {
     products: Product[];
     bookings: Booking[];
-    addProduct: (product: Product) => Promise<void>;
-    updateProduct: (id: string, updates: Partial<Product>) => Promise<void>;
+    addProduct: (product: Product) => Promise<{ success: boolean; error?: string }>;
+    updateProduct: (id: string, updates: Partial<Product>) => Promise<{ success: boolean; error?: string }>;
     deleteProduct: (id: string) => Promise<void>;
     updateStock: (id: string, qty: number, type: 'IN' | 'OUT', reason: string) => Promise<void>;
     updateBookingStatus: (id: string, status: Booking['status']) => void;
@@ -83,7 +83,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                     inverter: p.inverter,
                     features: p.features || [],
                     seer: p.seer,
-                    image: p.image_url || '', // Schema is image_url
+                    image: p.image || p.image_url || '', // Schema is image, older schemas might use image_url
                     stock: p.stock,
                     minStock: p.min_stock, // Schema: min_stock
                     cost: p.cost,
@@ -100,9 +100,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     };
 
     // Actions
-    const addProduct = async (product: Product) => {
+    const addProduct = async (product: Product): Promise<{ success: boolean; error?: string }> => {
         try {
             // Map to DB Schema
+            // Use 'image' as per schema, fallback to 'image_url' if needed logic changes
             const dbProduct = {
                 name: product.name,
                 brand: product.brand,
@@ -111,7 +112,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 price: product.price,
                 inverter: product.inverter,
                 features: product.features,
-                image: product.image,
+                image: product.image, // schema uses image
                 stock: product.stock,
                 min_stock: product.minStock,
                 cost: product.cost,
@@ -124,18 +125,23 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             if (data) {
                 await fetchProducts(); // Refresh list
             }
-        } catch (error) {
-            alert('Failed to add product: ' + (error as Error).message);
+            return { success: true };
+        } catch (error: any) {
+            console.error('Failed to add product:', error);
+            return { success: false, error: error.message || 'Unknown error' };
         }
     };
 
-    const updateProduct = async (id: string, updates: Partial<Product>) => {
+    const updateProduct = async (id: string, updates: Partial<Product>): Promise<{ success: boolean; error?: string }> => {
         try {
             // Prepare DB updates
             const dbUpdates: any = { ...updates };
-            if (updates.image) {
+
+            // Map app 'image' back to DB 'image' column
+            if (updates.image !== undefined) {
                 dbUpdates.image = updates.image;
             }
+
             if (updates.minStock !== undefined) {
                 dbUpdates.min_stock = updates.minStock;
                 delete dbUpdates.minStock;
@@ -144,12 +150,19 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 dbUpdates.cost = Math.round(updates.price * 0.7);
             }
 
+            // Remove app-only fields if any leak through (like lastUpdate)
+            delete dbUpdates.lastUpdate;
+            delete dbUpdates.id; // Don't update ID
+
             const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
+
             if (error) throw error;
 
             await fetchProducts();
-        } catch (error) {
+            return { success: true };
+        } catch (error: any) {
             console.error('Update failed:', error);
+            return { success: false, error: error.message || 'Unknown error' };
         }
     };
 
