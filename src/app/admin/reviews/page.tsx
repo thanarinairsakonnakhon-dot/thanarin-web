@@ -35,12 +35,19 @@ export default function AdminReviews() {
 
     const loadReviews = async () => {
         setIsLoading(true);
-        const { data } = await supabase
-            .from('reviews')
-            .select('*')
-            .order('created_at', { ascending: false });
-        if (data) setReviews(data);
-        setIsLoading(false);
+        try {
+            const { data, error } = await supabase
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            if (data) setReviews(data);
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleOpenModal = (review?: Review) => {
@@ -69,21 +76,31 @@ export default function AdminReviews() {
     };
 
     const handleSave = async () => {
-        if (!formData.customer_name || !formData.review_text) return;
-
-        if (editingReview) {
-            await supabase
-                .from('reviews')
-                .update(formData)
-                .eq('id', editingReview.id);
-        } else {
-            await supabase
-                .from('reviews')
-                .insert(formData);
+        if (!formData.customer_name || !formData.review_text) {
+            alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+            return;
         }
 
-        setShowModal(false);
-        loadReviews();
+        try {
+            if (editingReview) {
+                const { error } = await supabase
+                    .from('reviews')
+                    .update(formData)
+                    .eq('id', editingReview.id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('reviews')
+                    .insert(formData);
+                if (error) throw error;
+            }
+
+            setShowModal(false);
+            loadReviews();
+        } catch (error: any) {
+            console.error('Error saving review:', error);
+            alert(`บันทึกไม่สำเร็จ: ${error.message || 'Unknown error'}\n\nกรุณาตรวจสอบว่าได้สร้างตาราง reviews ใน Supabase หรือยังครับ`);
+        }
     };
 
     const handleDelete = async (id: string) => {
