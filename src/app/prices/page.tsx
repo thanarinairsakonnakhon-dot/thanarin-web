@@ -36,7 +36,6 @@ const brandColors: { [key: string]: string } = {
 
 export default function PriceTablePage() {
     const [brandGroups, setBrandGroups] = useState<BrandGroup[]>([]);
-    const [brandLogos, setBrandLogos] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -45,6 +44,7 @@ export default function PriceTablePage() {
 
     const loadData = async () => {
         setIsLoading(true);
+        const logoMap: { [key: string]: string } = {};
 
         // Load products from products table
         const { data: products } = await supabase
@@ -59,12 +59,13 @@ export default function PriceTablePage() {
             .select('name, logo_url, color');
 
         if (acBrands) {
-            const logoMap: { [key: string]: string } = {};
             acBrands.forEach(b => {
-                if (b.logo_url) logoMap[b.name] = b.logo_url;
-                if (b.color) brandColors[b.name] = b.color;
+                if (b.name) {
+                    const normalizedName = b.name.toLowerCase().trim();
+                    if (b.logo_url) logoMap[normalizedName] = b.logo_url;
+                    if (b.color) brandColors[normalizedName] = b.color;
+                }
             });
-            setBrandLogos(logoMap);
         }
 
         if (products && products.length > 0) {
@@ -77,11 +78,15 @@ export default function PriceTablePage() {
             });
 
             // Convert to array and sort
-            const groups: BrandGroup[] = Object.keys(grouped).map(brand => ({
-                brand,
-                products: grouped[brand],
-                color: brandColors[brand] || brandColors['default']
-            }));
+            const groups: BrandGroup[] = Object.keys(grouped).map(brand => {
+                const normalizedBrand = brand.toLowerCase().trim();
+                return {
+                    brand,
+                    products: grouped[brand],
+                    color: brandColors[normalizedBrand] || brandColors[brand] || brandColors['default'],
+                    logo_url: logoMap[normalizedBrand] // Add logo_url to BrandGroup
+                };
+            });
 
             // Sort by number of products (most first)
             groups.sort((a, b) => b.products.length - a.products.length);
@@ -176,9 +181,9 @@ export default function PriceTablePage() {
                                     justifyContent: "center",
                                     gap: "1rem"
                                 }}>
-                                    {brandLogos[group.brand] ? (
+                                    {group.logo_url ? (
                                         <img
-                                            src={brandLogos[group.brand]}
+                                            src={group.logo_url}
                                             alt={group.brand}
                                             style={{
                                                 height: "40px",
