@@ -92,7 +92,7 @@ export default function Navbar() {
                                     </Link>
 
                                     <div className="nav-dropdown-content">
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 200px)', gap: '10px', padding: '15px' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 220px)', padding: '10px' }}>
                                             {[
                                                 { label: 'ล้างแอร์', icon: '🧼' },
                                                 { label: 'ซ่อมแอร์', icon: '🔧' },
@@ -103,23 +103,22 @@ export default function Navbar() {
                                                 <Link
                                                     key={item.label}
                                                     href={`/about?category=${item.label}`}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '12px',
-                                                        padding: '12px',
-                                                        borderRadius: '12px',
-                                                        color: '#1e293b',
-                                                        textDecoration: 'none',
-                                                        transition: 'all 0.2s',
-                                                        background: '#f8fafc'
-                                                    }}
                                                     className="dropdown-item"
                                                 >
                                                     <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
                                                     <span style={{ fontWeight: 500 }}>{item.label}</span>
                                                 </Link>
                                             ))}
+                                            <div style={{ borderTop: '1px solid #f1f5f9', marginTop: '5px', paddingTop: '5px' }}>
+                                                <Link
+                                                    href="/about"
+                                                    className="dropdown-item"
+                                                    style={{ color: 'var(--color-primary-blue) !important' }}
+                                                >
+                                                    <span style={{ fontSize: '1.2rem' }}>📸</span>
+                                                    <span style={{ fontWeight: 600 }}>ดูผลงานทั้งหมด</span>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -301,7 +300,7 @@ export default function Navbar() {
                             >
                                 📸 ผลงานทั้งหมด
                             </Link>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', padding: '0 0.5rem 0.5rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', padding: '0 0.5rem 0.5rem' }}>
                                 {[
                                     { label: 'ล้างแอร์', icon: '🧼' },
                                     { label: 'ซ่อมแอร์', icon: '🔧' },
@@ -313,17 +312,13 @@ export default function Navbar() {
                                         key={item.label}
                                         href={`/about?category=${item.label}`}
                                         onClick={() => setIsMenuOpen(false)}
+                                        className="dropdown-item"
                                         style={{
                                             padding: '0.75rem',
                                             background: 'white',
-                                            borderRadius: '8px',
                                             fontSize: '0.9rem',
-                                            color: '#475569',
-                                            textDecoration: 'none',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                            justifyContent: 'center'
                                         }}
                                     >
                                         <span>{item.icon}</span> {item.label}
