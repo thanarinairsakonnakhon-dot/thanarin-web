@@ -114,13 +114,8 @@ export default function HeroSlider() {
         }}>
             <div className="container" style={{ position: 'relative' }}>
                 {/* Slider Header */}
-                <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', padding: '0 0.5rem' }}>
-                    <div>
-                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginTop: '0.5rem', color: '#1e293b' }}>
-                            ไฮไลท์เด่น <span style={{ color: 'var(--color-primary-blue)' }}>จากธนรินทร์</span>
-                        </h2>
-                    </div>
-                </div>
+                {/* Slider Header */}
+                <div style={{ marginBottom: '2.5rem' }}></div>
 
                 {/* Slider Container */}
                 <div
