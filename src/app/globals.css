@@ -224,3 +224,198 @@ h6 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+
+/* Mobile Base */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .btn-wow {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Navbar Mobile */
+@media (max-width: 900px) {
+  header nav {
+    display: none !important;
+  }
+
+  header .container {
+    height: 60px !important;
+  }
+
+  header a img {
+    width: 120px !important;
+    height: 40px !important;
+  }
+}
+
+/* Hero Section Mobile */
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 80px !important;
+    min-height: auto !important;
+  }
+
+  .hero-section h1 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .hero-section p {
+    font-size: 1rem !important;
+  }
+
+  .hero-buttons {
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+  }
+
+  .hero-buttons a,
+  .hero-buttons button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* Product Cards Mobile */
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .product-card {
+    padding: 1rem !important;
+  }
+
+  .product-card h3 {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Calculator Section Mobile */
+@media (max-width: 768px) {
+  .calculator-section {
+    padding: 2rem 0 !important;
+  }
+
+  .calculator-section h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Footer Mobile */
+@media (max-width: 768px) {
+  footer {
+    text-align: center;
+  }
+
+  footer .grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+}
+
+/* Admin Layout Mobile */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    position: fixed !important;
+    left: -280px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .admin-sidebar.open {
+    left: 0;
+  }
+
+  .admin-content {
+    padding: 1rem !important;
+  }
+}
+
+/* Chat Widget Mobile */
+@media (max-width: 480px) {
+  .chat-widget-window {
+    width: calc(100vw - 2rem) !important;
+    height: 70vh !important;
+    bottom: 4rem !important;
+    right: 1rem !important;
+    left: 1rem !important;
+  }
+}
+
+/* Cards and Sections Mobile */
+@media (max-width: 768px) {
+  .card-glass {
+    padding: 1.5rem !important;
+    margin: 0 0.5rem;
+  }
+
+  section {
+    padding: 3rem 0 !important;
+  }
+
+  section h2 {
+    font-size: 1.8rem !important;
+  }
+}
+
+/* Service Badges Mobile */
+@media (max-width: 600px) {
+  .service-badges {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .service-badge {
+    width: 100% !important;
+  }
+}
+
+/* Testimonials Mobile */
+@media (max-width: 768px) {
+  .testimonial-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* General Typography Mobile */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.2rem !important;
+  }
+
+  p {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Safe Area for PWA */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  header {
+    padding-top: env(safe-area-inset-top);
+  }
+}
