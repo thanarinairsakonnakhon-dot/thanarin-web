@@ -512,7 +512,7 @@ export default function AdminProducts() {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>ประเภท</label>
                                     <select
@@ -524,6 +524,17 @@ export default function AdminProducts() {
                                         <option value="Cassette">Cassette</option>
                                         <option value="Ceiling">Ceiling</option>
                                         <option value="Floor">Floor Standing</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#334155' }}>ระบบ</label>
+                                    <select
+                                        value={formData.inverter ? 'true' : 'false'}
+                                        onChange={e => setFormData({ ...formData, inverter: e.target.value === 'true' })}
+                                        style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid #cbd5e1' }}
+                                    >
+                                        <option value="true">Inverter</option>
+                                        <option value="false">Non-Inverter (Fix-Speed)</option>
                                     </select>
                                 </div>
                                 <div>

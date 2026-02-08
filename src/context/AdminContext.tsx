@@ -11,6 +11,7 @@ type AdminContextType = {
     updateProduct: (id: string, updates: Partial<Product>) => Promise<{ success: boolean; error?: string }>;
     deleteProduct: (id: string) => Promise<void>;
     updateStock: (id: string, qty: number, type: 'IN' | 'OUT', reason: string) => Promise<void>;
+    createBooking: (booking: Partial<Booking>) => Promise<{ success: boolean; error?: string }>;
     updateBookingStatus: (id: string, status: Booking['status']) => Promise<void>;
     assignTechnician: (id: string, technician: string) => Promise<void>;
     isLoading: boolean;
@@ -185,6 +186,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         await updateProduct(id, { stock: newStock, status: newStatus as any });
     };
 
+    const createBooking = async (booking: Partial<Booking>): Promise<{ success: boolean; error?: string }> => {
+        try {
+            const { data, error } = await supabase.from('bookings').insert([booking]).select();
+            if (error) throw error;
+            if (data) {
+                await fetchBookings();
+            }
+            return { success: true };
+        } catch (error: any) {
+            console.error('Failed to create booking:', error);
+            return { success: false, error: error.message || 'Unknown error' };
+        }
+    };
+
     const updateBookingStatus = async (id: string, status: Booking['status']) => {
         try {
             const { error } = await supabase.from('bookings').update({ status }).eq('id', id);
@@ -196,11 +211,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     };
 
     const assignTechnician = async (id: string, technician: string) => {
-        // Note: 'technician' column assumes it exists or we handle it in future
         try {
-            // For now, update local state to reflect change immediately in UI if needed
-            // await supabase.from('bookings').update({ technician }).eq('id', id);
-            setBookings(prev => prev.map(b => b.id === id ? { ...b, technician } as any : b));
+            const { error } = await supabase.from('bookings').update({ technician }).eq('id', id);
+            if (error) throw error;
+
+            // Optimistic update
+            setBookings(prev => prev.map(b => b.id === id ? { ...b, technician } : b));
         } catch (err) {
             console.error('Error assigning technician:', err);
         }
