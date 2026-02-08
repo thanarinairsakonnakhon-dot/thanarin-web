@@ -61,7 +61,7 @@ export default function HeroSlider() {
     if (isLoading) {
         return (
             <section style={{
-                height: '400px',
+                height: '350px',
                 background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
                 display: 'flex',
                 alignItems: 'center',
@@ -80,10 +80,9 @@ export default function HeroSlider() {
     return (
         <section style={{
             position: 'relative',
-            height: '450px',
+            height: '350px',
             marginTop: '80px',
-            overflow: 'hidden',
-            borderRadius: '0 0 20px 20px'
+            overflow: 'hidden'
         }}>
             {/* Slides */}
             {slides.map((slide, index) => (
