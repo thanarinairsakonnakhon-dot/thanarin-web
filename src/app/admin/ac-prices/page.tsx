@@ -195,25 +195,20 @@ export default function AdminACPrices() {
 
                             <div style={{ padding: '1rem' }}>
                                 {/* Actions Row 1 - Manage Series */}
-                                <Link
-                                    href={`/admin/ac-prices/${brand.id}`}
-                                    style={{
-                                        display: 'block',
-                                        width: '100%',
-                                        padding: '0.6rem',
-                                        background: '#f0f9ff',
-                                        border: '1px solid #0A84FF',
-                                        borderRadius: '8px',
-                                        color: '#0A84FF',
-                                        textAlign: 'center',
-                                        textDecoration: 'none',
-                                        fontWeight: 600,
-                                        fontSize: '0.9rem',
-                                        marginBottom: '0.8rem'
-                                    }}
-                                >
-                                    📋 จัดการ Series & ราคา
-                                </Link>
+                                {/* Actions Row 1 - Manage Series (Obsolete) */}
+                                {/* <Link href={`/admin/ac-prices/${brand.id}`}>...</Link> */}
+                                <div style={{
+                                    padding: '0.6rem',
+                                    background: '#f8fafc',
+                                    borderRadius: '8px',
+                                    color: '#64748b',
+                                    fontSize: '0.85rem',
+                                    textAlign: 'center',
+                                    marginBottom: '0.8rem',
+                                    border: '1px dashed #cbd5e1'
+                                }}>
+                                    ✨ จัดการราคาที่เมนู "สินค้า"
+                                </div>
 
                                 {/* Actions Row 2 */}
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>

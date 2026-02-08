@@ -140,6 +140,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 dbUpdates.min_stock = updates.minStock;
                 delete dbUpdates.minStock;
             }
+            if (updates.price !== undefined) {
+                dbUpdates.cost = Math.round(updates.price * 0.7);
+            }
 
             const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
             if (error) throw error;
