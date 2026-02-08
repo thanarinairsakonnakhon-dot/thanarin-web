@@ -26,8 +26,8 @@ async function getProduct(id: string): Promise<Product | null> {
         btu: product.btu,
         price: product.price,
         inverter: product.inverter,
-        features: product.features || [],
-        seer: product.seer || 0,
+        features: (product.features && product.features.length > 0) ? product.features : ['Inverter System', 'ประหยัดไฟเบอร์ 5', 'เย็นเร็วทันใจ', 'รับประกันคอมเพรสเซอร์ 10 ปี'],
+        seer: product.seer || 18.00,
         image: product.image || product.image_url || '/images/placeholder.png', // Map image/image_url
         // Inventory fields
         stock: product.stock || 0,
