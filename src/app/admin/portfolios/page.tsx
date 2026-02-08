@@ -26,7 +26,7 @@ export default function AdminPortfolios() {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        category: 'Residential',
+        category: 'ล้างแอร์',
         image_url: '',
         size: 'medium',
         is_active: true,
@@ -53,7 +53,7 @@ export default function AdminPortfolios() {
             setFormData({
                 title: item.title || '',
                 description: item.description || '',
-                category: item.category || 'Residential',
+                category: item.category || 'ล้างแอร์',
                 image_url: item.image_url || '',
                 size: item.size || 'medium',
                 is_active: item.is_active,
@@ -64,7 +64,7 @@ export default function AdminPortfolios() {
             setFormData({
                 title: '',
                 description: '',
-                category: 'Residential',
+                category: 'ล้างแอร์',
                 image_url: '',
                 size: 'medium',
                 is_active: true,
@@ -186,7 +186,7 @@ export default function AdminPortfolios() {
         loadPortfolios();
     };
 
-    const categories = ['Residential', 'Commercial', 'Service'];
+    const categories = ['ล้างแอร์', 'ซ่อมแอร์', 'ติดตั้งแอร์', 'งานโครงการ', 'ขายส่ง'];
     const sizes = ['small', 'medium', 'large'];
 
     return (
