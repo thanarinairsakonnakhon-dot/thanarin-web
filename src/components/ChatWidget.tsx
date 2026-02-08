@@ -37,7 +37,11 @@ export default function ChatWidget() {
     const [showNameInput, setShowNameInput] = useState(false);
     const [nameInput, setNameInput] = useState('');
     const [sessionExists, setSessionExists] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Popular emojis for quick access
+    const emojis = ['😀', '😂', '🥰', '😍', '🤩', '😊', '🙏', '👍', '👋', '❤️', '🔥', '💯', '✨', '🎉', '👀', '🤔', '😅', '😭', '🙌', '💪', '🏠', '❄️', '🌡️', '💨', '🌀', '☀️', '🌙', '⭐'];
 
     // Initialize session (only check if exists, don't create yet)
     useEffect(() => {
@@ -314,40 +318,98 @@ export default function ChatWidget() {
                         </div>
 
                         {/* Input Area */}
-                        <form onSubmit={handleSendMessage} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '0.5rem' }}>
-                            <input
-                                type="text"
-                                placeholder="พิมพ์ข้อความ..."
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                disabled={isLoading}
-                                style={{
-                                    flex: 1,
-                                    padding: '0.8rem',
-                                    borderRadius: '99px',
+                        <div style={{ position: 'relative' }}>
+                            {/* Emoji Picker */}
+                            {showEmojiPicker && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '100%',
+                                    left: '0.5rem',
+                                    right: '0.5rem',
+                                    background: 'white',
                                     border: '1px solid #e2e8f0',
-                                    outline: 'none',
-                                    background: '#f8fafc'
-                                }}
-                            />
-                            <button
-                                type="submit"
-                                className="btn-wow"
-                                disabled={isLoading}
-                                style={{
-                                    padding: '0.8rem',
-                                    borderRadius: '50%',
-                                    width: '45px',
-                                    height: '45px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: 'none'
-                                }}
-                            >
-                                ➤
-                            </button>
-                        </form>
+                                    borderRadius: '12px',
+                                    padding: '0.75rem',
+                                    boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
+                                    marginBottom: '0.5rem',
+                                    zIndex: 10
+                                }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.25rem' }}>
+                                        {emojis.map((emoji, i) => (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                onClick={() => {
+                                                    setInputValue(prev => prev + emoji);
+                                                    setShowEmojiPicker(false);
+                                                }}
+                                                style={{
+                                                    fontSize: '1.3rem',
+                                                    padding: '0.4rem',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '8px',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                                onMouseOver={(e) => e.currentTarget.style.background = '#f1f5f9'}
+                                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <form onSubmit={handleSendMessage} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        fontSize: '1.3rem',
+                                        cursor: 'pointer',
+                                        padding: '0.5rem'
+                                    }}
+                                >
+                                    😊
+                                </button>
+                                <input
+                                    type="text"
+                                    placeholder="พิมพ์ข้อความ..."
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onFocus={() => setShowEmojiPicker(false)}
+                                    disabled={isLoading}
+                                    style={{
+                                        flex: 1,
+                                        padding: '0.8rem',
+                                        borderRadius: '99px',
+                                        border: '1px solid #e2e8f0',
+                                        outline: 'none',
+                                        background: '#f8fafc'
+                                    }}
+                                />
+                                <button
+                                    type="submit"
+                                    className="btn-wow"
+                                    disabled={isLoading}
+                                    style={{
+                                        padding: '0.8rem',
+                                        borderRadius: '50%',
+                                        width: '45px',
+                                        height: '45px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: 'none'
+                                    }}
+                                >
+                                    ➤
+                                </button>
+                            </form>
+                        </div>
                     </>
                 )}
             </div>

@@ -27,6 +27,7 @@ export default function AdminChatPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [replyText, setReplyText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showAll, setShowAll] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Load chat sessions
@@ -39,7 +40,11 @@ export default function AdminChatPage() {
 
             if (data) {
                 setSessions(data);
-                if (data.length > 0 && !selectedSessionId) {
+                // Select first unread session
+                const unreadSession = data.find(s => s.unread_count > 0);
+                if (unreadSession && !selectedSessionId) {
+                    setSelectedSessionId(unreadSession.session_id);
+                } else if (data.length > 0 && !selectedSessionId) {
                     setSelectedSessionId(data[0].session_id);
                 }
             }
@@ -163,21 +168,55 @@ export default function AdminChatPage() {
             {/* Sidebar: Chat List */}
             <div style={{ width: '300px', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ padding: '1rem', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                    <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b' }}>💬 แชทลูกค้า</h2>
-                    <input
-                        type="text"
-                        placeholder="🔍 ค้นหา..."
-                        style={{ width: '100%', padding: '0.6rem', marginTop: '0.5rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>💬 แชทลูกค้า</h2>
+                        <span style={{ background: '#fee2e2', color: '#ef4444', padding: '0.2rem 0.5rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 600 }}>
+                            {sessions.filter(s => s.unread_count > 0).length} รอตอบ
+                        </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                        <button
+                            onClick={() => setShowAll(false)}
+                            style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: !showAll ? '#3b82f6' : '#e2e8f0',
+                                color: !showAll ? 'white' : '#64748b',
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: 600
+                            }}
+                        >
+                            รอตอบ
+                        </button>
+                        <button
+                            onClick={() => setShowAll(true)}
+                            style={{
+                                flex: 1,
+                                padding: '0.5rem',
+                                borderRadius: '8px',
+                                border: 'none',
+                                background: showAll ? '#3b82f6' : '#e2e8f0',
+                                color: showAll ? 'white' : '#64748b',
+                                cursor: 'pointer',
+                                fontSize: '0.8rem',
+                                fontWeight: 600
+                            }}
+                        >
+                            ทั้งหมด
+                        </button>
+                    </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto' }}>
-                    {sessions.length === 0 && (
+                    {(showAll ? sessions : sessions.filter(s => s.unread_count > 0)).length === 0 && (
                         <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📭</div>
-                            <div>ยังไม่มีแชทลูกค้า</div>
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{showAll ? '📭' : '✅'}</div>
+                            <div>{showAll ? 'ยังไม่มีแชทลูกค้า' : 'ไม่มีแชทรอตอบ'}</div>
                         </div>
                     )}
-                    {sessions.map(session => (
+                    {(showAll ? sessions : sessions.filter(s => s.unread_count > 0)).map(session => (
                         <div
                             key={session.id}
                             onClick={() => setSelectedSessionId(session.session_id)}
