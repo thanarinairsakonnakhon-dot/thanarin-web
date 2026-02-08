@@ -109,7 +109,7 @@ export default function HeroSlider() {
     return (
         <section style={{
             paddingTop: '120px',
-            paddingBottom: '4rem',
+            paddingBottom: '1rem',
             background: '#F8FAFC'
         }}>
             <div className="container" style={{ position: 'relative' }}>

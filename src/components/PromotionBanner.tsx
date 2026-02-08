@@ -67,7 +67,7 @@ export default function PromotionBanner() {
     const current = promotions[currentIndex];
 
     return (
-        <section style={{ padding: '2rem 0' }}>
+        <section style={{ padding: '1rem 0' }}>
             <div className="container">
                 <div style={{
                     background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)',
