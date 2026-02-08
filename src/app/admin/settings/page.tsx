@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface Setting {
-    id: string;
+    id?: string;
     setting_key: string;
     setting_value: string;
     setting_type: string;
@@ -19,12 +19,19 @@ export default function AdminSettings() {
     const settingLabels: Record<string, string> = {
         'hero_title': 'หัวข้อหลัก (Hero Title)',
         'hero_subtitle': 'คำอธิบาย (Hero Subtitle)',
-        'phone_number': 'เบอร์โทร',
+        // Footer Settings
+        'footer_description': 'คำแนะนำร้าน (Footer Description)',
+        'phone_number': 'เบอร์โทรศัพท์',
         'line_id': 'Line ID',
-        'address': 'ที่อยู่ร้าน (Footer)',
-        'footer_description': 'คำแนะนำร้าน (Footer)',
-        'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมาย ,)'
+        'address': 'ที่อยู่ร้าน',
+        'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมายคอมม่า ,)'
     };
+
+    const defaultSettings: Setting[] = Object.keys(settingLabels).map(key => ({
+        setting_key: key,
+        setting_value: '',
+        setting_type: 'text'
+    }));
 
     useEffect(() => {
         loadSettings();
@@ -36,7 +43,17 @@ export default function AdminSettings() {
             .from('site_settings')
             .select('*')
             .order('setting_key');
-        if (data) setSettings(data);
+
+        if (data) {
+            // Merge fetched data with default settings to ensure all keys exist
+            const mergedSettings = defaultSettings.map(defaultSetting => {
+                const found = data.find(d => d.setting_key === defaultSetting.setting_key);
+                return found ? found : defaultSetting;
+            });
+            setSettings(mergedSettings);
+        } else {
+            setSettings(defaultSettings);
+        }
         setIsLoading(false);
     };
 
@@ -50,33 +67,31 @@ export default function AdminSettings() {
         setIsSaving(true);
         setMessage('');
 
-        for (const setting of settings) {
-            await supabase
-                .from('site_settings')
-                .update({
-                    setting_value: setting.setting_value,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('setting_key', setting.setting_key);
+        try {
+            for (const setting of settings) {
+                // Remove id if it's undefined (new setting)
+                const { id, ...settingData } = setting;
+
+                await supabase
+                    .from('site_settings')
+                    .upsert({
+                        setting_key: settingData.setting_key,
+                        setting_value: settingData.setting_value,
+                        setting_type: settingData.setting_type,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+            }
+
+            setMessage('✅ บันทึกข้อมูลเรียบร้อย!');
+            // Reload to get IDs for new settings
+            loadSettings();
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            setMessage('❌ เกิดข้อผิดพลาดในการบันทึก');
+        } finally {
+            setIsSaving(false);
+            setTimeout(() => setMessage(''), 3000);
         }
-
-        setMessage('✅ บันทึกเรียบร้อย!');
-        setIsSaving(false);
-
-        setTimeout(() => setMessage(''), 3000);
-    };
-
-    const handleAddSetting = async () => {
-        const key = prompt('ใส่ชื่อ Setting Key (ภาษาอังกฤษ):');
-        if (!key) return;
-
-        await supabase.from('site_settings').insert({
-            setting_key: key.toLowerCase().replace(/\s+/g, '_'),
-            setting_value: '',
-            setting_type: 'text'
-        });
-
-        loadSettings();
     };
 
     return (
@@ -84,22 +99,21 @@ export default function AdminSettings() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                     <h1 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e293b' }}>⚙️ ตั้งค่าเว็บไซต์</h1>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>แก้ไขข้อความในหน้า Homepage</p>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>แก้ไขข้อมูลส่วนต่างๆ ของเว็บไซต์</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     {message && (
-                        <span style={{ color: '#22c55e', fontWeight: 600 }}>{message}</span>
+                        <span style={{ color: message.includes('❌') ? '#ef4444' : '#22c55e', fontWeight: 600 }}>
+                            {message}
+                        </span>
                     )}
-                    <button onClick={handleAddSetting} style={{ padding: '0.8rem 1rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: 'white', cursor: 'pointer' }}>
-                        + เพิ่ม Setting
-                    </button>
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
                         className="btn-wow"
                         style={{ padding: '0.8rem 1.5rem', opacity: isSaving ? 0.7 : 1 }}
                     >
-                        {isSaving ? '💾 กำลังบันทึก...' : '💾 บันทึก'}
+                        {isSaving ? '💾 กำลังบันทึก...' : '💾 บันทึกการเปลี่ยนแปลง'}
                     </button>
                 </div>
             </div>
@@ -107,86 +121,66 @@ export default function AdminSettings() {
             {isLoading ? (
                 <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>กำลังโหลด...</div>
             ) : (
-                <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                    {settings.length === 0 ? (
-                        <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-                            <div>ยังไม่มีการตั้งค่า</div>
-                            <p style={{ fontSize: '0.9rem', color: '#94a3b8', marginTop: '0.5rem' }}>
-                                กรุณาสร้างตาราง site_settings ใน Supabase ก่อน
-                            </p>
+                <div style={{ display: 'grid', gap: '2rem' }}>
+                    {/* Hero Section Settings */}
+                    <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>
+                            🏠 ส่วนหัวข้อหลัก (Hero Section)
                         </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            {settings.map((setting, index) => (
-                                <div
-                                    key={setting.id}
-                                    style={{
-                                        padding: '1.5rem 2rem',
-                                        borderBottom: index < settings.length - 1 ? '1px solid #f1f5f9' : 'none',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '0.5rem'
-                                    }}
-                                >
-                                    <label style={{ fontWeight: 600, color: '#1e293b' }}>
-                                        {settingLabels[setting.setting_key] || setting.setting_key}
+                        <div style={{ padding: '1.5rem 2rem' }}>
+                            {settings.filter(s => s.setting_key.startsWith('hero_')).map((setting) => (
+                                <div key={setting.setting_key} style={{ marginBottom: '1.5rem' }}>
+                                    <label style={{ fontWeight: 600, color: '#1e293b', display: 'block', marginBottom: '0.5rem' }}>
+                                        {settingLabels[setting.setting_key]}
                                     </label>
-                                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.25rem' }}>
-                                        Key: {setting.setting_key}
-                                    </div>
-                                    {setting.setting_key.includes('subtitle') || setting.setting_key.includes('description') ? (
+                                    <input
+                                        type="text"
+                                        value={setting.setting_value || ''}
+                                        onChange={(e) => handleChange(setting.setting_key, e.target.value)}
+                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '1rem' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer Settings */}
+                    <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>
+                            🦶 ส่วนท้ายเว็บ (Footer)
+                        </div>
+                        <div style={{ padding: '1.5rem 2rem' }}>
+                            {settings.filter(s => !s.setting_key.startsWith('hero_')).map((setting) => (
+                                <div key={setting.setting_key} style={{ marginBottom: '1.5rem' }}>
+                                    <label style={{ fontWeight: 600, color: '#1e293b', display: 'block', marginBottom: '0.5rem' }}>
+                                        {settingLabels[setting.setting_key]}
+                                    </label>
+                                    {setting.setting_key === 'footer_description' || setting.setting_key === 'address' ? (
                                         <textarea
                                             value={setting.setting_value || ''}
                                             onChange={(e) => handleChange(setting.setting_key, e.target.value)}
                                             rows={3}
-                                            style={{
-                                                width: '100%',
-                                                padding: '0.8rem',
-                                                borderRadius: '8px',
-                                                border: '1px solid #e2e8f0',
-                                                fontSize: '1rem',
-                                                resize: 'vertical'
-                                            }}
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '1rem', resize: 'vertical' }}
                                         />
                                     ) : (
                                         <input
                                             type="text"
                                             value={setting.setting_value || ''}
                                             onChange={(e) => handleChange(setting.setting_key, e.target.value)}
-                                            style={{
-                                                width: '100%',
-                                                padding: '0.8rem',
-                                                borderRadius: '8px',
-                                                border: '1px solid #e2e8f0',
-                                                fontSize: '1rem'
-                                            }}
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '1rem' }}
                                         />
+                                    )}
+                                    {setting.setting_key === 'services_list' && (
+                                        <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                            * ใส่รายการบริการต่างๆ โดยคั่นด้วยเครื่องหมายจุลภาค (,) เช่น ล้างแอร์, ซ่อมแอร์, ติดตั้งแอร์
+                                        </p>
                                     )}
                                 </div>
                             ))}
                         </div>
-                    )}
+                    </div>
                 </div>
             )}
-
-            {/* Preview Section */}
-            <div style={{ marginTop: '2rem' }}>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem', color: '#1e293b' }}>👁️ ตัวอย่าง Hero Section</h2>
-                <div style={{
-                    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                    padding: '3rem',
-                    borderRadius: '16px',
-                    textAlign: 'center'
-                }}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#1e293b', marginBottom: '1rem' }}>
-                        {settings.find(s => s.setting_key === 'hero_title')?.setting_value || 'หัวข้อหลัก'}
-                    </h1>
-                    <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto' }}>
-                        {settings.find(s => s.setting_key === 'hero_subtitle')?.setting_value || 'คำอธิบาย'}
-                    </p>
-                </div>
-            </div>
         </div>
     );
 }
