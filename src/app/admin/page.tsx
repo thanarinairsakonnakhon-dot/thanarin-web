@@ -56,11 +56,12 @@ export default function AdminDashboard() {
             .order('booking_date', { ascending: true })
             .limit(10);
 
-        // Load chat sessions
+        // Load chat sessions (only those waiting for reply from admin)
         const { data: chatSessions } = await supabase
             .from('chat_sessions')
             .select('*')
-            .eq('is_active', true);
+            .eq('is_active', true)
+            .eq('last_message_sender', 'user');
 
         if (products) {
             const lowStock = products.filter(p => p.stock <= (p.minStock || 2)); // Use minStock

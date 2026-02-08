@@ -162,7 +162,8 @@ export default function ChatWidget() {
                     is_active: true,
                     last_message: messageText,
                     last_message_at: new Date().toISOString(),
-                    unread_count: 1
+                    unread_count: 1,
+                    last_message_sender: 'user'
                 });
                 setSessionExists(true);
             } else {
@@ -171,7 +172,8 @@ export default function ChatWidget() {
                     last_message: messageText,
                     last_message_at: new Date().toISOString(),
                     unread_count: 1,
-                    is_active: true
+                    is_active: true,
+                    last_message_sender: 'user'
                 }).eq('session_id', sessionId);
             }
 

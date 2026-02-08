@@ -11,6 +11,7 @@ interface ChatSession {
     last_message_at: string;
     unread_count: number;
     is_active: boolean;
+    last_message_sender?: string;
 }
 
 interface Message {
@@ -45,7 +46,7 @@ export default function AdminChatPage() {
             if (data) {
                 setSessions(data);
                 // Select first unread session
-                const unreadSession = data.find(s => s.unread_count > 0);
+                const unreadSession = data.find(s => s.last_message_sender === 'user');
                 if (unreadSession && !selectedSessionId) {
                     setSelectedSessionId(unreadSession.session_id);
                 } else if (data.length > 0 && !selectedSessionId) {
@@ -139,7 +140,8 @@ export default function AdminChatPage() {
             // Update session's last message
             await supabase.from('chat_sessions').update({
                 last_message: `Admin: ${messageText}`,
-                last_message_at: new Date().toISOString()
+                last_message_at: new Date().toISOString(),
+                last_message_sender: 'admin'
             }).eq('session_id', selectedSessionId);
 
         } catch (error) {
@@ -175,7 +177,7 @@ export default function AdminChatPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                         <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>💬 แชทลูกค้า</h2>
                         <span style={{ background: '#fee2e2', color: '#ef4444', padding: '0.2rem 0.5rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 600 }}>
-                            {sessions.filter(s => s.unread_count > 0).length} รอตอบ
+                            {sessions.filter(s => s.last_message_sender === 'user').length} รอตอบ
                         </span>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -214,13 +216,13 @@ export default function AdminChatPage() {
                     </div>
                 </div>
                 <div style={{ flex: 1, overflowY: 'auto' }}>
-                    {(showAll ? sessions : sessions.filter(s => s.unread_count > 0)).length === 0 && (
+                    {(showAll ? sessions : sessions.filter(s => s.last_message_sender === 'user')).length === 0 && (
                         <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{showAll ? '📭' : '✅'}</div>
                             <div>{showAll ? 'ยังไม่มีแชทลูกค้า' : 'ไม่มีแชทรอตอบ'}</div>
                         </div>
                     )}
-                    {(showAll ? sessions : sessions.filter(s => s.unread_count > 0)).map(session => (
+                    {(showAll ? sessions : sessions.filter(s => s.last_message_sender === 'user')).map(session => (
                         <div
                             key={session.id}
                             onClick={() => setSelectedSessionId(session.session_id)}
