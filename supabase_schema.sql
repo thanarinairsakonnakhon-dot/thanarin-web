@@ -220,4 +220,55 @@ CREATE POLICY "Public Insert Portfolio Images" ON portfolio_images FOR INSERT WI
 CREATE POLICY "Public Update Portfolio Images" ON portfolio_images FOR UPDATE USING (true);
 CREATE POLICY "Public Delete Portfolio Images" ON portfolio_images FOR DELETE USING (true);
 
+-- 16. Create AC Brands Table
+CREATE TABLE ac_brands (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL,
+  logo_url TEXT,
+  color TEXT DEFAULT '#0A84FF',
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE ac_brands ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read AC Brands" ON ac_brands FOR SELECT USING (true);
+CREATE POLICY "Public Insert AC Brands" ON ac_brands FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update AC Brands" ON ac_brands FOR UPDATE USING (true);
+CREATE POLICY "Public Delete AC Brands" ON ac_brands FOR DELETE USING (true);
+
+-- 17. Create AC Series Table
+CREATE TABLE ac_series (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  brand_id UUID REFERENCES ac_brands(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE ac_series ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read AC Series" ON ac_series FOR SELECT USING (true);
+CREATE POLICY "Public Insert AC Series" ON ac_series FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update AC Series" ON ac_series FOR UPDATE USING (true);
+CREATE POLICY "Public Delete AC Series" ON ac_series FOR DELETE USING (true);
+
+-- 18. Create AC Models Table (price list)
+CREATE TABLE ac_models (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  series_id UUID REFERENCES ac_series(id) ON DELETE CASCADE,
+  model_name TEXT NOT NULL,
+  btu TEXT,
+  price DECIMAL(10,2),
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE ac_models ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read AC Models" ON ac_models FOR SELECT USING (true);
+CREATE POLICY "Public Insert AC Models" ON ac_models FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update AC Models" ON ac_models FOR UPDATE USING (true);
+CREATE POLICY "Public Delete AC Models" ON ac_models FOR DELETE USING (true);
+
 

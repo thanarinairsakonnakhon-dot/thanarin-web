@@ -83,6 +83,7 @@ function AdminLayoutContent({
         { name: 'Dashboard', path: '/admin', icon: '📊' },
         { name: 'จัดการสินค้า', path: '/admin/products', icon: '📦' },
         { name: 'คลังสินค้า', path: '/admin/inventory', icon: '🏭' },
+        { name: 'ตารางราคาแอร์', path: '/admin/ac-prices', icon: '💰' },
         { name: 'รายการจอง', path: '/admin/bookings', icon: '📅' },
         { name: 'โปรโมชั่น', path: '/admin/promotions', icon: '🎉' },
         { name: 'รีวิวลูกค้า', path: '/admin/reviews', icon: '⭐' },

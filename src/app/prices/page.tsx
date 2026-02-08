@@ -1,146 +1,95 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
-// Brand data with pricing
-const brands = [
-    {
-        name: "Mitsubishi Mr.Slim",
-        logo: "🔺",
-        color: "#E60012",
-        bgGradient: "linear-gradient(135deg, #E60012 0%, #B30000 100%)",
-        series: [
-            {
-                name: "Mitsubishi Mr.Slim",
-                models: [
-                    { model: "MSY-KY09", btu: "9,212", price: "14,900" },
-                    { model: "MSY-KY13", btu: "12,283", price: "15,900" },
-                ]
-            }
-        ]
-    },
-    {
-        name: "Midea",
-        logo: "⭕",
-        color: "#00A0E9",
-        bgGradient: "linear-gradient(135deg, #00A0E9 0%, #0066CC 100%)",
-        series: [
-            {
-                name: "Midea Inverter 2025",
-                models: [
-                    { model: "Numen 09", btu: "9,360", price: "10,500" },
-                    { model: "Numen 12", btu: "12,283", price: "15,900" },
-                    { model: "Numen 18", btu: "18,000", price: "18,900" },
-                    { model: "Numen 24", btu: "24,566", price: "23,500" },
-                ]
-            },
-            {
-                name: "Midea ธรรมดา 2025",
-                models: [
-                    { model: "Tornado 09", btu: "9,300", price: "10,500" },
-                    { model: "Tornado 12", btu: "12,300", price: "11,400" },
-                    { model: "Tornado 18", btu: "18,200", price: "18,500" },
-                    { model: "Tornado 24", btu: "25,000", price: "22,500" },
-                ]
-            }
-        ]
-    },
-    {
-        name: "Haier",
-        logo: "❄️",
-        color: "#C41230",
-        bgGradient: "linear-gradient(135deg, #C41230 0%, #8B0000 100%)",
-        series: [
-            {
-                name: "Haier Inverter",
-                models: [
-                    { model: "HSU-09VQAC", btu: "9,200", price: "12,400" },
-                    { model: "HSU-12VQAC", btu: "12,300", price: "12,800" },
-                    { model: "HSU-18VQAC", btu: "18,000", price: "19,200" },
-                    { model: "HSU-24VQAC", btu: "23,200", price: "23,500" },
-                ]
-            },
-            {
-                name: "Haier ธรรมดา",
-                models: [
-                    { model: "HSU-10CQRC", btu: "9,200", price: "12,400" },
-                    { model: "HSU-13CQRC", btu: "12,000", price: "13,000" },
-                ]
-            }
-        ]
-    },
-    {
-        name: "Carrier",
-        logo: "🌀",
-        color: "#003087",
-        bgGradient: "linear-gradient(135deg, #003087 0%, #001F5C 100%)",
-        series: [
-            {
-                name: "Carrier Copper 10 Inverter",
-                models: [
-                    { model: "TVDA10", btu: "9,000", price: "13,400" },
-                    { model: "TVDA13", btu: "12,100", price: "13,400" },
-                    { model: "TVDA18", btu: "18,000", price: "21,200" },
-                    { model: "TVDA28", btu: "25,200", price: "31,200" },
-                ]
-            },
-            {
-                name: "Carrier Copper 7 ธรรมดา",
-                models: [
-                    { model: "TSAA10", btu: "9,200", price: "13,800" },
-                    { model: "TSAA13", btu: "12,000", price: "13,900" },
-                ]
-            }
-        ]
-    },
-    {
-        name: "Daikin",
-        logo: "🔷",
-        color: "#007DC5",
-        bgGradient: "linear-gradient(135deg, #007DC5 0%, #005A8C 100%)",
-        series: [
-            {
-                name: "Daikin 2025",
-                models: [
-                    { model: "FTKB09ZV2S", btu: "9,200", price: "13,900" },
-                    { model: "FTKB12ZV2S", btu: "12,300", price: "14,600" },
-                    { model: "FTKB18ZV2S", btu: "18,100", price: "21,900" },
-                ]
-            },
-            {
-                name: "Daikin 2024",
-                models: [
-                    { model: "FTKQ15YV2S", btu: "15,000", price: "18,500" },
-                ]
-            }
-        ]
-    },
-    {
-        name: "AUX",
-        logo: "🅰️",
-        color: "#FF6600",
-        bgGradient: "linear-gradient(135deg, #FF6600 0%, #CC5200 100%)",
-        series: [
-            {
-                name: "AUX Inverter 2025",
-                models: [
-                    { model: "ASW-12/DIMA", btu: "12,000", price: "11,500" },
-                ]
-            },
-            {
-                name: "AUX Inverter 2024",
-                models: [
-                    { model: "ASW-09/DIQE", btu: "9,000", price: "10,500" },
-                    { model: "ASW-18/DIQE", btu: "18,000", price: "16,300" },
-                    { model: "ASW-24/DIQE", btu: "25,000", price: "20,500" },
-                ]
-            }
-        ]
-    }
-];
+interface Brand {
+    id: string;
+    name: string;
+    logo_url: string;
+    color: string;
+    is_active: boolean;
+}
+
+interface Series {
+    id: string;
+    brand_id: string;
+    name: string;
+    is_active: boolean;
+}
+
+interface Model {
+    id: string;
+    series_id: string;
+    model_name: string;
+    btu: string;
+    price: number;
+    is_active: boolean;
+}
 
 export default function PriceTablePage() {
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [seriesMap, setSeriesMap] = useState<{ [key: string]: Series[] }>({});
+    const [modelsMap, setModelsMap] = useState<{ [key: string]: Model[] }>({});
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        setIsLoading(true);
+
+        // Load brands
+        const { data: brandsData } = await supabase
+            .from('ac_brands')
+            .select('*')
+            .eq('is_active', true)
+            .order('display_order');
+
+        if (brandsData && brandsData.length > 0) {
+            setBrands(brandsData);
+
+            // Load series for all brands
+            const seriesObj: { [key: string]: Series[] } = {};
+            const modelsObj: { [key: string]: Model[] } = {};
+
+            for (const brand of brandsData) {
+                const { data: seriesData } = await supabase
+                    .from('ac_series')
+                    .select('*')
+                    .eq('brand_id', brand.id)
+                    .eq('is_active', true)
+                    .order('display_order');
+
+                if (seriesData) {
+                    seriesObj[brand.id] = seriesData;
+
+                    // Load models for each series
+                    for (const series of seriesData) {
+                        const { data: modelsData } = await supabase
+                            .from('ac_models')
+                            .select('*')
+                            .eq('series_id', series.id)
+                            .eq('is_active', true)
+                            .order('display_order');
+
+                        if (modelsData) {
+                            modelsObj[series.id] = modelsData;
+                        }
+                    }
+                }
+            }
+
+            setSeriesMap(seriesObj);
+            setModelsMap(modelsObj);
+        }
+
+        setIsLoading(false);
+    };
+
     return (
         <main className="bg-aurora" style={{ minHeight: "100vh" }}>
             <Navbar />
@@ -177,148 +126,184 @@ export default function PriceTablePage() {
                     </p>
                 </div>
 
-                {/* Price Cards Grid */}
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-                    gap: "2rem"
-                }}>
-                    {brands.map((brand) => (
-                        <div
-                            key={brand.name}
-                            style={{
-                                background: "white",
-                                borderRadius: "20px",
-                                overflow: "hidden",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
-                                transition: "transform 0.3s, box-shadow 0.3s"
-                            }}
-                            onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-5px)';
-                                e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.15)';
-                            }}
-                            onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.08)';
-                            }}
-                        >
-                            {/* Brand Header */}
-                            <div style={{
-                                background: brand.bgGradient,
-                                padding: "1.5rem",
-                                textAlign: "center",
-                                color: "white"
-                            }}>
-                                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
-                                    {brand.logo}
-                                </div>
-                                <h2 style={{
-                                    fontSize: "1.3rem",
-                                    fontWeight: 700,
-                                    margin: 0,
-                                    color: "white"
+                {isLoading ? (
+                    <div style={{ textAlign: "center", padding: "4rem", color: "#64748b" }}>
+                        <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>❄️</div>
+                        กำลังโหลดข้อมูล...
+                    </div>
+                ) : brands.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "4rem", color: "#64748b" }}>
+                        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📋</div>
+                        <p>ยังไม่มีข้อมูลตารางราคา</p>
+                        <p style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>กรุณาติดต่อสอบถามราคาได้</p>
+                    </div>
+                ) : (
+                    /* Price Cards Grid */
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+                        gap: "2rem"
+                    }}>
+                        {brands.map((brand) => (
+                            <div
+                                key={brand.id}
+                                style={{
+                                    background: "white",
+                                    borderRadius: "20px",
+                                    overflow: "hidden",
+                                    boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+                                    transition: "transform 0.3s, box-shadow 0.3s"
+                                }}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.15)';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.08)';
+                                }}
+                            >
+                                {/* Brand Header */}
+                                <div style={{
+                                    background: `linear-gradient(135deg, ${brand.color} 0%, ${brand.color}CC 100%)`,
+                                    padding: "1.5rem",
+                                    textAlign: "center",
+                                    color: "white",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "1rem"
                                 }}>
-                                    {brand.name}
-                                </h2>
-                            </div>
+                                    {brand.logo_url ? (
+                                        <img
+                                            src={brand.logo_url}
+                                            alt={brand.name}
+                                            style={{
+                                                height: "40px",
+                                                maxWidth: "120px",
+                                                objectFit: "contain",
+                                                background: "white",
+                                                borderRadius: "8px",
+                                                padding: "4px"
+                                            }}
+                                        />
+                                    ) : (
+                                        <div style={{ fontSize: "2rem" }}>❄️</div>
+                                    )}
+                                    <h2 style={{
+                                        fontSize: "1.3rem",
+                                        fontWeight: 700,
+                                        margin: 0,
+                                        color: "white"
+                                    }}>
+                                        {brand.name}
+                                    </h2>
+                                </div>
 
-                            {/* Series Tables */}
-                            <div style={{ padding: "1.5rem" }}>
-                                {brand.series.map((series, sIdx) => (
-                                    <div key={sIdx} style={{ marginBottom: sIdx < brand.series.length - 1 ? "1.5rem" : 0 }}>
-                                        {/* Series Title */}
-                                        <h3 style={{
-                                            fontSize: "1rem",
-                                            fontWeight: 700,
-                                            color: brand.color,
-                                            marginBottom: "0.8rem",
-                                            paddingBottom: "0.5rem",
-                                            borderBottom: `2px solid ${brand.color}20`
-                                        }}>
-                                            {series.name}
-                                        </h3>
+                                {/* Series Tables */}
+                                <div style={{ padding: "1.5rem" }}>
+                                    {seriesMap[brand.id]?.map((series, sIdx) => (
+                                        <div key={series.id} style={{ marginBottom: sIdx < (seriesMap[brand.id]?.length || 0) - 1 ? "1.5rem" : 0 }}>
+                                            {/* Series Title */}
+                                            <h3 style={{
+                                                fontSize: "1rem",
+                                                fontWeight: 700,
+                                                color: brand.color,
+                                                marginBottom: "0.8rem",
+                                                paddingBottom: "0.5rem",
+                                                borderBottom: `2px solid ${brand.color}20`
+                                            }}>
+                                                {series.name}
+                                            </h3>
 
-                                        {/* Table */}
-                                        <table style={{
-                                            width: "100%",
-                                            borderCollapse: "collapse",
-                                            fontSize: "0.9rem"
-                                        }}>
-                                            <thead>
-                                                <tr style={{
-                                                    background: "#f8fafc",
-                                                    color: "#64748b",
-                                                    fontWeight: 600
+                                            {/* Table */}
+                                            {modelsMap[series.id]?.length > 0 ? (
+                                                <table style={{
+                                                    width: "100%",
+                                                    borderCollapse: "collapse",
+                                                    fontSize: "0.9rem"
                                                 }}>
-                                                    <td style={{ padding: "0.6rem", textAlign: "left" }}>รุ่น</td>
-                                                    <td style={{ padding: "0.6rem", textAlign: "center" }}>BTU</td>
-                                                    <td style={{ padding: "0.6rem", textAlign: "right" }}>ราคา</td>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {series.models.map((model, mIdx) => (
-                                                    <tr key={mIdx} style={{
-                                                        borderBottom: "1px solid #f1f5f9"
-                                                    }}>
-                                                        <td style={{
-                                                            padding: "0.6rem",
-                                                            fontWeight: 500,
-                                                            color: "#1e293b"
-                                                        }}>
-                                                            {model.model}
-                                                        </td>
-                                                        <td style={{
-                                                            padding: "0.6rem",
-                                                            textAlign: "center",
-                                                            color: brand.color,
+                                                    <thead>
+                                                        <tr style={{
+                                                            background: "#f8fafc",
+                                                            color: "#64748b",
                                                             fontWeight: 600
                                                         }}>
-                                                            {model.btu}
-                                                        </td>
-                                                        <td style={{
-                                                            padding: "0.6rem",
-                                                            textAlign: "right",
-                                                            fontWeight: 700,
-                                                            color: "#1e293b"
-                                                        }}>
-                                                            ฿{model.price}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ))}
+                                                            <td style={{ padding: "0.6rem", textAlign: "left" }}>รุ่น</td>
+                                                            <td style={{ padding: "0.6rem", textAlign: "center" }}>BTU</td>
+                                                            <td style={{ padding: "0.6rem", textAlign: "right" }}>ราคา</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {modelsMap[series.id]?.map((model) => (
+                                                            <tr key={model.id} style={{
+                                                                borderBottom: "1px solid #f1f5f9"
+                                                            }}>
+                                                                <td style={{
+                                                                    padding: "0.6rem",
+                                                                    fontWeight: 500,
+                                                                    color: "#1e293b"
+                                                                }}>
+                                                                    {model.model_name}
+                                                                </td>
+                                                                <td style={{
+                                                                    padding: "0.6rem",
+                                                                    textAlign: "center",
+                                                                    color: brand.color,
+                                                                    fontWeight: 600
+                                                                }}>
+                                                                    {model.btu}
+                                                                </td>
+                                                                <td style={{
+                                                                    padding: "0.6rem",
+                                                                    textAlign: "right",
+                                                                    fontWeight: 700,
+                                                                    color: "#1e293b"
+                                                                }}>
+                                                                    ฿{Number(model.price).toLocaleString()}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            ) : (
+                                                <div style={{ color: "#94a3b8", fontSize: "0.9rem", padding: "1rem 0" }}>
+                                                    ติดต่อสอบถามราคา
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
 
-                                {/* CTA Button */}
-                                <Link
-                                    href="/products"
-                                    style={{
-                                        display: "block",
-                                        width: "100%",
-                                        padding: "0.8rem",
-                                        background: brand.bgGradient,
-                                        color: "white",
-                                        textAlign: "center",
-                                        borderRadius: "10px",
-                                        fontWeight: 600,
-                                        textDecoration: "none",
-                                        marginTop: "1rem",
-                                        transition: "opacity 0.3s"
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.opacity = '0.9';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.opacity = '1';
-                                    }}
-                                >
-                                    ดูสินค้า →
-                                </Link>
+                                    {/* CTA Button */}
+                                    <Link
+                                        href="/products"
+                                        style={{
+                                            display: "block",
+                                            width: "100%",
+                                            padding: "0.8rem",
+                                            background: `linear-gradient(135deg, ${brand.color} 0%, ${brand.color}CC 100%)`,
+                                            color: "white",
+                                            textAlign: "center",
+                                            borderRadius: "10px",
+                                            fontWeight: 600,
+                                            textDecoration: "none",
+                                            marginTop: "1rem",
+                                            transition: "opacity 0.3s"
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.currentTarget.style.opacity = '0.9';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.currentTarget.style.opacity = '1';
+                                        }}
+                                    >
+                                        ดูสินค้า →
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {/* Additional Info */}
                 <div style={{
