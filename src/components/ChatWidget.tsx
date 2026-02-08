@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 // Generate or get session ID from localStorage
@@ -28,6 +29,7 @@ interface Message {
 }
 
 export default function ChatWidget() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -39,6 +41,9 @@ export default function ChatWidget() {
     const [sessionExists, setSessionExists] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Hide on admin pages
+    const isAdminPage = pathname?.startsWith('/admin');
 
     // Popular emojis for quick access
     const emojis = ['😀', '😂', '🥰', '😍', '🤩', '😊', '🙏', '👍', '👋', '❤️', '🔥', '💯', '✨', '🎉', '👀', '🤔', '😅', '😭', '🙌', '💪', '🏠', '❄️', '🌡️', '💨', '🌀', '☀️', '🌙', '⭐'];
@@ -190,6 +195,9 @@ export default function ChatWidget() {
             minute: '2-digit'
         });
     };
+
+    // Don't render on admin pages
+    if (isAdminPage) return null;
 
     return (
         <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999, fontFamily: 'var(--font-kanit)' }}>
