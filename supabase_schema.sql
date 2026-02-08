@@ -184,3 +184,23 @@ CREATE POLICY "Public Read Hero Slides" ON hero_slides FOR SELECT USING (true);
 CREATE POLICY "Public Insert Hero Slides" ON hero_slides FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public Update Hero Slides" ON hero_slides FOR UPDATE USING (true);
 CREATE POLICY "Public Delete Hero Slides" ON hero_slides FOR DELETE USING (true);
+
+-- 14. Create Portfolios Table (for project showcase)
+CREATE TABLE portfolios (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  category TEXT DEFAULT 'Residential',
+  image_url TEXT,
+  size TEXT DEFAULT 'medium',
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE portfolios ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Portfolios" ON portfolios FOR SELECT USING (true);
+CREATE POLICY "Public Insert Portfolios" ON portfolios FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Portfolios" ON portfolios FOR UPDATE USING (true);
+CREATE POLICY "Public Delete Portfolios" ON portfolios FOR DELETE USING (true);
+

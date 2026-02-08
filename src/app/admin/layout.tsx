@@ -88,6 +88,7 @@ function AdminLayoutContent({
         { name: 'รีวิวลูกค้า', path: '/admin/reviews', icon: '⭐' },
         { name: 'แชทลูกค้า', path: '/admin/chat', icon: '💬' },
         { name: 'Hero Slides', path: '/admin/slides', icon: '🖼️' },
+        { name: 'ผลงาน', path: '/admin/portfolios', icon: '🏆' },
         { name: 'ตั้งค่าเว็บ', path: '/admin/settings', icon: '⚙️' },
     ];
 
