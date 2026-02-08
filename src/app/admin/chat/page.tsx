@@ -28,7 +28,11 @@ export default function AdminChatPage() {
     const [replyText, setReplyText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showAll, setShowAll] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Popular emojis for quick access
+    const emojis = ['😀', '😂', '🥰', '😍', '😊', '🙏', '👍', '👋', '❤️', '🔥', '💯', '✨', '🎉', '👀', '🤔', '😅', '💪', '🏠', '❄️', '🌡️', '💨', '🌀', '☀️', '⭐', '✅', '📞', '🛠️', '💰'];
 
     // Load chat sessions
     useEffect(() => {
@@ -318,19 +322,78 @@ export default function AdminChatPage() {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSendReply} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '1rem' }}>
-                            <input
-                                type="text"
-                                placeholder="พิมพ์ข้อความตอบกลับ..."
-                                value={replyText}
-                                onChange={(e) => setReplyText(e.target.value)}
-                                disabled={isLoading}
-                                style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                            />
-                            <button type="submit" className="btn-wow" disabled={isLoading} style={{ padding: '0.8rem 1.5rem', borderRadius: '8px' }}>
-                                {isLoading ? '...' : 'ส่ง'}
-                            </button>
-                        </form>
+                        <div style={{ position: 'relative' }}>
+                            {/* Emoji Picker */}
+                            {showEmojiPicker && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '100%',
+                                    left: '1rem',
+                                    background: 'white',
+                                    border: '1px solid #e2e8f0',
+                                    borderRadius: '12px',
+                                    padding: '1rem',
+                                    boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
+                                    marginBottom: '0.5rem',
+                                    zIndex: 10,
+                                    width: '320px'
+                                }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.25rem' }}>
+                                        {emojis.map((emoji, i) => (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                onClick={() => {
+                                                    setReplyText(prev => prev + emoji);
+                                                    setShowEmojiPicker(false);
+                                                }}
+                                                style={{
+                                                    fontSize: '1.4rem',
+                                                    padding: '0.5rem',
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '8px',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                                onMouseOver={(e) => e.currentTarget.style.background = '#f1f5f9'}
+                                                onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <form onSubmit={handleSendReply} style={{ padding: '1rem', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                    style={{
+                                        background: showEmojiPicker ? '#eff6ff' : 'transparent',
+                                        border: '1px solid #e2e8f0',
+                                        fontSize: '1.3rem',
+                                        cursor: 'pointer',
+                                        padding: '0.6rem 0.8rem',
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    😊
+                                </button>
+                                <input
+                                    type="text"
+                                    placeholder="พิมพ์ข้อความตอบกลับ..."
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    onFocus={() => setShowEmojiPicker(false)}
+                                    disabled={isLoading}
+                                    style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                />
+                                <button type="submit" className="btn-wow" disabled={isLoading} style={{ padding: '0.8rem 1.5rem', borderRadius: '8px' }}>
+                                    {isLoading ? '...' : 'ส่ง'}
+                                </button>
+                            </form>
+                        </div>
                     </>
                 ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
