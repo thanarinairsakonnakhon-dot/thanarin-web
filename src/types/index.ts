@@ -1,3 +1,4 @@
+// Define standardized Product type
 export type Product = {
     id: string;
     name: string;
@@ -9,9 +10,13 @@ export type Product = {
     features: string[];
     seer: number;
     image: string;
-    stock?: number;
-    status?: string;
-    minStock?: number;
-    cost?: number;
+    image_url?: string; // For compatibility
+    // Inventory fields
+    stock: number;
+    minStock: number;
+    cost: number;
+    status: 'In Stock' | 'Low Stock' | 'Out of Stock' | string; // Allow string for flexibility but prefer specific values
     updatedAt?: string;
+    lastUpdate?: string; // For AdminContext compatibility
 };
+

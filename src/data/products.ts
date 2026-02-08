@@ -1,15 +1,5 @@
-export type Product = {
-    id: string;
-    name: string;
-    brand: 'Daikin' | 'Mitsubishi' | 'Carrier' | 'Haier' | 'Samsung';
-    type: 'Wall' | 'Cassette' | 'Ceiling' | 'Portable';
-    btu: number;
-    seer: number;
-    price: number;
-    image: string;
-    features: string[];
-    inverter: boolean;
-};
+import { Product } from '@/types';
+
 
 export const products: Product[] = [
     {
@@ -23,6 +13,10 @@ export const products: Product[] = [
         image: '/images/daikin-ftkq.png',
         features: ['Inverter', 'กรองฝุ่น PM 2.5', 'ระบบป้องกันเชื้อรา'],
         inverter: true,
+        stock: 10,
+        minStock: 2,
+        cost: 10000,
+        status: 'In Stock'
     },
     {
         id: 'dk-kq12',
@@ -35,6 +29,10 @@ export const products: Product[] = [
         image: '/images/daikin-ftkq.png',
         features: ['Inverter', 'กรองฝุ่น PM 2.5', 'ระบบป้องกันเชื้อรา'],
         inverter: true,
+        stock: 10,
+        minStock: 2,
+        cost: 12000,
+        status: 'In Stock'
     },
     {
         id: 'mit-gr13',
@@ -47,6 +45,10 @@ export const products: Product[] = [
         image: '/images/mitsubishi-gr.png',
         features: ['ระบบทำความเย็นเร็ว', 'แผ่นกรอง Nano Platinum', 'เคลือบสารลดการเกาะตัวของฝุ่น'],
         inverter: true,
+        stock: 5,
+        minStock: 2,
+        cost: 15000,
+        status: 'In Stock'
     },
     {
         id: 'car-x10',
@@ -59,6 +61,10 @@ export const products: Product[] = [
         image: '/images/carrier-xinverter.png',
         features: ['X-Ionizer ฟอกอากาศ', 'ลมแรงแต่ลมละมุน', 'ระบบทำความสะอาดตัวเอง'],
         inverter: true,
+        stock: 8,
+        minStock: 2,
+        cost: 11000,
+        status: 'In Stock'
     },
     {
         id: 'haier-vns',
@@ -71,6 +77,10 @@ export const products: Product[] = [
         image: '/images/haier-vns.png',
         features: ['เร่งความเย็น Turbo Cool', 'ส่งลมไกล Triple Airflow', 'เคลือบสารป้องกันสนิม'],
         inverter: true,
+        stock: 15,
+        minStock: 2,
+        cost: 7000,
+        status: 'In Stock'
     },
     {
         id: 'dk-cst24',
@@ -83,6 +93,10 @@ export const products: Product[] = [
         image: '/images/daikin-cassette.png',
         features: ['กระจายลมรอบทิศทาง', 'เซ็นเซอร์อัจฉริยะ', 'ทำงานเงียบสนิท'],
         inverter: true,
+        stock: 2,
+        minStock: 1,
+        cost: 35000,
+        status: 'Low Stock'
     },
     {
         id: 'mit-ceil30',
@@ -95,5 +109,9 @@ export const products: Product[] = [
         image: '/images/mitsubishi-ceiling.png',
         features: ['กระจายลมกว้าง', 'โหมดเพดานสูง', 'ระบบเริ่มทำงานอัตโนมัติ'],
         inverter: true,
+        stock: 0,
+        minStock: 1,
+        cost: 28000,
+        status: 'Out of Stock'
     }
 ];

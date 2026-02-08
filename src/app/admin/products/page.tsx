@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { useAdmin, Product } from '@/context/AdminContext';
+import { useAdmin } from '@/context/AdminContext';
+import { Product } from '@/types';
+
 import { supabase } from '@/lib/supabase';
 import {
     Search, Plus, Edit, Trash2, Image as ImageIcon,

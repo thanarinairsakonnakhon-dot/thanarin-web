@@ -5,15 +5,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-interface Product {
-    id: string;
-    name: string;
-    brand: string;
-    btu: number;
-    price: number;
-    inverter: boolean;
-    image: string;
-}
+import { Product } from '@/types';
 
 interface BrandGroup {
     brand: string;

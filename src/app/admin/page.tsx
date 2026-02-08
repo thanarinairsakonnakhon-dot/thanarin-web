@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Product } from '@/types';
 import Link from 'next/link';
 
 interface DashboardStats {
@@ -22,13 +23,6 @@ interface Booking {
     status: string;
 }
 
-interface Product {
-    id: string;
-    name: string;
-    brand: string;
-    stock: number;
-    min_stock: number;
-}
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats>({
@@ -69,7 +63,7 @@ export default function AdminDashboard() {
             .eq('is_active', true);
 
         if (products) {
-            const lowStock = products.filter(p => p.stock <= (p.min_stock || 2));
+            const lowStock = products.filter(p => p.stock <= (p.minStock || 2)); // Use minStock
             setLowStockProducts(lowStock.slice(0, 5));
             setStats(prev => ({
                 ...prev,
@@ -218,7 +212,7 @@ export default function AdminDashboard() {
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.name}</div>
                                         <div style={{ fontSize: '0.8rem', color: '#ef4444' }}>
-                                            เหลือ {item.stock} เครื่อง (ต่ำกว่า {item.min_stock || 2})
+                                            เหลือ {item.stock} เครื่อง (ต่ำกว่า {item.minStock || 2})
                                         </div>
                                     </div>
                                     <Link href="/admin/inventory" style={{

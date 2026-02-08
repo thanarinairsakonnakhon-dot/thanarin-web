@@ -2,27 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Product } from '@/types'; // Import standardized type
 
-// Define Types
-export type Product = {
-    id: string;
-    name: string;
-    brand: string;
-    type: string;
-    btu: number;
-    price: number;
-    inverter: boolean;
-    features: string[];
-    seer: number;
-    image: string;
-    image_url?: string; // For compatibility with other parts of the app that might expect this
-    // Inventory fields
-    stock: number;
-    minStock: number;
-    cost: number;
-    status: 'In Stock' | 'Low Stock' | 'Out of Stock';
-    lastUpdate?: string;
-};
 
 export type Booking = {
     id: string;

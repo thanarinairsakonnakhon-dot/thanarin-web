@@ -29,8 +29,11 @@ async function getProduct(id: string): Promise<Product | null> {
         features: product.features || [],
         seer: product.seer || 0,
         image: product.image || product.image_url || '/images/placeholder.png', // Map image/image_url
-        stock: product.stock,
-        status: product.status
+        // Inventory fields
+        stock: product.stock || 0,
+        minStock: product.min_stock || 0, // Map min_stock to minStock
+        cost: product.cost || 0,
+        status: product.status || 'Out of Stock'
     };
 }
 

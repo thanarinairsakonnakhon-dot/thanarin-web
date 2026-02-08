@@ -3,16 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-interface Product {
-    id: string;
-    name: string;
-    brand: string;
-    stock: number;
-    min_stock: number;
-    cost: number;
-    price: number;
-    status: string;
-}
+import { Product } from '@/types';
 
 interface StockLog {
     id: string;
@@ -103,7 +94,8 @@ export default function AdminInventory() {
             .from('products')
             .update({
                 stock: newStock,
-                status: newStock === 0 ? 'Out of Stock' : newStock <= (product.min_stock || 2) ? 'Low Stock' : 'In Stock'
+                min_stock: product.minStock, // Keep db column as min_stock if needed, but access via minStock
+                status: newStock === 0 ? 'Out of Stock' : newStock <= (product.minStock || 2) ? 'Low Stock' : 'In Stock'
             })
             .eq('id', selectedProductId);
 
@@ -125,7 +117,7 @@ export default function AdminInventory() {
     };
 
     const totalValue = products.reduce((acc, item) => acc + ((item.cost || 0) * item.stock), 0);
-    const lowStockCount = products.filter(i => i.stock <= (i.min_stock || 2)).length;
+    const lowStockCount = products.filter(i => i.stock <= (i.minStock || 2)).length;
     const totalStock = products.reduce((acc, item) => acc + item.stock, 0);
 
     const formatDate = (dateStr: string) => {
@@ -204,7 +196,7 @@ export default function AdminInventory() {
                         </thead>
                         <tbody>
                             {products.map((item) => {
-                                const isLowStock = item.stock <= (item.min_stock || 2);
+                                const isLowStock = item.stock <= (item.minStock || 2);
                                 return (
                                     <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9', background: isLowStock ? '#fff5f5' : 'white' }}>
                                         <td style={{ padding: '1rem' }}>
@@ -215,7 +207,7 @@ export default function AdminInventory() {
                                             <div style={{ fontWeight: 700, fontSize: '1.1rem', color: isLowStock ? '#ef4444' : '#1e293b' }}>
                                                 {item.stock}
                                             </div>
-                                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Min: {item.min_stock || 2}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Min: {item.minStock || 2}</div>
                                         </td>
                                         <td style={{ padding: '1rem', textAlign: 'right', color: '#64748b' }}>
                                             ฿{(item.cost || 0).toLocaleString()}
