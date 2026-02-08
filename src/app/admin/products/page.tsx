@@ -137,32 +137,49 @@ export default function AdminProducts() {
         }
     };
 
+    // Auto-format text helper
+    const formatDescription = (text: string) => {
+        if (!text) return '';
+        const lines = text.split(/\r\n|\r|\n/); // Handle all newline types
+        return lines.map(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+
+            // 1. If already bulleted, standardize it to '•'
+            if (trimmed.match(/^[-•*]\s/)) {
+                return trimmed.replace(/^[-•*]\s+/, '• ');
+            }
+            if (trimmed.match(/^\d+\.\s/)) {
+                return trimmed.replace(/^\d+\.\s+/, '• ');
+            }
+
+            // 2. Detect "Topic: Value" pattern (Spec list style)
+            // Must contain ':' and be relatively short (specs are usually short)
+            if (trimmed.includes(':') && trimmed.length < 100) {
+                // Check if it's not a URL (http:) or time (10:00) - simple check
+                if (!trimmed.match(/^https?:/) && !trimmed.match(/\d{2}:\d{2}/)) {
+                    return `• ${trimmed}`;
+                }
+            }
+
+            // 3. Detect short phrases that might be list items (but no colon)
+            // Heuristic: Short length (< 50 chars) and no ending punctuation (., !)
+            if (trimmed.length < 50 && !trimmed.match(/[.!?]$/)) {
+                // Let's leave plain text alone unless it strongly looks like a spec.
+            }
+
+            // Return as plain text (paragraph/header)
+            return trimmed;
+        }).join('\n');
+    };
+
     // Auto-format pasted text for bullet points
     const handleDetailsPaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const text = e.clipboardData.getData('text/plain');
         if (!text) return;
 
-        const lines = text.split('\n');
-        const formatted = lines.map(line => {
-            const trimmed = line.trim();
-            if (!trimmed) return '';
-
-            // If already bulleted, standardize it
-            if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.match(/^\d+\./)) {
-                return trimmed.replace(/^[-•]\s*/, '• ').replace(/^\d+\.\s*/, '• ');
-            }
-
-            // Key-Value pairs (contains : but not at end)
-            // Also check length to avoid formatting long descriptions as bullets just because they have a colon time or something
-            if (trimmed.includes(':') && !trimmed.endsWith(':') && trimmed.length < 100) {
-                return `• ${trimmed}`;
-            }
-
-            // Headers (usually short, no colon)
-            // Just return as is, maybe with newline for spacing if needed
-            return `\n${trimmed}`;
-        }).join('\n').replace(/^\n+/, ''); // Remove leading newlines
+        const formatted = formatDescription(text);
 
         const textarea = e.target as HTMLTextAreaElement;
         const start = textarea.selectionStart;
@@ -175,6 +192,14 @@ export default function AdminProducts() {
         setFormData(prev => ({ ...prev, description: newVal }));
 
         // NOTE: Cursor position update is tricky with React state, sticking to append/insert logic
+    };
+
+    // Manual Trigger
+    const handleManualFormat = () => {
+        if (!formData.description) return;
+        const formatted = formatDescription(formData.description);
+        setFormData(prev => ({ ...prev, description: formatted }));
+        showToast('จัดรูปแบบข้อความเรียบร้อย', 'success');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -536,13 +561,21 @@ export default function AdminProducts() {
                                 </div>
                             </div>
 
-                            {/* Description with Smart Paste */}
                             <div>
                                 <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
                                     <span style={{ fontWeight: 600, color: '#334155' }}>รายละเอียดสินค้าเพิ่มเติม</span>
-                                    <span style={{ fontSize: '0.8rem', color: '#64748b', background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '50px' }}>
-                                        💡 เคล็ดลับ: ก๊อปวางข้อความระบบจะจัดรูปแบบให้อัตโนมัติ
-                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={handleManualFormat}
+                                        style={{
+                                            fontSize: '0.8rem', color: '#0A84FF', background: '#eff6ff',
+                                            padding: '0.3rem 0.8rem', borderRadius: '50px', border: 'none',
+                                            cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem'
+                                        }}
+                                        title="จัดรูปแบบข้อความอัตโนมัติ"
+                                    >
+                                        ✨ จัดรูปแบบอัตโนมัติ
+                                    </button>
                                 </label>
                                 <textarea
                                     rows={8}

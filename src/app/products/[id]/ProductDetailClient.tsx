@@ -144,9 +144,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                                             currentList = [];
                                         }
                                         elements.push(
-                                            <h3 key={`text-${index}`} style={{ fontSize: '1.1rem', fontWeight: 600, marginTop: '1.5rem', marginBottom: '0.8rem', color: '#1e293b' }}>
+                                            <div key={`text-${index}`} style={{
+                                                marginTop: '1.5rem', marginBottom: '0.8rem',
+                                                color: '#1e293b',
+                                                // If it's short, look like header, otherwise paragraph
+                                                fontSize: trimmed.length < 50 ? '1.1rem' : '1rem',
+                                                fontWeight: trimmed.length < 50 ? 600 : 400
+                                            }}>
                                                 {trimmed}
-                                            </h3>
+                                            </div>
                                         );
                                     }
                                 });
