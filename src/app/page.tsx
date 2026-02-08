@@ -92,27 +92,62 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Feature 3: Box Bottom Right */}
+                        {/* Feature 4: Additional Wide Box for Calculator (Replacing or adding) */}
                         <div className="card-glass" style={{
                             gridColumn: 'span 5',
                             padding: '2.5rem',
-                            background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-blue) 100%)',
+                            background: 'linear-gradient(135deg, #0A84FF 0%, #5856d6 100%)',
                             color: 'white'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'white' }}>จองคิวออนไลน์</h3>
-                                <span style={{ fontSize: '2rem' }}>📅</span>
+                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'white' }}>🧮 คำนวณขนาดแอร์</h3>
+                                <span style={{ fontSize: '2rem' }}>✨</span>
                             </div>
-                            <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem' }}>
-                                ไม่ต้องรอแอดมินตอบ เลือกเวลาช่างว่างได้ทันทีผ่านเว็บไซต์ รู้ผลไวภายใน 30 วินาที
+                            <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '1.5rem' }}>
+                                ไม่แน่ใจขนาดแอร์? ลองใช้เครื่องมือคำนวณ BTU ฟรีของเรา
                             </p>
-                            <Link href="/booking" style={{
+                            <Link href="/calculator" style={{
                                 background: 'white',
-                                color: 'var(--color-primary-blue)',
+                                color: '#0A84FF',
                                 padding: '0.8rem 1.5rem',
                                 borderRadius: '50px',
                                 fontWeight: 700,
-                                display: 'inline-block'
+                                display: 'inline-block',
+                                textAlign: 'center'
+                            }}>
+                                เริ่มคำนวณ →
+                            </Link>
+                        </div>
+
+                        {/* Feature 3: Box Bottom Right (Original Reservation) */}
+                        <div className="card-glass" style={{
+                            gridColumn: 'span 12', // Make this one wider to fit new layout
+                            padding: '2.5rem',
+                            background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-blue) 100%)',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '2rem'
+                        }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3 style={{ fontSize: '2rem', color: 'white' }}>จองคิวออนไลน์</h3>
+                                    <span style={{ fontSize: '2.5rem' }}>📅</span>
+                                </div>
+                                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem' }}>
+                                    ไม่ต้องรอแอดมินตอบ เลือกเวลาช่างว่างได้ทันทีผ่านเว็บไซต์ รู้ผลไวภายใน 30 วินาที
+                                </p>
+                            </div>
+                            <Link href="/booking" style={{
+                                background: 'white',
+                                color: 'var(--color-primary-blue)',
+                                padding: '1.2rem 3rem',
+                                borderRadius: '50px',
+                                fontWeight: 800,
+                                fontSize: '1.2rem',
+                                display: 'inline-block',
+                                whiteSpace: 'nowrap'
                             }}>
                                 จองเลย →
                             </Link>

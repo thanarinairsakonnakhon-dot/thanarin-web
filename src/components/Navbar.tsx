@@ -70,6 +70,7 @@ export default function Navbar() {
                                 <Link href="/" style={{ fontWeight: 500, color: 'var(--color-text-main)', textDecoration: 'none' }}>หน้าแรก</Link>
                                 <Link href="/products" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>สินค้า</Link>
                                 <Link href="/prices" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ตารางราคาแอร์</Link>
+                                <Link href="/calculator" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>คำนวณ BTU</Link>
                                 <Link href="/about" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ผลงาน</Link>
                             </nav>
 
@@ -214,6 +215,23 @@ export default function Navbar() {
                             }}
                         >
                             💰 ตารางราคาแอร์
+                        </Link>
+                        <Link
+                            href="/calculator"
+                            onClick={() => setIsMenuOpen(false)}
+                            style={{
+                                padding: '1rem 1.25rem',
+                                fontWeight: 500,
+                                color: '#475569',
+                                borderRadius: '12px',
+                                textDecoration: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            🧮 คำนวณ BTU
                         </Link>
                         <Link
                             href="/about"
