@@ -138,9 +138,15 @@ export default function AdminProducts() {
     };
 
     // Auto-format text helper
-    const formatDescription = (text: string) => {
+    const formatDescription = (text: string, mode: 'auto' | 'manual' = 'auto') => {
         if (!text) return '';
-        const lines = text.split(/\r\n|\r|\n/); // Handle all newline types
+
+        let processedText = text;
+        if (mode === 'manual') {
+            processedText = processedText.replace(/\s{2,}/g, '\n').replace(/\s+-\s+/g, '\n- ');
+        }
+
+        const lines = processedText.split(/\r\n|\r|\n/); // Handle all newline types
         return lines.map(line => {
             const trimmed = line.trim();
             if (!trimmed) return '';
@@ -179,7 +185,7 @@ export default function AdminProducts() {
         const text = e.clipboardData.getData('text/plain');
         if (!text) return;
 
-        const formatted = formatDescription(text);
+        const formatted = formatDescription(text, 'auto');
 
         const textarea = e.target as HTMLTextAreaElement;
         const start = textarea.selectionStart;
@@ -197,7 +203,7 @@ export default function AdminProducts() {
     // Manual Trigger
     const handleManualFormat = () => {
         if (!formData.description) return;
-        const formatted = formatDescription(formData.description);
+        const formatted = formatDescription(formData.description, 'manual');
         setFormData(prev => ({ ...prev, description: formatted }));
         showToast('จัดรูปแบบข้อความเรียบร้อย', 'success');
     };
