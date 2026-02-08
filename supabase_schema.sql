@@ -165,3 +165,22 @@ INSERT INTO site_settings (setting_key, setting_value, setting_type) VALUES
 -- 12. Enable Realtime for Chat
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_messages;
+
+-- 13. Create Hero Slides Table (for homepage slider)
+CREATE TABLE hero_slides (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT,
+  subtitle TEXT,
+  image_url TEXT NOT NULL,
+  link_url TEXT,
+  button_text TEXT DEFAULT 'ดูเพิ่มเติม',
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE hero_slides ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Hero Slides" ON hero_slides FOR SELECT USING (true);
+CREATE POLICY "Public Insert Hero Slides" ON hero_slides FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Hero Slides" ON hero_slides FOR UPDATE USING (true);
+CREATE POLICY "Public Delete Hero Slides" ON hero_slides FOR DELETE USING (true);

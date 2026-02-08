@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
+import HeroSlider from '@/components/HeroSlider';
 import Link from 'next/link';
 import Testimonials from '@/components/Testimonials';
 import ServiceBadges from '@/components/ServiceBadges';
@@ -11,6 +12,8 @@ export default function Home() {
     return (
         <main style={{ minHeight: '100vh', background: '#F8FAFC' }}>
             <Navbar />
+
+            <HeroSlider />
 
             <HeroSection />
 
