@@ -85,7 +85,7 @@ export default function GalleryPage() {
 
                 {/* Filter Buttons */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
-                    {['ทั้งหมด', 'ล้างแอร์', 'ซ่อมแอร์', 'ติดตั้งแอร์', 'งานโครงการ', 'ขายส่ง'].map((cat) => (
+                    {['ทั้งหมด', 'ล้างแอร์', 'ซ่อมแอร์', 'งานซ่อม', 'ติดตั้งแอร์', 'งานโครงการ', 'อะไหล่', 'ขายส่ง'].map((cat) => (
                         <button
                             key={cat}
                             onClick={() => setFilter(cat)}
