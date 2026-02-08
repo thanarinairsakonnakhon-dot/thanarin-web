@@ -17,8 +17,6 @@ export default function AdminSettings() {
     const [message, setMessage] = useState('');
 
     const settingLabels: Record<string, string> = {
-        'hero_title': 'หัวข้อหลัก (Hero Title)',
-        'hero_subtitle': 'คำอธิบาย (Hero Subtitle)',
         // Footer Settings
         'footer_description': 'คำแนะนำร้าน (Footer Description)',
         'phone_number': 'เบอร์โทรศัพท์',
@@ -122,27 +120,7 @@ export default function AdminSettings() {
                 <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>กำลังโหลด...</div>
             ) : (
                 <div style={{ display: 'grid', gap: '2rem' }}>
-                    {/* Hero Section Settings */}
-                    <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                        <div style={{ padding: '1.5rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontWeight: 700, color: '#1e293b' }}>
-                            🏠 ส่วนหัวข้อหลัก (Hero Section)
-                        </div>
-                        <div style={{ padding: '1.5rem 2rem' }}>
-                            {settings.filter(s => s.setting_key.startsWith('hero_')).map((setting) => (
-                                <div key={setting.setting_key} style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ fontWeight: 600, color: '#1e293b', display: 'block', marginBottom: '0.5rem' }}>
-                                        {settingLabels[setting.setting_key]}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={setting.setting_value || ''}
-                                        onChange={(e) => handleChange(setting.setting_key, e.target.value)}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '1rem' }}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+
 
                     {/* Footer Settings */}
                     <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
@@ -150,7 +128,7 @@ export default function AdminSettings() {
                             🦶 ส่วนท้ายเว็บ (Footer)
                         </div>
                         <div style={{ padding: '1.5rem 2rem' }}>
-                            {settings.filter(s => !s.setting_key.startsWith('hero_')).map((setting) => (
+                            {settings.map((setting) => (
                                 <div key={setting.setting_key} style={{ marginBottom: '1.5rem' }}>
                                     <label style={{ fontWeight: 600, color: '#1e293b', display: 'block', marginBottom: '0.5rem' }}>
                                         {settingLabels[setting.setting_key]}
