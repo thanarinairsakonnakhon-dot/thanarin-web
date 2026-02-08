@@ -96,6 +96,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 btu: product.btu,
                 price: product.price,
                 inverter: product.inverter,
+                seer: product.seer,
                 features: product.features,
                 image: product.image, // schema uses image
                 stock: product.stock,
@@ -122,22 +123,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             // Prepare DB updates
             const dbUpdates: any = { ...updates };
 
-            // Map app 'image' back to DB 'image' column
-            if (updates.image !== undefined) {
-                dbUpdates.image = updates.image;
+            // Ensure features are not lost if empty
+            if (updates.features !== undefined) {
+                dbUpdates.features = updates.features || [];
             }
 
-            if (updates.minStock !== undefined) {
-                dbUpdates.min_stock = updates.minStock;
-                delete dbUpdates.minStock;
-            }
-            if (updates.price !== undefined) {
-                dbUpdates.cost = Math.round(updates.price * 0.7);
+            // Map app 'seer' back to DB if present
+            if (updates.seer !== undefined) {
+                dbUpdates.seer = updates.seer;
             }
 
             // Remove app-only fields
             delete dbUpdates.lastUpdate;
             delete dbUpdates.image_url; // Don't try to update this non-existent column
+            delete dbUpdates.minStock;
             delete dbUpdates.id;
 
             const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);

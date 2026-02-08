@@ -3,6 +3,9 @@ import ProductDetailClient from './ProductDetailClient';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
     params: { id: string };
 }
