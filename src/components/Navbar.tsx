@@ -50,14 +50,14 @@ export default function Navbar() {
                     WebkitBackdropFilter: 'blur(10px)',
                     borderBottom: '1px solid rgba(0,0,0,0.05)'
                 }}>
-                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '70px', padding: '0 1rem' }}>
+                <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px', padding: '0 1rem' }}>
                     {/* Logo Area */}
                     <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
                         <Image
                             src="/logo.png"
                             alt="Thanarin Air"
-                            width={120}
-                            height={40}
+                            width={180}
+                            height={60}
                             style={{ objectFit: 'contain' }}
                             priority
                         />
@@ -149,7 +149,7 @@ export default function Navbar() {
                 <div
                     style={{
                         position: 'fixed',
-                        top: '70px',
+                        top: '80px',
                         left: 0,
                         right: 0,
                         background: 'white',
