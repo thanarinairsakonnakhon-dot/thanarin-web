@@ -137,6 +137,46 @@ export default function AdminProducts() {
         }
     };
 
+    // Auto-format pasted text for bullet points
+    const handleDetailsPaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData('text/plain');
+        if (!text) return;
+
+        const lines = text.split('\n');
+        const formatted = lines.map(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+
+            // If already bulleted, standardize it
+            if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.match(/^\d+\./)) {
+                return trimmed.replace(/^[-•]\s*/, '• ').replace(/^\d+\.\s*/, '• ');
+            }
+
+            // Key-Value pairs (contains : but not at end)
+            // Also check length to avoid formatting long descriptions as bullets just because they have a colon time or something
+            if (trimmed.includes(':') && !trimmed.endsWith(':') && trimmed.length < 100) {
+                return `• ${trimmed}`;
+            }
+
+            // Headers (usually short, no colon)
+            // Just return as is, maybe with newline for spacing if needed
+            return `\n${trimmed}`;
+        }).join('\n').replace(/^\n+/, ''); // Remove leading newlines
+
+        const textarea = e.target as HTMLTextAreaElement;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentVal = formData.description || '';
+
+        const newVal = currentVal.substring(0, start) + formatted + currentVal.substring(end);
+
+        // Update state
+        setFormData(prev => ({ ...prev, description: newVal }));
+
+        // NOTE: Cursor position update is tricky with React state, sticking to append/insert logic
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -494,6 +534,30 @@ export default function AdminProducts() {
                                         style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid #cbd5e1' }}
                                     />
                                 </div>
+                            </div>
+
+                            {/* Description with Smart Paste */}
+                            <div>
+                                <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+                                    <span style={{ fontWeight: 600, color: '#334155' }}>รายละเอียดสินค้าเพิ่มเติม</span>
+                                    <span style={{ fontSize: '0.8rem', color: '#64748b', background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '50px' }}>
+                                        💡 เคล็ดลับ: ก๊อปวางข้อความระบบจะจัดรูปแบบให้อัตโนมัติ
+                                    </span>
+                                </label>
+                                <textarea
+                                    rows={8}
+                                    placeholder="วางรายละเอียดที่นี่ (เช่น คุณสมบัติทางเทคนิค, การรับประกัน)..."
+                                    value={formData.description || ''}
+                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    onPaste={handleDetailsPaste}
+                                    style={{
+                                        width: '100%', padding: '1rem', borderRadius: '16px',
+                                        border: '1px solid #cbd5e1', outline: 'none',
+                                        fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical'
+                                    }}
+                                    onFocus={(e) => e.target.style.borderColor = '#0A84FF'}
+                                    onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
+                                />
                             </div>
 
                             {/* Features */}

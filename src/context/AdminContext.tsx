@@ -73,7 +73,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                         minStock: p.min_stock, // Schema: min_stock
                         cost: p.cost,
                         status: p.status as any,
-                        lastUpdate: new Date(p.created_at).toLocaleDateString()
+                        lastUpdate: new Date(p.created_at).toLocaleDateString(),
+                        description: p.description || ''
                     };
                 });
                 setProducts(mappedProducts);
@@ -102,7 +103,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                 stock: product.stock,
                 min_stock: product.minStock,
                 cost: product.cost,
-                status: product.status
+                status: product.status,
+                description: product.description
             };
 
             const { data, error } = await supabase.from('products').insert([dbProduct]).select();

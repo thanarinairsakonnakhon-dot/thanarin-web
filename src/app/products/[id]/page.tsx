@@ -36,7 +36,8 @@ async function getProduct(id: string): Promise<Product | null> {
         stock: product.stock || 0,
         minStock: product.min_stock || 0, // Map min_stock to minStock
         cost: product.cost || 0,
-        status: product.status || 'Out of Stock'
+        status: product.status || 'Out of Stock',
+        description: product.description || ''
     };
 }
 

@@ -120,6 +120,50 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         </div>
                     </div>
 
+                    {/* Description Section */}
+                    {product.description && (
+                        <div style={{ marginBottom: '3rem', color: '#475569', lineHeight: 1.8 }}>
+                            {(() => {
+                                const lines = product.description.split('\n');
+                                const elements = [];
+                                let currentList: string[] = [];
+
+                                lines.forEach((line, index) => {
+                                    const trimmed = line.trim();
+                                    if (!trimmed) return;
+
+                                    if (trimmed.startsWith('•')) {
+                                        currentList.push(trimmed.substring(1).trim());
+                                    } else {
+                                        if (currentList.length > 0) {
+                                            elements.push(
+                                                <ul key={`list-${index}`} style={{ listStyleType: 'disc', paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+                                                    {currentList.map((item, i) => <li key={i} style={{ marginBottom: '0.5rem' }}>{item}</li>)}
+                                                </ul>
+                                            );
+                                            currentList = [];
+                                        }
+                                        elements.push(
+                                            <h3 key={`text-${index}`} style={{ fontSize: '1.1rem', fontWeight: 600, marginTop: '1.5rem', marginBottom: '0.8rem', color: '#1e293b' }}>
+                                                {trimmed}
+                                            </h3>
+                                        );
+                                    }
+                                });
+
+                                if (currentList.length > 0) {
+                                    elements.push(
+                                        <ul key={`list-last`} style={{ listStyleType: 'disc', paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+                                            {currentList.map((item, i) => <li key={i} style={{ marginBottom: '0.5rem' }}>{item}</li>)}
+                                        </ul>
+                                    );
+                                }
+
+                                return elements;
+                            })()}
+                        </div>
+                    )}
+
                     {/* Features List */}
                     <div style={{ marginBottom: '3rem' }}>
                         <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1rem' }}>คุณสมบัติเด่น</h3>

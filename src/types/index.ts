@@ -11,6 +11,7 @@ export type Product = {
     seer: number;
     image: string;
     image_url?: string; // For compatibility
+    description?: string; // Detailed description
     // Inventory fields
     stock: number;
     minStock: number;
