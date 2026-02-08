@@ -1,14 +1,94 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+
+// Generate or get session ID from localStorage
+const getSessionId = () => {
+    if (typeof window === 'undefined') return '';
+    let sessionId = localStorage.getItem('chat_session_id');
+    if (!sessionId) {
+        sessionId = 'guest_' + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('chat_session_id', sessionId);
+    }
+    return sessionId;
+};
+
+interface Message {
+    id: string;
+    message: string;
+    sender: string;
+    created_at: string;
+}
 
 export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState([
-        { id: 1, text: 'สวัสดีครับ! 👋 มีอะไรให้ธนรินทร์แอร์ช่วยดูแลไหมครับ?', sender: 'admin', time: 'Now' }
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
+    const [sessionId, setSessionId] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Initialize session
+    useEffect(() => {
+        const sid = getSessionId();
+        setSessionId(sid);
+
+        // Ensure chat session exists
+        const initSession = async () => {
+            const { data: existing } = await supabase
+                .from('chat_sessions')
+                .select('session_id')
+                .eq('session_id', sid)
+                .single();
+
+            if (!existing) {
+                await supabase.from('chat_sessions').insert({
+                    session_id: sid,
+                    customer_name: 'Guest User',
+                    is_active: true
+                });
+            }
+        };
+
+        initSession();
+    }, []);
+
+    // Load messages
+    useEffect(() => {
+        if (!sessionId) return;
+
+        const loadMessages = async () => {
+            const { data } = await supabase
+                .from('chat_messages')
+                .select('*')
+                .eq('session_id', sessionId)
+                .order('created_at', { ascending: true });
+
+            if (data) {
+                setMessages(data);
+            }
+        };
+
+        loadMessages();
+
+        // Subscribe to real-time updates
+        const channel = supabase
+            .channel(`chat_${sessionId}`)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'chat_messages',
+                filter: `session_id=eq.${sessionId}`
+            }, (payload) => {
+                setMessages(prev => [...prev, payload.new as Message]);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [sessionId]);
 
     const toggleChat = () => setIsOpen(!isOpen);
 
@@ -20,30 +100,42 @@ export default function ChatWidget() {
         scrollToBottom();
     }, [messages, isOpen]);
 
-    const handleSendMessage = (e?: React.FormEvent) => {
+    const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || isLoading || !sessionId) return;
 
-        const newUserMsg = {
-            id: Date.now(),
-            text: inputValue,
-            sender: 'user',
-            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-        };
-
-        setMessages(prev => [...prev, newUserMsg]);
+        setIsLoading(true);
+        const messageText = inputValue;
         setInputValue('');
 
-        // Mock Auto-reply
-        setTimeout(() => {
-            const replyMsg = {
-                id: Date.now() + 1,
-                text: 'ขอบคุณที่ทักเข้ามาครับ แอดมินจะรีบตอบกลับให้เร็วที่สุดครับ (ระบบ Demo) 😊',
-                sender: 'admin',
-                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages(prev => [...prev, replyMsg]);
-        }, 1000);
+        try {
+            // Insert message
+            await supabase.from('chat_messages').insert({
+                session_id: sessionId,
+                sender: 'user',
+                message: messageText
+            });
+
+            // Update session's last message
+            await supabase.from('chat_sessions').update({
+                last_message: messageText,
+                last_message_at: new Date().toISOString(),
+                unread_count: supabase.rpc ? 1 : 1,
+                is_active: true
+            }).eq('session_id', sessionId);
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const formatTime = (timestamp: string) => {
+        return new Date(timestamp).toLocaleTimeString('th-TH', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     return (
@@ -95,6 +187,12 @@ export default function ChatWidget() {
 
                 {/* Messages Area */}
                 <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {messages.length === 0 && (
+                        <div style={{ textAlign: 'center', color: '#94a3b8', padding: '2rem' }}>
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👋</div>
+                            <div>สวัสดีครับ! มีอะไรให้ช่วยไหมครับ?</div>
+                        </div>
+                    )}
                     {messages.map(msg => (
                         <div key={msg.id} style={{
                             alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
@@ -111,7 +209,7 @@ export default function ChatWidget() {
                                 fontSize: '0.95rem',
                                 lineHeight: '1.5'
                             }}>
-                                {msg.text}
+                                {msg.message}
                             </div>
                             <div style={{
                                 fontSize: '0.7rem',
@@ -119,7 +217,7 @@ export default function ChatWidget() {
                                 marginTop: '4px',
                                 textAlign: msg.sender === 'user' ? 'right' : 'left'
                             }}>
-                                {msg.time}
+                                {formatTime(msg.created_at)}
                             </div>
                         </div>
                     ))}
@@ -133,6 +231,7 @@ export default function ChatWidget() {
                         placeholder="พิมพ์ข้อความ..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
+                        disabled={isLoading}
                         style={{
                             flex: 1,
                             padding: '0.8rem',
@@ -145,6 +244,7 @@ export default function ChatWidget() {
                     <button
                         type="submit"
                         className="btn-wow"
+                        disabled={isLoading}
                         style={{
                             padding: '0.8rem',
                             borderRadius: '50%',
