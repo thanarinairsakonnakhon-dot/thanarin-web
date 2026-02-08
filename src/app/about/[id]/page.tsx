@@ -150,13 +150,13 @@ export default function PortfolioDetailPage() {
                     <div
                         onClick={() => setSelectedImage(portfolio.image_url)}
                         style={{
-                            width: '100%',
-                            height: '400px',
-                            borderRadius: '20px',
+                            maxWidth: '700px',
+                            height: '300px',
+                            borderRadius: '16px',
                             overflow: 'hidden',
                             marginBottom: '2rem',
                             cursor: 'pointer',
-                            boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.1)'
                         }}
                     >
                         <img
