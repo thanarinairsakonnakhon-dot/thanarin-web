@@ -69,7 +69,7 @@ export default function Navbar() {
                             <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
                                 <Link href="/" style={{ fontWeight: 500, color: 'var(--color-text-main)', textDecoration: 'none' }}>หน้าแรก</Link>
                                 <Link href="/products" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>สินค้า</Link>
-                                <Link href="/services" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>บริการติดตั้ง</Link>
+                                <Link href="/prices" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ตารางราคาแอร์</Link>
                                 <Link href="/about" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ผลงาน</Link>
                             </nav>
 
@@ -199,7 +199,7 @@ export default function Navbar() {
                             ❄️ สินค้า
                         </Link>
                         <Link
-                            href="/services"
+                            href="/prices"
                             onClick={() => setIsMenuOpen(false)}
                             style={{
                                 padding: '1rem 1.25rem',
@@ -213,7 +213,7 @@ export default function Navbar() {
                                 fontSize: '1rem'
                             }}
                         >
-                            🔧 บริการติดตั้ง
+                            💰 ตารางราคาแอร์
                         </Link>
                         <Link
                             href="/about"
