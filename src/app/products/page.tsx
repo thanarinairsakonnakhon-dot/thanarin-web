@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
@@ -226,6 +227,7 @@ export default function ProductsPage() {
 
                 </div>
             </div>
+            <Footer />
         </main>
     );
 }

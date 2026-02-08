@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
@@ -400,6 +401,7 @@ export default function PriceTablePage() {
                     </Link>
                 </div>
             </div>
+            <Footer />
         </main>
     );
 }

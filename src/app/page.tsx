@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import HeroSlider from '@/components/HeroSlider';
 import Link from 'next/link';
 import Testimonials from '@/components/Testimonials';
@@ -175,34 +176,7 @@ export default function Home() {
                 </div>
             </section>
 
-            <footer style={{ background: '#0F172A', color: 'white', padding: '5rem 0 2rem' }}>
-                <div className="container">
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '4rem', marginBottom: '4rem' }}>
-                        <div>
-                            <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1.5rem' }}>TH.AIR</h3>
-                            <p style={{ color: '#94A3B8' }}>ร้านแอร์ที่คุณวางใจได้ ด้วยมาตรฐานการบริการระดับสากล และความใส่ใจดุจญาติมิตร</p>
-                        </div>
-                        <div>
-                            <h4 style={{ marginBottom: '1.5rem' }}>บริการของเรา</h4>
-                            <ul style={{ listStyle: 'none', color: '#94A3B8', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                <li>ล้างแอร์</li>
-                                <li>ซ่อมแอร์</li>
-                                <li>ติดตั้งแอร์ใหม่</li>
-                                <li>ย้ายจุดติดตั้ง</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style={{ marginBottom: '1.5rem' }}>ติดต่อเรา</h4>
-                            <p style={{ color: '#94A3B8', marginBottom: '0.5rem' }}>089-999-9999</p>
-                            <p style={{ color: '#94A3B8' }}>Line: @thanarin.air</p>
-                            <p style={{ color: '#94A3B8' }}>Bangkok, Thailand</p>
-                        </div>
-                    </div>
-                    <div style={{ textAlign: 'center', borderTop: '1px solid #1E293B', paddingTop: '2rem', color: '#475569' }}>
-                        © 2024 Thanarin Air Conditioner. Designed by Antigravity.
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </main>
     );
 }

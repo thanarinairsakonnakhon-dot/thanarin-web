@@ -21,7 +21,9 @@ export default function AdminSettings() {
         'hero_subtitle': 'คำอธิบาย (Hero Subtitle)',
         'phone_number': 'เบอร์โทร',
         'line_id': 'Line ID',
-        'address': 'ที่อยู่'
+        'address': 'ที่อยู่ร้าน (Footer)',
+        'footer_description': 'คำแนะนำร้าน (Footer)',
+        'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมาย ,)'
     };
 
     useEffect(() => {

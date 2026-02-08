@@ -1,6 +1,7 @@
 "use client";
 
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { useCompare } from '@/context/CompareContext';
 import { Product } from '@/types';
@@ -170,6 +171,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </div>
             </div>
 
+            <Footer />
         </main>
     );
 }
