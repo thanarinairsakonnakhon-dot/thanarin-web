@@ -1,56 +1,65 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { supabase } from '@/lib/supabase';
 
-const reviews = [
+interface Review {
+    id: string;
+    customer_name: string;
+    customer_avatar: string;
+    rating: number;
+    review_text: string;
+    service_type: string;
+}
+
+// Fallback reviews if database is empty
+const defaultReviews = [
     {
-        id: 1,
-        name: "คุณวิชัย (สุขุมวิท 39)",
-        role: "เจ้าของกิจการ",
-        avatar: "👨🏻‍💼",
+        id: '1',
+        customer_name: "คุณวิชัย",
+        customer_avatar: "",
         rating: 5,
-        comment: "ทีมงานเป็นมืออาชีพมาก เข้ามาตรงเวลา ปูผ้ากันเปื้อนอย่างดี ติดตั้งเสร็จเก็บกวาดเรียบร้อย แอร์เย็นฉ่ำถูกใจครับ",
-        date: "2 วันที่แล้ว"
+        review_text: "ทีมงานเป็นมืออาชีพมาก เข้ามาตรงเวลา ปูผ้ากันเปื้อนอย่างดี ติดตั้งเสร็จเก็บกวาดเรียบร้อย",
+        service_type: "ติดตั้งแอร์"
     },
     {
-        id: 2,
-        name: "คุณหมอแนน (รพ.จุฬา)",
-        role: "แพทย์",
-        avatar: "👩🏻‍⚕️",
+        id: '2',
+        customer_name: "คุณหมอแนน",
+        customer_avatar: "",
         rating: 5,
-        comment: "ประทับใจบริการคำนวณ BTU ค่ะ ไม่ยัดเยียดขายของ แพงกว่าเจ้าอื่นนิดหน่อยแต่คุ้มค่าความสบายใจ แนะนำเลยค่ะ",
-        date: "1 สัปดาห์ที่แล้ว"
+        review_text: "ประทับใจบริการคำนวณ BTU ค่ะ ไม่ยัดเยียดขายของ แนะนำเลยค่ะ",
+        service_type: "ซื้อแอร์"
     },
     {
-        id: 3,
-        name: "พี่ต้น (หมู่บ้านเศรษฐสิริ)",
-        role: "วิศวกร",
-        avatar: "👷🏻‍♂️",
+        id: '3',
+        customer_name: "พี่ต้น",
+        customer_avatar: "",
         rating: 5,
-        comment: "งานเดินท่อสวยมาก เข้ามุมเนี๊ยบ ผมเป็นวิศวกรยังยอมรับฝีมือ ช่างมีความรู้จริง ถามอะไรตอบได้หมด",
-        date: "2 สัปดาห์ที่แล้ว"
-    },
-    {
-        id: 4,
-        name: "ร้านกาแฟ Good Day",
-        role: "Commercial",
-        avatar: "☕",
-        rating: 4.5,
-        comment: "เรียกมาล้างแอร์ 4 ตัว สะอาดเหมือนใหม่ ลมแรงขึ้นชัดเจน พนักงานสุภาพมากครับ",
-        date: "3 สัปดาห์ที่แล้ว"
+        review_text: "งานเดินท่อสวยมาก เข้ามุมเนี๊ยบ ช่างมีความรู้จริง ถามอะไรตอบได้หมด",
+        service_type: "ติดตั้งแอร์"
     }
 ];
 
 export default function Testimonials() {
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [reviews, setReviews] = useState<Review[]>(defaultReviews);
 
-    // Auto-scroll effect
     useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveIndex((current) => (current + 1) % reviews.length);
-        }, 5000);
-        return () => clearInterval(interval);
+        loadReviews();
     }, []);
+
+    const loadReviews = async () => {
+        const { data, error } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('is_visible', true)
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+        if (data && data.length > 0) {
+            setReviews(data);
+        }
+        // If error or no data, keep default reviews
+    };
 
     return (
         <section style={{ padding: '6rem 0', overflow: 'hidden', position: 'relative' }}>
@@ -71,30 +80,15 @@ export default function Testimonials() {
 
                 {/* Reviews Carousel */}
                 <div style={{
-                    display: 'flex',
-                    gap: '2rem',
-                    transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                    transform: `translateX(calc(-${activeIndex * 100}% - ${activeIndex * 2}rem))`, // Simple sliding logic (needs adjustment for desktop centering ideally, but works for basic carousel)
-                    // For a more robust responsive centered carousel, we'd need more complex calculation or a library.
-                    // Let's keep it simple: On desktop, maybe show 2-3? 
-                    // Let's try a different approach: CSS Grid with Scroll Snap for mobile-friendliness without complex JS math
-                }} className="review-scroll-container">
-
-                    {/* We will over-ride the inline style above with a better CSS class approach in globals if needed, 
-                    but for now, let's just make it a horizontal scroll container */}
-                </div>
-
-                {/* Actually, let's do a CSS Grid Scroll Snap. It's much smoother and less bug-prone */}
-                <div style={{
                     display: 'grid',
                     gridAutoFlow: 'column',
-                    gridAutoColumns: 'min(100%, 400px)', // Mobile 100%, Desktop 400px cards
+                    gridAutoColumns: 'min(100%, 400px)',
                     gap: '2rem',
                     overflowX: 'auto',
-                    padding: '1rem 1rem 3rem', // Bottom padding for shadow clipping
+                    padding: '1rem 1rem 3rem',
                     scrollSnapType: 'x mandatory',
-                    scrollbarWidth: 'none', // Hide scrollbar Firefox
-                    msOverflowStyle: 'none', // Hide scrollbar IE
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
                 }} className="hide-scrollbar">
 
                     {reviews.map((review, index) => (
@@ -110,27 +104,39 @@ export default function Testimonials() {
                                 flexDirection: 'column',
                                 justifyContent: 'space-between',
                                 border: '1px solid rgba(255,255,255,0.6)',
-                                background: index % 2 === 0 ? 'rgba(255,255,255,0.8)' : 'rgba(240, 249, 255, 0.8)' // Alternate colors slightly
+                                background: index % 2 === 0 ? 'rgba(255,255,255,0.8)' : 'rgba(240, 249, 255, 0.8)'
                             }}
                         >
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                    <div style={{ fontSize: '3rem', lineHeight: 1 }}>{review.avatar}</div>
+                                    <div style={{
+                                        width: '50px',
+                                        height: '50px',
+                                        borderRadius: '50%',
+                                        background: '#e2e8f0',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '1.5rem'
+                                    }}>
+                                        {review.customer_avatar ? (
+                                            <img src={review.customer_avatar} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                                        ) : '👤'}
+                                    </div>
                                     <div style={{ fontSize: '1.2rem', color: '#F59E0B' }}>
-                                        {"★".repeat(Math.floor(review.rating))}
-                                        {review.rating % 1 !== 0 && "½"}
+                                        {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
                                     </div>
                                 </div>
                                 <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'var(--color-text-main)', fontStyle: 'italic', marginBottom: '1.5rem' }}>
-                                    "{review.comment}"
+                                    "{review.review_text}"
                                 </p>
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                                 <div style={{ width: '40px', height: '1px', background: '#CBD5E1' }}></div>
                                 <div>
-                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-sub)' }}>{review.role} • {review.date}</div>
+                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.customer_name}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-sub)' }}>{review.service_type}</div>
                                 </div>
                             </div>
                         </div>

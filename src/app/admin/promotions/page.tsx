@@ -1,0 +1,307 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+
+interface Promotion {
+    id: string;
+    title: string;
+    description: string;
+    discount_text: string;
+    image_url: string;
+    link_url: string;
+    is_active: boolean;
+    start_date: string;
+    end_date: string;
+    display_order: number;
+    created_at: string;
+}
+
+export default function AdminPromotions() {
+    const [promotions, setPromotions] = useState<Promotion[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [editingPromo, setEditingPromo] = useState<Promotion | null>(null);
+
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        discount_text: '',
+        image_url: '',
+        link_url: '/products',
+        is_active: true,
+        start_date: '',
+        end_date: '',
+        display_order: 0
+    });
+
+    useEffect(() => {
+        loadPromotions();
+    }, []);
+
+    const loadPromotions = async () => {
+        setIsLoading(true);
+        const { data } = await supabase
+            .from('promotions')
+            .select('*')
+            .order('display_order');
+        if (data) setPromotions(data);
+        setIsLoading(false);
+    };
+
+    const handleOpenModal = (promo?: Promotion) => {
+        if (promo) {
+            setEditingPromo(promo);
+            setFormData({
+                title: promo.title,
+                description: promo.description || '',
+                discount_text: promo.discount_text || '',
+                image_url: promo.image_url || '',
+                link_url: promo.link_url || '/products',
+                is_active: promo.is_active,
+                start_date: promo.start_date || '',
+                end_date: promo.end_date || '',
+                display_order: promo.display_order || 0
+            });
+        } else {
+            setEditingPromo(null);
+            setFormData({
+                title: '',
+                description: '',
+                discount_text: '',
+                image_url: '',
+                link_url: '/products',
+                is_active: true,
+                start_date: '',
+                end_date: '',
+                display_order: promotions.length
+            });
+        }
+        setShowModal(true);
+    };
+
+    const handleSave = async () => {
+        if (!formData.title) return;
+
+        const payload = {
+            ...formData,
+            start_date: formData.start_date || null,
+            end_date: formData.end_date || null
+        };
+
+        if (editingPromo) {
+            await supabase.from('promotions').update(payload).eq('id', editingPromo.id);
+        } else {
+            await supabase.from('promotions').insert(payload);
+        }
+
+        setShowModal(false);
+        loadPromotions();
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('ลบโปรโมชั่นนี้?')) return;
+        await supabase.from('promotions').delete().eq('id', id);
+        loadPromotions();
+    };
+
+    const handleToggleActive = async (id: string, current: boolean) => {
+        await supabase.from('promotions').update({ is_active: !current }).eq('id', id);
+        loadPromotions();
+    };
+
+    return (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                    <h1 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e293b' }}>🎉 โปรโมชั่น</h1>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>จัดการโปรโมชั่นแสดงในหน้าแรก</p>
+                </div>
+                <button onClick={() => handleOpenModal()} className="btn-wow" style={{ padding: '0.8rem 1.5rem' }}>
+                    + เพิ่มโปรโมชั่น
+                </button>
+            </div>
+
+            {/* Promotions List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {isLoading ? (
+                    <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>กำลังโหลด...</div>
+                ) : promotions.length === 0 ? (
+                    <div style={{ background: 'white', padding: '3rem', textAlign: 'center', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎁</div>
+                        <div style={{ color: '#94a3b8' }}>ยังไม่มีโปรโมชั่น</div>
+                    </div>
+                ) : (
+                    promotions.map(promo => (
+                        <div key={promo.id} style={{
+                            background: 'white',
+                            padding: '1.5rem',
+                            borderRadius: '12px',
+                            border: promo.is_active ? '2px solid #22c55e' : '1px solid #e2e8f0',
+                            opacity: promo.is_active ? 1 : 0.6,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '1.5rem',
+                            flexWrap: 'wrap'
+                        }}>
+                            {/* Order Handle */}
+                            <div style={{ color: '#94a3b8', fontSize: '1.5rem' }}>⋮⋮</div>
+
+                            {/* Promo Info */}
+                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <h3 style={{ fontWeight: 700, color: '#1e293b', margin: 0 }}>{promo.title}</h3>
+                                    {promo.discount_text && (
+                                        <span style={{ background: '#fee2e2', color: '#ef4444', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+                                            {promo.discount_text}
+                                        </span>
+                                    )}
+                                </div>
+                                <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>{promo.description}</p>
+                                {(promo.start_date || promo.end_date) && (
+                                    <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#94a3b8' }}>
+                                        📅 {promo.start_date || '...'} ถึง {promo.end_date || '...'}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Status */}
+                            <div>
+                                <span style={{
+                                    padding: '0.3rem 0.8rem',
+                                    borderRadius: '50px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    background: promo.is_active ? '#ecfdf5' : '#f1f5f9',
+                                    color: promo.is_active ? '#059669' : '#64748b'
+                                }}>
+                                    {promo.is_active ? '🟢 เปิดใช้งาน' : '⚪ ปิด'}
+                                </span>
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                    onClick={() => handleToggleActive(promo.id, promo.is_active)}
+                                    style={{ padding: '0.5rem 1rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                    {promo.is_active ? '⏸️ ปิด' : '▶️ เปิด'}
+                                </button>
+                                <button
+                                    onClick={() => handleOpenModal(promo)}
+                                    style={{ padding: '0.5rem 1rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                    ✏️ แก้ไข
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(promo.id)}
+                                    style={{ padding: '0.5rem 1rem', border: '1px solid #fecaca', borderRadius: '8px', background: '#fef2f2', color: '#ef4444', cursor: 'pointer', fontSize: '0.85rem' }}
+                                >
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Modal */}
+            {showModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+                    <div style={{ background: 'white', padding: '2rem', borderRadius: '16px', width: '500px', maxWidth: '90%', maxHeight: '90vh', overflow: 'auto' }}>
+                        <h2 style={{ marginBottom: '1.5rem', color: '#1e293b' }}>
+                            {editingPromo ? '✏️ แก้ไขโปรโมชั่น' : '🎉 เพิ่มโปรโมชั่นใหม่'}
+                        </h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ชื่อโปรโมชั่น *</label>
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    placeholder="เช่น ลดสูงสุด 40% ต้อนรับหน้าร้อน"
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>รายละเอียด</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    rows={3}
+                                    placeholder="อธิบายโปรโมชั่น..."
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1', resize: 'vertical' }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ข้อความส่วนลด (Badge)</label>
+                                <input
+                                    type="text"
+                                    value={formData.discount_text}
+                                    onChange={(e) => setFormData({ ...formData, discount_text: e.target.value })}
+                                    placeholder="เช่น 40% OFF, ฟรีติดตั้ง"
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Link ปุ่มคลิก</label>
+                                <input
+                                    type="text"
+                                    value={formData.link_url}
+                                    onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
+                                    placeholder="/products"
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>วันเริ่มต้น</label>
+                                    <input
+                                        type="date"
+                                        value={formData.start_date}
+                                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>วันสิ้นสุด</label>
+                                    <input
+                                        type="date"
+                                        value={formData.end_date}
+                                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.is_active}
+                                        onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                                    />
+                                    เปิดใช้งานโปรโมชั่น
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                            <button onClick={() => setShowModal(false)} style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}>
+                                ยกเลิก
+                            </button>
+                            <button onClick={handleSave} className="btn-wow" style={{ flex: 1, padding: '0.8rem' }}>
+                                บันทึก
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

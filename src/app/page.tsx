@@ -3,6 +3,7 @@ import HeroSection from '@/components/HeroSection';
 import Link from 'next/link';
 import Testimonials from '@/components/Testimonials';
 import ServiceBadges from '@/components/ServiceBadges';
+import PromotionBanner from '@/components/PromotionBanner';
 
 
 
@@ -12,6 +13,8 @@ export default function Home() {
             <Navbar />
 
             <HeroSection />
+
+            <PromotionBanner />
 
             {/* Bento Grid Features Section */}
             <section style={{ padding: '4rem 0 8rem' }}>

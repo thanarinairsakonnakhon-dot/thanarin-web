@@ -84,8 +84,10 @@ function AdminLayoutContent({
         { name: 'จัดการสินค้า', path: '/admin/products', icon: '📦' },
         { name: 'คลังสินค้า', path: '/admin/inventory', icon: '🏭' },
         { name: 'รายการจอง', path: '/admin/bookings', icon: '📅' },
+        { name: 'โปรโมชั่น', path: '/admin/promotions', icon: '🎉' },
+        { name: 'รีวิวลูกค้า', path: '/admin/reviews', icon: '⭐' },
         { name: 'แชทลูกค้า', path: '/admin/chat', icon: '💬' },
-        { name: 'ตั้งค่า', path: '/admin/settings', icon: '⚙️' },
+        { name: 'ตั้งค่าเว็บ', path: '/admin/settings', icon: '⚙️' },
     ];
 
     return (

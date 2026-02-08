@@ -101,6 +101,67 @@ ALTER TABLE stock_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public Read Stock Logs" ON stock_logs FOR SELECT USING (true);
 CREATE POLICY "Public Insert Stock Logs" ON stock_logs FOR INSERT WITH CHECK (true);
 
--- 9. Enable Realtime for Chat
+-- 9. Create Reviews Table
+CREATE TABLE reviews (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  customer_avatar TEXT,
+  rating INTEGER NOT NULL DEFAULT 5,
+  review_text TEXT NOT NULL,
+  service_type TEXT,
+  is_visible BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Reviews" ON reviews FOR SELECT USING (true);
+CREATE POLICY "Public Insert Reviews" ON reviews FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Reviews" ON reviews FOR UPDATE USING (true);
+CREATE POLICY "Public Delete Reviews" ON reviews FOR DELETE USING (true);
+
+-- 10. Create Promotions Table
+CREATE TABLE promotions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  discount_text TEXT,
+  image_url TEXT,
+  link_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  start_date DATE,
+  end_date DATE,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE promotions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Promotions" ON promotions FOR SELECT USING (true);
+CREATE POLICY "Public Insert Promotions" ON promotions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Promotions" ON promotions FOR UPDATE USING (true);
+CREATE POLICY "Public Delete Promotions" ON promotions FOR DELETE USING (true);
+
+-- 11. Create Site Settings Table (for editable homepage content)
+CREATE TABLE site_settings (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  setting_key TEXT UNIQUE NOT NULL,
+  setting_value TEXT,
+  setting_type TEXT DEFAULT 'text', -- text, html, number, json
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Site Settings" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Public Insert Site Settings" ON site_settings FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public Update Site Settings" ON site_settings FOR UPDATE USING (true);
+
+-- Insert default settings
+INSERT INTO site_settings (setting_key, setting_value, setting_type) VALUES
+('hero_title', 'ความเย็นที่... เหนือระดับ', 'text'),
+('hero_subtitle', 'ติดตั้งใจถึงบ้าน หมดห่วงการันตีคุณภาพ พร้อมราคาผ่อนได้ถูกใจ และใช้ฟรีที่บ้านเพียง 2-3 วราจาเอง', 'text'),
+('phone_number', '089-999-9999', 'text'),
+('line_id', '@thanarinair', 'text'),
+('address', 'จ.สกลนคร', 'text');
+
+-- 12. Enable Realtime for Chat
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_messages;
