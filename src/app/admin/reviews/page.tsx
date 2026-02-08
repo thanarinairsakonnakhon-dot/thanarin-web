@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 
 interface Review {
@@ -12,6 +12,7 @@ interface Review {
     service_type: string;
     is_visible: boolean;
     created_at: string;
+    review_image_url?: string | null;
 }
 
 export default function AdminReviews() {
@@ -19,6 +20,8 @@ export default function AdminReviews() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingReview, setEditingReview] = useState<Review | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         customer_name: '',
@@ -26,7 +29,8 @@ export default function AdminReviews() {
         rating: 5,
         review_text: '',
         service_type: 'ติดตั้งแอร์',
-        is_visible: true
+        is_visible: true,
+        review_image_url: ''
     });
 
     useEffect(() => {
@@ -59,7 +63,8 @@ export default function AdminReviews() {
                 rating: review.rating,
                 review_text: review.review_text,
                 service_type: review.service_type || '',
-                is_visible: review.is_visible
+                is_visible: review.is_visible,
+                review_image_url: review.review_image_url || ''
             });
         } else {
             setEditingReview(null);
@@ -69,10 +74,62 @@ export default function AdminReviews() {
                 rating: 5,
                 review_text: '',
                 service_type: 'ติดตั้งแอร์',
-                is_visible: true
+                is_visible: true,
+                review_image_url: ''
             });
         }
         setShowModal(true);
+    };
+
+    const resizeImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('No context')); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No blob')), 'image/jpeg', quality);
+            };
+            img.onerror = () => reject(new Error('Failed to load'));
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            // Resize image to max 800x800 for optimization
+            const resizedBlob = await resizeImage(file, 800, 800, 0.8);
+
+            const fileName = `review_${Date.now()}.jpg`;
+            const filePath = `reviews/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('images')
+                .upload(filePath, resizedBlob, { contentType: 'image/jpeg' });
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+            setFormData(prev => ({ ...prev, review_image_url: data.publicUrl }));
+        } catch (error: any) {
+            console.error('Upload error:', error);
+            alert(`อัปโหลดรูปไม่สำเร็จ: ${error.message}`);
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleSave = async () => {
@@ -163,6 +220,12 @@ export default function AdminReviews() {
                                 </div>
                             </div>
 
+                            {review.review_image_url && (
+                                <div style={{ marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden', maxHeight: '150px' }}>
+                                    <img src={review.review_image_url} alt="Review" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                </div>
+                            )}
+
                             <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: '1rem', lineHeight: 1.6 }}>
                                 "{review.review_text}"
                             </p>
@@ -240,6 +303,46 @@ export default function AdminReviews() {
                                 </select>
                             </div>
 
+                            {/* Review Image Upload */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>รูปรีวิว (เช่น รูปคู่ลูกค้า)</label>
+                                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} style={{ display: 'none' }} />
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    style={{
+                                        width: '100%',
+                                        height: '100px',
+                                        border: '2px dashed #cbd5e1',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        background: formData.review_image_url ? 'white' : '#f8fafc',
+                                        overflow: 'hidden',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    {uploading ? (
+                                        <div style={{ color: '#64748b' }}>กำลังอัปโหลด...</div>
+                                    ) : formData.review_image_url ? (
+                                        <img src={formData.review_image_url} alt="Review" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    ) : (
+                                        <div style={{ textAlign: 'center', color: '#64748b' }}>
+                                            <div>📷 คลิกเพื่ออัปโหลดรูป</div>
+                                        </div>
+                                    )}
+                                </div>
+                                {formData.review_image_url && (
+                                    <button
+                                        onClick={() => setFormData(prev => ({ ...prev, review_image_url: '' }))}
+                                        style={{ marginTop: '0.5rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
+                                    >
+                                        ❌ ลบรูปภาพ
+                                    </button>
+                                )}
+                            </div>
+
                             <div>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ข้อความรีวิว *</label>
                                 <textarea
@@ -266,8 +369,8 @@ export default function AdminReviews() {
                             <button onClick={() => setShowModal(false)} style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}>
                                 ยกเลิก
                             </button>
-                            <button onClick={handleSave} className="btn-wow" style={{ flex: 1, padding: '0.8rem' }}>
-                                บันทึก
+                            <button onClick={handleSave} className="btn-wow" style={{ flex: 1, padding: '0.8rem' }} disabled={uploading}>
+                                {uploading ? 'กำลังอัปโหลด...' : 'บันทึก'}
                             </button>
                         </div>
                     </div>

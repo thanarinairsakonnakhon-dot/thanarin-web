@@ -10,6 +10,7 @@ interface Review {
     rating: number;
     review_text: string;
     service_type: string;
+    review_image_url?: string;
 }
 
 // Fallback reviews if database is empty
@@ -116,7 +117,7 @@ export default function Testimonials() {
                                 scrollSnapAlign: 'center',
                                 padding: '2rem',
                                 borderRadius: '24px',
-                                minHeight: '250px',
+                                minHeight: '300px', // Increased height to accommodate image
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'space-between',
@@ -126,35 +127,45 @@ export default function Testimonials() {
                         >
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                    <div style={{
-                                        width: '50px',
-                                        height: '50px',
-                                        borderRadius: '50%',
-                                        background: '#e2e8f0',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '1.5rem'
-                                    }}>
-                                        {review.customer_avatar ? (
-                                            <img src={review.customer_avatar} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                                        ) : '👤'}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                        <div style={{
+                                            width: '50px',
+                                            height: '50px',
+                                            borderRadius: '50%',
+                                            background: '#e2e8f0',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '1.5rem',
+                                            overflow: 'hidden'
+                                        }}>
+                                            {review.customer_avatar ? (
+                                                <img src={review.customer_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : '👤'}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.customer_name}</div>
+                                            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-sub)' }}>{review.service_type}</div>
+                                        </div>
                                     </div>
                                     <div style={{ fontSize: '1.2rem', color: '#F59E0B' }}>
                                         {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
                                     </div>
                                 </div>
-                                <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'var(--color-text-main)', fontStyle: 'italic', marginBottom: '1.5rem' }}>
+
+                                {review.review_image_url && (
+                                    <div style={{ marginBottom: '1rem', borderRadius: '12px', overflow: 'hidden', maxHeight: '200px' }}>
+                                        <img
+                                            src={review.review_image_url}
+                                            alt="Customer Review"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                )}
+
+                                <p style={{ fontSize: '1.05rem', lineHeight: '1.6', color: 'var(--color-text-main)', fontStyle: 'italic', marginBottom: '1.5rem' }}>
                                     "{review.review_text}"
                                 </p>
-                            </div>
-
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <div style={{ width: '40px', height: '1px', background: '#CBD5E1' }}></div>
-                                <div>
-                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{review.customer_name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-sub)' }}>{review.service_type}</div>
-                                </div>
                             </div>
                         </div>
                     ))}
