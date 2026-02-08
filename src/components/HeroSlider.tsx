@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 interface Slide {
@@ -137,9 +136,8 @@ export default function HeroSlider() {
                     }}
                 >
                     {slides.map((slide) => (
-                        <Link
+                        <div
                             key={slide.id}
-                            href={slide.link_url || '/products'}
                             style={{
                                 flex: `0 0 calc(${100 / itemsPerPage}% - ${((itemsPerPage - 1) * 1.5) / itemsPerPage}rem)`,
                                 minWidth: `calc(${100 / itemsPerPage}% - ${((itemsPerPage - 1) * 1.5) / itemsPerPage}rem)`,
@@ -148,18 +146,17 @@ export default function HeroSlider() {
                                 borderRadius: '28px',
                                 overflow: 'hidden',
                                 display: 'block',
-                                boxShadow: '0 15px 35px rgba(0,0,0,0.1)',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                                 transition: 'all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
-                                textDecoration: 'none',
                                 scrollSnapAlign: 'start'
                             }}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-12px)';
-                                e.currentTarget.style.boxShadow = '0 25px 50px rgba(10, 132, 255, 0.25)';
+                                e.currentTarget.style.boxShadow = '0 20px 40px rgba(10, 132, 255, 0.25)';
                             }}
                             onMouseOut={(e) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.1)';
+                                e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
                             }}
                         >
                             {/* Background Image */}
@@ -214,27 +211,13 @@ export default function HeroSlider() {
                                         display: '-webkit-box',
                                         WebkitLineClamp: 3,
                                         WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden',
-                                        marginBottom: '1.2rem'
+                                        overflow: 'hidden'
                                     }}>
                                         {slide.subtitle}
                                     </p>
                                 )}
-                                <div style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    color: '#0A84FF',
-                                    fontWeight: 700,
-                                    fontSize: '0.9rem',
-                                    background: 'white',
-                                    padding: '0.6rem 1.2rem',
-                                    borderRadius: '50px'
-                                }}>
-                                    {slide.button_text || 'ดูรายละเอียด'} →
-                                </div>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
 
