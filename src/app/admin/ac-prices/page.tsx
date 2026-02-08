@@ -150,8 +150,8 @@ export default function AdminACPrices() {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e293b' }}>💰 ตารางราคาแอร์</h1>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>จัดการแบรนด์, ซีรีส์ และราคา</p>
+                    <h1 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e293b' }}>💰 จัดการแบรนด์ (Brands)</h1>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem' }}>จัดการแบรนด์แอร์สำหรับแสดงในหน้า Price List</p>
                 </div>
                 <button onClick={() => handleOpenModal()} className="btn-wow" style={{ padding: '0.8rem 1.5rem' }}>
                     + เพิ่มแบรนด์
@@ -194,9 +194,7 @@ export default function AdminACPrices() {
                             </div>
 
                             <div style={{ padding: '1rem' }}>
-                                {/* Actions Row 1 - Manage Series */}
-                                {/* Actions Row 1 - Manage Series (Obsolete) */}
-                                {/* <Link href={`/admin/ac-prices/${brand.id}`}>...</Link> */}
+                                {/* Note: Series & Model management are now handled in "Products" menu */}
                                 <div style={{
                                     padding: '0.6rem',
                                     background: '#f8fafc',
@@ -204,10 +202,10 @@ export default function AdminACPrices() {
                                     color: '#64748b',
                                     fontSize: '0.85rem',
                                     textAlign: 'center',
-                                    marginBottom: '0.8rem',
+                                    marginTop: '0.8rem',
                                     border: '1px dashed #cbd5e1'
                                 }}>
-                                    ✨ จัดการราคาที่เมนู "สินค้า"
+                                    ✨ ใช้สำหรับแสดงผลในหน้า Price List
                                 </div>
 
                                 {/* Actions Row 2 */}
