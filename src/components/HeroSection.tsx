@@ -1,6 +1,44 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+
+interface SiteSettings {
+    [key: string]: string;
+}
 
 export default function HeroSection() {
+    const [settings, setSettings] = useState<SiteSettings>({
+        hero_title: 'ความเย็นที่... เหนือระดับ',
+        hero_subtitle: 'ติดตั้งใจถึงบ้าน หมดห่วงการันตีคุณภาพ',
+        phone_number: '089-999-9999',
+        line_id: '@thanarinair'
+    });
+
+    useEffect(() => {
+        const loadSettings = async () => {
+            const { data } = await supabase
+                .from('site_settings')
+                .select('setting_key, setting_value');
+
+            if (data && data.length > 0) {
+                const settingsMap: SiteSettings = {};
+                data.forEach(item => {
+                    settingsMap[item.setting_key] = item.setting_value;
+                });
+                setSettings(prev => ({ ...prev, ...settingsMap }));
+            }
+        };
+
+        loadSettings();
+    }, []);
+
+    // Parse title - split by "..." or first space for gradient effect
+    const titleParts = settings.hero_title.includes('...')
+        ? settings.hero_title.split('...')
+        : [settings.hero_title, ''];
+
     return (
         <section className="bg-mesh" style={{
             position: 'relative',
@@ -52,7 +90,7 @@ export default function HeroSection() {
                         }}>
                             <span style={{ display: 'block', width: '8px', height: '8px', background: '#22C55E', borderRadius: '50%' }} className="animate-pulse-glow"></span>
                             <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-primary-dark)' }}>
-                                อันดับ 1 งานติดตั้งแอร์โซนกรุงเทพฯ
+                                อันดับ 1 งานติดตั้งแอร์
                             </span>
                         </div>
 
@@ -62,8 +100,8 @@ export default function HeroSection() {
                             marginBottom: '1.5rem',
                             fontWeight: 800
                         }}>
-                            ความเย็นที่... <br />
-                            <span className="text-gradient-blue">เหนือระดับ</span>
+                            {titleParts[0]}{titleParts[1] && '...'}<br />
+                            {titleParts[1] && <span className="text-gradient-blue">{titleParts[1].trim()}</span>}
                         </h1>
 
                         <p style={{
@@ -73,23 +111,25 @@ export default function HeroSection() {
                             maxWidth: '90%',
                             lineHeight: 1.7
                         }}>
-                            สัมผัสประสบการณ์ความเย็นที่แตกต่าง ด้วยทีมช่างมืออาชีพที่ใส่ใจทุกรายละเอียด
-                            พร้อมเทคโนโลยีคำนวณ BTU แม่นยำที่สุด
+                            {settings.hero_subtitle}
                         </p>
 
                         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                             <Link href="/calculator" className="btn-wow">
                                 คำนวณ BTU ฟรี ✨
                             </Link>
-                            <Link href="/booking" style={{
+                            <a href={`tel:${settings.phone_number.replace(/-/g, '')}`} style={{
                                 fontSize: '1.1rem',
                                 fontWeight: 600,
                                 color: 'var(--color-text-main)',
                                 textDecoration: 'underline',
-                                textUnderlineOffset: '4px'
+                                textUnderlineOffset: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
                             }}>
-                                ติดต่อช่างด่วน
-                            </Link>
+                                📞 {settings.phone_number}
+                            </a>
 
                         </div>
 
