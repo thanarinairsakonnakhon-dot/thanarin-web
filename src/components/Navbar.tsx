@@ -71,7 +71,58 @@ export default function Navbar() {
                                 <Link href="/products" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>สินค้า</Link>
                                 <Link href="/prices" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ตารางราคาแอร์</Link>
                                 <Link href="/calculator" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>คำนวณ BTU</Link>
-                                <Link href="/about" style={{ fontWeight: 500, color: 'var(--color-text-sub)', textDecoration: 'none' }}>ผลงาน</Link>
+
+                                {/* Portfolio Dropdown */}
+                                <div
+                                    className="nav-dropdown-container"
+                                    style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}
+                                >
+                                    <Link
+                                        href="/about"
+                                        style={{
+                                            fontWeight: 500,
+                                            color: 'var(--color-text-sub)',
+                                            textDecoration: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        ผลงาน <span style={{ fontSize: '0.8rem', transition: 'transform 0.3s' }}>▼</span>
+                                    </Link>
+
+                                    <div className="nav-dropdown-content">
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 200px)', gap: '10px', padding: '15px' }}>
+                                            {[
+                                                { label: 'ล้างแอร์', icon: '🧼' },
+                                                { label: 'ซ่อมแอร์', icon: '🔧' },
+                                                { label: 'ติดตั้งแอร์', icon: '❄️' },
+                                                { label: 'งานโครงการ', icon: '🏢' },
+                                                { label: 'ขายส่ง', icon: '📦' }
+                                            ].map((item) => (
+                                                <Link
+                                                    key={item.label}
+                                                    href={`/about?category=${item.label}`}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '12px',
+                                                        padding: '12px',
+                                                        borderRadius: '12px',
+                                                        color: '#1e293b',
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.2s',
+                                                        background: '#f8fafc'
+                                                    }}
+                                                    className="dropdown-item"
+                                                >
+                                                    <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                                                    <span style={{ fontWeight: 500 }}>{item.label}</span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </nav>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -233,23 +284,53 @@ export default function Navbar() {
                         >
                             🧮 คำนวณ BTU
                         </Link>
-                        <Link
-                            href="/about"
-                            onClick={() => setIsMenuOpen(false)}
-                            style={{
-                                padding: '1rem 1.25rem',
-                                fontWeight: 500,
-                                color: '#475569',
-                                borderRadius: '12px',
-                                textDecoration: 'none',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                                fontSize: '1rem'
-                            }}
-                        >
-                            📸 ผลงาน
-                        </Link>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: '#f8fafc', borderRadius: '12px', padding: '0.5rem' }}>
+                            <Link
+                                href="/about"
+                                onClick={() => setIsMenuOpen(false)}
+                                style={{
+                                    padding: '1rem 1.25rem',
+                                    fontWeight: isMenuOpen ? 600 : 500,
+                                    color: '#1e293b',
+                                    textDecoration: 'none',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.75rem',
+                                    fontSize: '1rem'
+                                }}
+                            >
+                                📸 ผลงานทั้งหมด
+                            </Link>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', padding: '0 0.5rem 0.5rem' }}>
+                                {[
+                                    { label: 'ล้างแอร์', icon: '🧼' },
+                                    { label: 'ซ่อมแอร์', icon: '🔧' },
+                                    { label: 'ติดตั้งแอร์', icon: '❄️' },
+                                    { label: 'งานโครงการ', icon: '🏢' },
+                                    { label: 'ขายส่ง', icon: '📦' }
+                                ].map((item) => (
+                                    <Link
+                                        key={item.label}
+                                        href={`/about?category=${item.label}`}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        style={{
+                                            padding: '0.75rem',
+                                            background: 'white',
+                                            borderRadius: '8px',
+                                            fontSize: '0.9rem',
+                                            color: '#475569',
+                                            textDecoration: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}
+                                    >
+                                        <span>{item.icon}</span> {item.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                         <Link
                             href="/booking"
                             onClick={() => setIsMenuOpen(false)}

@@ -17,9 +17,15 @@ interface Portfolio {
 export default function GalleryPage() {
     const [projects, setProjects] = useState<Portfolio[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filter, setFilter] = useState("All");
+    const [filter, setFilter] = useState("ทั้งหมด");
 
     useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const categoryParam = searchParams.get('category');
+        if (categoryParam) {
+            setFilter(categoryParam);
+        }
+
         const loadProjects = async () => {
             const { data } = await supabase
                 .from('portfolios')
@@ -37,7 +43,7 @@ export default function GalleryPage() {
     }, []);
 
     const filteredProjects =
-        filter === "All"
+        filter === "ทั้งหมด"
             ? projects
             : projects.filter((p) => p.category === filter);
 
@@ -79,7 +85,7 @@ export default function GalleryPage() {
 
                 {/* Filter Buttons */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
-                    {['All', 'Residential', 'Commercial', 'Service'].map((cat) => (
+                    {['ทั้งหมด', 'ล้างแอร์', 'ซ่อมแอร์', 'ติดตั้งแอร์', 'งานโครงการ', 'ขายส่ง'].map((cat) => (
                         <button
                             key={cat}
                             onClick={() => setFilter(cat)}
@@ -96,10 +102,7 @@ export default function GalleryPage() {
                                 boxShadow: filter === cat ? '0 4px 12px rgba(10, 132, 255, 0.3)' : 'none'
                             }}
                         >
-                            {cat === 'All' && 'ทั้งหมด'}
-                            {cat === 'Residential' && 'บ้านพักอาศัย'}
-                            {cat === 'Commercial' && 'เชิงพาณิชย์'}
-                            {cat === 'Service' && 'งานบริการ/ซ่อม'}
+                            {cat}
                         </button>
                     ))}
                 </div>
