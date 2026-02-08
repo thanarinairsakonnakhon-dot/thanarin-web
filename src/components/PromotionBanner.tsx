@@ -31,19 +31,34 @@ export default function PromotionBanner() {
     }, [promotions.length]);
 
     const loadPromotions = async () => {
-        const today = new Date().toISOString().split('T')[0];
+        try {
+            const { data } = await supabase
+                .from('promotions')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order');
 
-        const { data } = await supabase
-            .from('promotions')
-            .select('*')
-            .eq('is_active', true)
-            .or(`start_date.is.null,start_date.lte.${today}`)
-            .or(`end_date.is.null,end_date.gte.${today}`)
-            .order('display_order')
-            .limit(5);
+            if (data && data.length > 0) {
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
 
-        if (data && data.length > 0) {
-            setPromotions(data);
+                const activePromos = data.filter(promo => {
+                    const start = promo.start_date ? new Date(promo.start_date) : null;
+                    const end = promo.end_date ? new Date(promo.end_date) : null;
+
+                    if (start) start.setHours(0, 0, 0, 0);
+                    if (end) end.setHours(23, 59, 59, 999);
+
+                    const isStarted = !start || now >= start;
+                    const isNotEnded = !end || now <= end;
+
+                    return isStarted && isNotEnded;
+                });
+
+                setPromotions(activePromos);
+            }
+        } catch (error) {
+            console.error('Error loading promotions:', error);
         }
     };
 
