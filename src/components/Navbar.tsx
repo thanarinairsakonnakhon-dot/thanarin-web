@@ -88,37 +88,85 @@ export default function Navbar() {
                                             gap: '4px'
                                         }}
                                     >
-                                        ผลงาน <span style={{ fontSize: '0.8rem', transition: 'transform 0.3s' }}>▼</span>
+                                        ผลงาน <span className="dropdown-caret" style={{ fontSize: '0.8rem', transition: 'transform 0.3s' }}>▼</span>
                                     </Link>
 
-                                    <div className="nav-dropdown-content">
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 220px)', padding: '10px' }}>
+                                    <div className="nav-dropdown-content mega-menu">
+                                        <div style={{ display: 'flex', gap: '15px', padding: '20px', justifyContent: 'center' }}>
                                             {[
-                                                { label: 'ล้างแอร์', icon: '🧼' },
-                                                { label: 'ซ่อมแอร์', icon: '🔧' },
-                                                { label: 'ติดตั้งแอร์', icon: '❄️' },
-                                                { label: 'งานโครงการ', icon: '🏢' },
-                                                { label: 'ขายส่ง', icon: '📦' }
+                                                { label: 'ล้างแอร์', icon: '🧼', img: 'https://images.unsplash.com/photo-1581094288338-2314dddb7ec3?auto=format&fit=crop&q=80&w=400' },
+                                                { label: 'ซ่อมแอร์', icon: '🔧', img: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400' },
+                                                { label: 'ติดตั้งแอร์', icon: '❄️', img: 'https://images.unsplash.com/photo-1599933310631-89ce0d22079f?auto=format&fit=crop&q=80&w=400' },
+                                                { label: 'งานโครงการ', icon: '🏢', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=400' },
+                                                { label: 'ขายส่ง', icon: '📦', img: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400' }
                                             ].map((item) => (
                                                 <Link
                                                     key={item.label}
                                                     href={`/about?category=${item.label}`}
-                                                    className="dropdown-item"
+                                                    className="mega-menu-item"
+                                                    style={{
+                                                        width: '180px',
+                                                        background: 'white',
+                                                        borderRadius: '16px',
+                                                        overflow: 'hidden',
+                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                                                        textDecoration: 'none',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        border: '1px solid #f1f5f9',
+                                                        transition: 'all 0.3s'
+                                                    }}
                                                 >
-                                                    <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
-                                                    <span style={{ fontWeight: 500 }}>{item.label}</span>
+                                                    <div style={{
+                                                        height: '100px',
+                                                        background: `url(${item.img}) center/cover no-repeat`,
+                                                        position: 'relative'
+                                                    }}>
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            bottom: '5px',
+                                                            right: '5px',
+                                                            background: 'rgba(255,255,255,0.9)',
+                                                            borderRadius: '50%',
+                                                            width: '30px',
+                                                            height: '30px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '1rem'
+                                                        }}>
+                                                            {item.icon}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ padding: '12px', textAlign: 'center' }}>
+                                                        <span style={{
+                                                            fontWeight: 700,
+                                                            color: '#1e293b',
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontSize: '1rem'
+                                                        }}>
+                                                            {item.label}
+                                                        </span>
+                                                        <div className="btn-learn-more" style={{
+                                                            fontSize: '0.8rem',
+                                                            color: 'white',
+                                                            background: 'var(--color-primary-blue)',
+                                                            padding: '4px 12px',
+                                                            borderRadius: '99px',
+                                                            display: 'inline-block',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            ดูเพิ่มเติม
+                                                        </div>
+                                                    </div>
                                                 </Link>
                                             ))}
-                                            <div style={{ borderTop: '1px solid #f1f5f9', marginTop: '5px', paddingTop: '5px' }}>
-                                                <Link
-                                                    href="/about"
-                                                    className="dropdown-item"
-                                                    style={{ color: 'var(--color-primary-blue) !important' }}
-                                                >
-                                                    <span style={{ fontSize: '1.2rem' }}>📸</span>
-                                                    <span style={{ fontWeight: 600 }}>ดูผลงานทั้งหมด</span>
-                                                </Link>
-                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '10px 0', borderTop: '1px solid #f1f5f9', background: '#f8fafc' }}>
+                                            <Link href="/about" style={{ color: 'var(--color-primary-blue)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>
+                                                📸 ดูภาพผลงานทั้งหมด →
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
