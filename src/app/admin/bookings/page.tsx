@@ -12,6 +12,24 @@ const MONTHS = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+const extractCoords = (input: string) => {
+    if (!input) return null;
+
+    // Pattern 1: Google Maps URL with @lat,lng
+    const atMatch = input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
+
+    // Pattern 2: Google Maps URL with query q=lat,lng
+    const qMatch = input.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (qMatch) return { lat: parseFloat(qMatch[1]), lng: parseFloat(qMatch[2]) };
+
+    // Pattern 3: Raw coordinates "lat, lng"
+    const rawMatch = input.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+    if (rawMatch) return { lat: parseFloat(rawMatch[1]), lng: parseFloat(rawMatch[2]) };
+
+    return null;
+};
+
 export default function AdminBookingsPage() {
     const { bookings, updateBookingStatus, createBooking, assignTechnician } = useAdmin();
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -385,6 +403,26 @@ export default function AdminBookingsPage() {
                                     </div>
 
                                     <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem' }}>ลิ้งค์แผนที่ / พิกัด (Google Maps)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="วางลิ้งค์ Google Maps หรือพิกัด..."
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                            onChange={(e) => {
+                                                const coords = extractCoords(e.target.value);
+                                                if (coords) {
+                                                    setFormData({ ...formData, location_lat: coords.lat, location_lng: coords.lng });
+                                                }
+                                            }}
+                                        />
+                                        {formData.location_lat && (
+                                            <div style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '4px', fontWeight: 600 }}>
+                                                ✅ ตรวจพบพิกัด: {formData.location_lat.toFixed(4)}, {formData.location_lng?.toFixed(4)}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div>
                                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem' }}>รายละเอียด/หมายเหตุ</label>
                                         <textarea
                                             style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1', minHeight: '80px' }}
@@ -450,13 +488,29 @@ export default function AdminBookingsPage() {
                                         <select
                                             value={formData.status}
                                             onChange={e => setFormData({ ...formData, status: e.target.value as any })}
-                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white' }}
                                         >
-                                            <option value="pending">🟡 รอดำเนินการ</option>
-                                            <option value="confirmed">🔵 ยืนยันแล้ว</option>
-                                            <option value="completed">🟢 เสร็จสิ้น</option>
-                                            <option value="cancelled">🔴 ยกเลิก</option>
+                                            <option value="pending">⏳ รอยืนยัน</option>
+                                            <option value="confirmed">✅ ยืนยันแล้ว</option>
+                                            <option value="completed">🏁 เสร็จสิ้น</option>
+                                            <option value="cancelled">❌ ยกเลิก</option>
                                         </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', marginBottom: '0.5rem' }}>ลิ้งค์แผนที่ / พิกัด (Google Maps)</label>
+                                        <input
+                                            type="text"
+                                            defaultValue={editingBooking.location_lat ? `${editingBooking.location_lat}, ${editingBooking.location_lng}` : ''}
+                                            placeholder="วางลิ้งค์ Google Maps ใหม่เพื่อแก้ไขพิกัด..."
+                                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+                                            onChange={(e) => {
+                                                const coords = extractCoords(e.target.value);
+                                                if (coords) {
+                                                    setFormData({ ...formData, location_lat: coords.lat, location_lng: coords.lng });
+                                                }
+                                            }}
+                                        />
                                     </div>
 
                                     <div>
