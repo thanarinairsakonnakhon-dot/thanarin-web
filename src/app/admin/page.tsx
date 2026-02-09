@@ -171,7 +171,7 @@ export default function AdminDashboard() {
             <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '2rem', color: '#1e293b' }}>Dashboard Overview</h1>
 
             {/* Stats Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            <div className="dashboard-stats-grid">
                 {[
                     { title: 'งานรอยืนยัน', value: stats.pendingBookings, color: '#f59e0b', icon: '⏳', link: '/admin/bookings' },
                     { title: 'งานยืนยันแล้ว', value: stats.confirmedBookings, color: '#059669', icon: '✅', link: '/admin/bookings' },
@@ -179,11 +179,7 @@ export default function AdminDashboard() {
                     { title: 'แชทรอตอบ', value: stats.activeChatSessions, color: '#3b82f6', icon: '💬', link: '/admin/chat' },
                 ].map((stat, index) => (
                     <Link key={index} href={stat.link} style={{ textDecoration: 'none' }}>
-                        <div style={{
-                            background: 'white', padding: '1.5rem', borderRadius: '16px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', border: '1px solid #f1f5f9',
-                            cursor: 'pointer', transition: 'all 0.2s'
-                        }}>
+                        <div className="stat-card">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
                                 <div style={{
                                     width: '45px', height: '45px',
@@ -208,10 +204,10 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
+            <div className="dashboard-content-grid">
 
                 {/* Recent Bookings */}
-                <div style={{ background: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9' }}>
+                <div className="dashboard-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>📅 งานล่าสุด</h3>
                         <Link href="/admin/bookings" style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem' }}>ดูทั้งหมด</Link>
@@ -225,16 +221,17 @@ export default function AdminDashboard() {
                             {recentBookings.map((booking) => {
                                 const style = getStatusStyle(booking.status);
                                 return (
-                                    <div key={booking.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.8rem', borderRadius: '8px', background: '#f8fafc' }}>
+                                    <div key={booking.id} className="booking-item">
                                         <div>
                                             <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{booking.customer_name}</div>
                                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{booking.service_type}</div>
                                         </div>
-                                        <div style={{ textAlign: 'right' }}>
+                                        <div className="booking-meta">
                                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{formatDate(booking.booking_date, booking.booking_time)}</div>
                                             <span style={{
                                                 padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem',
-                                                background: style.bg, color: style.color, fontWeight: 600
+                                                background: style.bg, color: style.color, fontWeight: 600,
+                                                display: 'inline-block', textAlign: 'center'
                                             }}>
                                                 {style.label}
                                             </span>
@@ -247,7 +244,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Low Stock Alert */}
-                <div style={{ background: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9' }}>
+                <div className="dashboard-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                         <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>⚠️ สินค้าใกล้หมด</h3>
                         <Link href="/admin/inventory" style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem' }}>ดูทั้งหมด</Link>
@@ -259,7 +256,7 @@ export default function AdminDashboard() {
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {lowStockProducts.map((item) => (
-                                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.8rem', borderRadius: '8px', background: '#fff1f2' }}>
+                                <div key={item.id} className="stock-item">
                                     <div style={{ fontSize: '1.5rem' }}>❄️</div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.name}</div>

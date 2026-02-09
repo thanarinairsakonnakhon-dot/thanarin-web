@@ -205,12 +205,15 @@ function AdminLayoutContent({
             </aside>
 
             {/* Main Content */}
-            <main style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '1.5rem', // Reduced padding for mobile
-                overflowX: 'hidden'
-            }}>
+            <main
+                className="admin-content"
+                style={{
+                    flex: 1,
+                    minWidth: 0,
+                    padding: '1.5rem', // Default desktop padding
+                    overflowX: 'hidden'
+                }}
+            >
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <button
                         onClick={() => setSidebarOpen(!isSidebarOpen)}
