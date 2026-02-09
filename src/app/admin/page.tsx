@@ -143,9 +143,9 @@ export default function AdminDashboard() {
             setRecentBookings(bookings.slice(0, 5));
             setStats(prev => ({
                 ...prev,
-                pendingBookings: bookings.filter(b => b.status === 'Pending').length,
-                confirmedBookings: bookings.filter(b => b.status === 'Confirmed').length,
-                completedBookings: bookings.filter(b => b.status === 'Completed').length
+                pendingBookings: bookings.filter(b => b.status?.toLowerCase() === 'pending').length,
+                confirmedBookings: bookings.filter(b => b.status?.toLowerCase() === 'confirmed').length,
+                completedBookings: bookings.filter(b => b.status?.toLowerCase() === 'completed').length
             }));
         }
 
@@ -165,10 +165,11 @@ export default function AdminDashboard() {
     };
 
     const getStatusStyle = (status: string) => {
-        switch (status) {
-            case 'Pending': return { bg: '#fff7ed', color: '#f59e0b', label: 'รอยืนยัน' };
-            case 'Confirmed': return { bg: '#ecfdf5', color: '#059669', label: 'ยืนยันแล้ว' };
-            case 'Completed': return { bg: '#eff6ff', color: '#3b82f6', label: 'เสร็จสิ้น' };
+        const lowerStatus = status?.toLowerCase();
+        switch (lowerStatus) {
+            case 'pending': return { bg: '#fff7ed', color: '#f59e0b', label: 'รอยืนยัน' };
+            case 'confirmed': return { bg: '#ecfdf5', color: '#059669', label: 'ยืนยันแล้ว' };
+            case 'completed': return { bg: '#eff6ff', color: '#3b82f6', label: 'เสร็จสิ้น' };
             default: return { bg: '#f1f5f9', color: '#64748b', label: status };
         }
     };
