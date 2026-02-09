@@ -449,6 +449,67 @@ h6 {
     visibility: visible;
   }
 
+  /* ==================== PRODUCT PAGE MOBILE ==================== */
+  .mobile-filter-toggle {
+    display: flex !important;
+  }
+
+  .sidebar-filter {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 85%;
+    height: 100vh;
+    background: white;
+    z-index: 2000;
+    padding: 2rem;
+    overflow-y: auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-filter.open {
+    left: 0;
+  }
+
+  .filter-header {
+    display: flex !important;
+  }
+
+  .desktop-filter-title {
+    display: none;
+  }
+
+  .mobile-apply-btn {
+    display: block !important;
+  }
+
+  .filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .filter-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .product-grid-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-card-item {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+
   .admin-content {
     padding: 1rem !important;
   }
