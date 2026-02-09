@@ -585,7 +585,7 @@ h6 {
     padding: 0.75rem !important;
   }
 
-  .product-card-item div:first-of-type {
+  .product-card-item>div:last-child>div:first-of-type {
     /* Brand/Type Text */
     font-size: 0.7rem !important;
     margin-bottom: 0.1rem;
@@ -603,32 +603,36 @@ h6 {
     overflow: hidden;
   }
 
-  .product-card-item div:nth-of-type(2) {
-    /* Features Pucks - HIDE on Mobile 3-col */
+  /* Target elements INSIDE the content container (the second div) */
+  .product-card-item>div:last-child>div:nth-of-type(2) {
+    /* Features Pucks - HIDE on Mobile */
     display: none !important;
   }
 
-  .product-card-item div:nth-of-type(3) {
+  .product-card-item>div:last-child>div:nth-of-type(3) {
     /* BTU/SEER Tags */
     gap: 0.25rem !important;
     margin-bottom: 0.5rem !important;
   }
 
-  .product-card-item div:nth-of-type(3) span {
+  .product-card-item>div:last-child>div:nth-of-type(3) span {
     font-size: 0.6rem !important;
     padding: 0.1rem 0.3rem !important;
   }
 
-  .product-card-item div:last-child {
+  .product-card-item>div:last-child>div:nth-of-type(4) {
     /* Price and Button Area */
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 0.3rem;
+    gap: 0.3rem !important;
+    margin-top: auto !important;
   }
 
-  .product-card-item div:last-child>div {
+  .product-card-item>div:last-child>div:nth-of-type(4)>div {
     /* Price */
     font-size: 0.85rem !important;
+    font-weight: 700 !important;
   }
 
   .product-card-item .btn-wow {
