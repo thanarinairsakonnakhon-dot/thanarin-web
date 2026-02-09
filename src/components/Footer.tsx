@@ -11,7 +11,7 @@ interface SiteSettings {
 export default function Footer() {
     const [settings, setSettings] = useState<SiteSettings>({
         footer_description: 'ร้านแอร์ที่คุณวางใจได้ ด้วยมาตรฐานการบริการระดับสากล และความใส่ใจดุจญาติมิตร',
-        phone_number: '089-999-9999',
+        phone_number: '086-238-7571',
         line_id: '@thanarinair',
         address: 'Bangkok, Thailand',
         services_list: 'ล้างแอร์,ซ่อมแอร์,ติดตั้งแอร์ใหม่,ย้ายจุดติดตั้ง'

@@ -86,3 +86,10 @@
     - [x] Optimize Admin Sidebar for mobile (Hamburger menu / Overlay)
     - [x] Adjust Dashboard Grid for single column on small screens
     - [x] Fix padding and font sizes for mobile readability
+
+- [x] Update Admin Phone on Job Sheet <!-- id: 56 -->
+    - [x] Research actual admin contact details
+    - [x] Create implementation plan
+    - [x] Fetch site settings in Admin Orders page
+    - [x] Update print layout with dynamic phone number
+    - [x] Verify changes on printed job sheet

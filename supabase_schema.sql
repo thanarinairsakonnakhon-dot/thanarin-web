@@ -157,10 +157,10 @@ CREATE POLICY "Public Update Site Settings" ON site_settings FOR UPDATE USING (t
 -- Insert default settings
 INSERT INTO site_settings (setting_key, setting_value, setting_type) VALUES
 ('hero_title', 'ความเย็นที่... เหนือระดับ', 'text'),
-('hero_subtitle', 'ติดตั้งใจถึงบ้าน หมดห่วงการันตีคุณภาพ พร้อมราคาผ่อนได้ถูกใจ และใช้ฟรีที่บ้านเพียง 2-3 วราจาเอง', 'text'),
-('phone_number', '089-999-9999', 'text'),
+('hero_subtitle', 'ติดตั้งใจถึงบ้าน หมดห่วงการันตีคุณภาพ พร้อมราคาที่ถูกใจ และบริการที่ประทับใจ', 'text'),
+('phone_number', '086-238-7571', 'text'),
 ('line_id', '@thanarinair', 'text'),
-('address', 'จ.สกลนคร', 'text');
+('address', '335/1 ม.3 ต.เชียงเครือ อ.เมือง จ.สกลนคร', 'text');
 
 -- 12. Enable Realtime for Chat
 ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;

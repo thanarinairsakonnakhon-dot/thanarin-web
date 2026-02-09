@@ -23,6 +23,9 @@ export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [settings, setSettings] = useState<{ phone_number?: string }>({
+        phone_number: '086-238-7571' // Official fallback
+    });
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -41,8 +44,28 @@ export default function AdminOrdersPage() {
         }
     };
 
+    const fetchSettings = async () => {
+        try {
+            const { data } = await supabase
+                .from('site_settings')
+                .select('setting_key, setting_value')
+                .in('setting_key', ['phone_number']);
+
+            if (data && data.length > 0) {
+                const settingsMap: any = {};
+                data.forEach(item => {
+                    settingsMap[item.setting_key] = item.setting_value;
+                });
+                setSettings(prev => ({ ...prev, ...settingsMap }));
+            }
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+        }
+    };
+
     useEffect(() => {
         fetchOrders();
+        fetchSettings();
     }, []);
 
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -257,7 +280,7 @@ export default function AdminOrdersPage() {
                         <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>
                             <h1 style={{ margin: 0, fontSize: '20pt', fontWeight: 800 }}>THANARIN AIR</h1>
                             <p style={{ margin: '2px 0', fontSize: '12pt' }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
-                            <p style={{ margin: 0, fontSize: '10pt' }}>โทร: 094-118-80XX | thanarin-air.com</p>
+                            <p style={{ margin: 0, fontSize: '10pt' }}>โทร: {settings.phone_number || '086-238-7571'} | thanarin-air.com</p>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>

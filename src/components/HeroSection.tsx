@@ -12,7 +12,7 @@ export default function HeroSection() {
     const [settings, setSettings] = useState<SiteSettings>({
         hero_title: 'ความเย็นที่... เหนือระดับ',
         hero_subtitle: 'ติดตั้งใจถึงบ้าน หมดห่วงการันตีคุณภาพ',
-        phone_number: '089-999-9999',
+        phone_number: '086-238-7571',
         line_id: '@thanarinair'
     });
 

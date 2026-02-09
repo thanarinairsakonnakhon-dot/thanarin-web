@@ -108,3 +108,10 @@ The calculation system was still present in the code but had no entry points. I 
     - **Layout Bug Fix:** แก้ไขบั๊ก HTML Structure ที่ทำให้ Overlay ของมือถือไปดัน Layout ของ Desktop จนเพี้ยน เรียบร้อยแล้ว ตอนนี้แสดงผล 2 คอลัมน์ได้สวยงามตามมาตรฐาน
     - **Grid Density:** ปรับการแสดงผลสินค้าบน Desktop ให้แน่นขึ้น (3-4 ชิ้นต่อแถว) ตามคำขอ โดยลดขนาดขั้นต่ำของ Card สินค้าลงเล็กน้อย และจัดการโครงสร้าง HTML ที่ซ้อนกันเกินจำเป็นออก ทำให้ Grid ทำงานได้สมบูรณ์แบบ
     - **Readable Layout:** ปรับขนาดตัวอักษรและระยะห่าง (Padding) ให้เหมาะสมกับการสัมผัสและอ่านง่ายบนหน้าจอเล็ก
+
+### 14. Admin Phone Number & Job Sheet Fix
+- **Dynamic Fetching**: Implemented logic in `AdminOrdersPage` and `AdminDashboard` to fetch the phone number from the `site_settings` table in Supabase.
+- **Official Fallbacks**: Replaced generic placeholders (e.g., `089-999-9999`, `082-123-4567`) with the official phone number `086-238-7571` as the default fallback in the code.
+- **Printed Job Sheets**: Updated the print headers in both the Orders page and the Dashboard booking modal to display the dynamic phone number and the correct website (`thanarin-air.com`).
+- **Site-wide Updates**: Updated the default/fallback phone number in both `Footer.tsx` and `HeroSection.tsx` to ensure brand consistency.
+- **Database Seed**: Updated `supabase_schema.sql` with official shop details, including the real phone number and specific address in Sakon Nakhon.

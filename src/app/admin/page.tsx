@@ -51,6 +51,9 @@ export default function AdminDashboard() {
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+    const [settings, setSettings] = useState<{ phone_number?: string }>({
+        phone_number: '086-238-7571' // Official fallback
+    });
 
     useEffect(() => {
         loadDashboardData();
@@ -128,6 +131,20 @@ export default function AdminDashboard() {
             .select('*')
             .eq('is_active', true)
             .eq('last_message_sender', 'user');
+
+        // Load site settings
+        const { data: siteSettings } = await supabase
+            .from('site_settings')
+            .select('setting_key, setting_value')
+            .in('setting_key', ['phone_number']);
+
+        if (siteSettings && siteSettings.length > 0) {
+            const settingsMap: any = {};
+            siteSettings.forEach(item => {
+                settingsMap[item.setting_key] = item.setting_value;
+            });
+            setSettings(prev => ({ ...prev, ...settingsMap }));
+        }
 
         if (products) {
             const lowStock = products.filter(p => p.stock <= (p.minStock || 2)); // Use minStock
@@ -269,6 +286,7 @@ export default function AdminDashboard() {
                     <BookingDetailModal
                         booking={selectedBooking}
                         onClose={() => setSelectedBooking(null)}
+                        adminPhone={settings.phone_number || '086-238-7571'}
                     />
                 )}
 
@@ -310,7 +328,7 @@ export default function AdminDashboard() {
     );
 }
 
-function BookingDetailModal({ booking, onClose }: { booking: Booking, onClose: () => void }) {
+function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking, onClose: () => void, adminPhone: string }) {
     const handlePrint = () => {
         window.print();
     };
@@ -352,7 +370,7 @@ function BookingDetailModal({ booking, onClose }: { booking: Booking, onClose: (
                 {/* Print Header (Only visible on paper) */}
                 <div className="print-only" style={{ textAlign: 'center', marginBottom: '2rem', borderBottom: '2px solid #000', paddingBottom: '1rem' }}>
                     <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'black' }}>TH.AIR - ใบสั่งงานช่าง</h1>
-                    <p style={{ fontSize: '1rem', color: 'black' }}>ร้านธนรินทร์แอร์ สกลนคร | โทร. 082-123-4567</p>
+                    <p style={{ fontSize: '1rem', color: 'black' }}>ร้านธนรินทร์แอร์ สกลนคร | โทร. {adminPhone}</p>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="job-details">
