@@ -1,21 +1,22 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Define available time slots
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
 
-export default function BookingPage() {
+function BookingContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]); // Format: "YYYY-MM-DD-HH:mm"
 
     const [formData, setFormData] = useState({
-        serviceType: 'installation', // installation, cleaning, repair
+        serviceType: searchParams.get('service') || 'installation', // installation, cleaning, repair
         selectedDate: '',
         selectedTime: '',
         name: '',
@@ -29,7 +30,7 @@ export default function BookingPage() {
             lat: null as number | null,
             lng: null as number | null
         },
-        note: ''
+        note: searchParams.get('model') ? `จองติดตั้งแอร์รุ่น: ${searchParams.get('model')}` : ''
     });
 
     const steps = [
@@ -158,6 +159,7 @@ export default function BookingPage() {
                 address_details: formData.addressDetails,
                 location_lat: formData.addressDetails.lat,
                 location_lng: formData.addressDetails.lng,
+                note: formData.note,
                 status: 'pending'
             }]);
 
@@ -316,7 +318,7 @@ export default function BookingPage() {
                                     ))}
                                 </div>
 
-                                {/* Floating Summary Bar for Mobile/Desktop */}
+                                {/* Summary Bar Logic ... (Lines 319-350 unchanged) ... */}
                                 {formData.selectedDate && formData.selectedTime && (
                                     <div style={{
                                         position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
@@ -380,7 +382,7 @@ export default function BookingPage() {
                                         </div>
                                     </div>
 
-                                    {/* Detailed Address */}
+                                    {/* Address ... (Lines 383-438 unchanged) ... */}
                                     <div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                                             <label style={{ fontWeight: 600 }}>ที่อยู่หน้างาน</label>
@@ -437,11 +439,22 @@ export default function BookingPage() {
                                         </div>
                                     </div>
 
+                                    {/* Note field for product model */}
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+                                        <textarea
+                                            value={formData.note}
+                                            onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                                            style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '100px' }}
+                                            placeholder="ระบุข้อมูลเพิ่มเติม หรือรุ่นแอร์ที่ต้องการ"
+                                        />
+                                    </div>
+
                                 </div>
                             </div>
                         )}
 
-                        {/* Step 4: Confirmation */}
+                        {/* Step 4: Confirmation ... (Lines 444-503 unchanged) ... */}
                         {step === 4 && (
                             <div className="animate-fade-in" style={{ textAlign: 'center' }}>
                                 <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
@@ -468,6 +481,12 @@ export default function BookingPage() {
                                             {new Date(formData.selectedDate).toLocaleDateString('th-TH')} เวลา {formData.selectedTime}
                                         </div>
                                     </div>
+                                    {formData.note && (
+                                        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
+                                            <div style={{ color: '#64748b' }}>รายละเอียด:</div>
+                                            <div style={{ fontWeight: 600 }}>{formData.note}</div>
+                                        </div>
+                                    )}
                                     <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '1rem', marginBottom: '0.5rem' }}>
                                         <div style={{ color: '#64748b' }}>ชื่อ:</div>
                                         <div style={{ fontWeight: 600 }}>{formData.name}</div>
@@ -502,7 +521,7 @@ export default function BookingPage() {
                             </div>
                         )}
 
-                        {/* Navigation Buttons */}
+                        {/* Navigation Buttons ... (Lines 505-518 unchanged) ... */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingBottom: step === 2 ? '80px' : '0' }}>
                             {step > 1 && (
                                 <button onClick={prevStep} className="btn" style={{ background: 'transparent', border: '1px solid #cbd5e1' }}>
@@ -521,5 +540,13 @@ export default function BookingPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function BookingPage() {
+    return (
+        <Suspense fallback={<div style={{ paddingTop: '120px', textAlign: 'center' }}>กำลังโหลดแบบฟอร์มจองคิว...</div>}>
+            <BookingContent />
+        </Suspense>
     );
 }

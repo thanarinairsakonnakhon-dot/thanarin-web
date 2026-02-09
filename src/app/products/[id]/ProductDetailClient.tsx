@@ -5,6 +5,8 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { useCompare } from '@/context/CompareContext';
 import { Product } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductDetailClientProps {
     product: Product;
@@ -12,7 +14,18 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
     const { addToCompare, isInCompare, removeFromCompare } = useCompare();
+    const { user } = useAuth();
+    const router = useRouter();
     const isSelected = isInCompare(product.id);
+
+    const handleBookNow = () => {
+        const bookingUrl = `/booking?service=installation&model=${encodeURIComponent(`${product.brand} - ${product.name}`)}`;
+        if (user) {
+            router.push(bookingUrl);
+        } else {
+            router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
+        }
+    };
 
     return (
         <main className="bg-aurora" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
@@ -193,9 +206,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
                         <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Link href="/booking" className="btn-wow" style={{ flex: 2, textAlign: 'center', fontSize: '1.2rem', padding: '1rem' }}>
+                            <button
+                                onClick={handleBookNow}
+                                className="btn-wow"
+                                style={{ flex: 2, textAlign: 'center', fontSize: '1.2rem', padding: '1rem', cursor: 'pointer', border: 'none' }}
+                            >
                                 จองคิวติดตั้งแอร์รุ่นนี้ 📅
-                            </Link>
+                            </button>
                             <button
                                 className="btn"
                                 onClick={() => isSelected ? removeFromCompare(product.id) : addToCompare(product)}
