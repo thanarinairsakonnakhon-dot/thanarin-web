@@ -22,7 +22,8 @@ export default function AdminSettings() {
         'phone_number': 'เบอร์โทรศัพท์',
         'line_id': 'Line ID',
         'address': 'ที่อยู่ร้าน',
-        'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมายคอมม่า ,)'
+        'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมายคอมม่า ,)',
+        'map_iframe_url': 'พิกัดแผนที่ร้าน (Google Maps Embed URL)'
     };
 
     const defaultSettings: Setting[] = Object.keys(settingLabels).map(key => ({
@@ -151,6 +152,11 @@ export default function AdminSettings() {
                                     {setting.setting_key === 'services_list' && (
                                         <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
                                             * ใส่รายการบริการต่างๆ โดยคั่นด้วยเครื่องหมายจุลภาค (,) เช่น ล้างแอร์, ซ่อมแอร์, ติดตั้งแอร์
+                                        </p>
+                                    )}
+                                    {setting.setting_key === 'map_iframe_url' && (
+                                        <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
+                                            * นำโค้ดจาก Google Maps (Share {'->'} Embed a map) มาเฉพาะส่วน src="..." หรือวางทั้งกิฟต์ก็ได้ระบบจะพยายามล้างให้ครับ
                                         </p>
                                     )}
                                 </div>

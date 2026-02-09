@@ -63,6 +63,19 @@ export default function Footer() {
                             <p style={{ margin: 0 }}>📍 {settings.address}</p>
                         </div>
                     </div>
+                    {settings.map_iframe_url && (
+                        <div className="footer-map-container" style={{ gridColumn: 'span 1', height: '150px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1E293B' }}>
+                            <iframe
+                                src={settings.map_iframe_url.includes('src="') ? settings.map_iframe_url.split('src="')[1].split('"')[0] : settings.map_iframe_url}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                    )}
                 </div>
                 <div style={{ textAlign: 'center', borderTop: '1px solid #1E293B', paddingTop: '1.5rem', color: '#475569', fontSize: '0.85rem' }}>
                     © {new Date().getFullYear()} Thanarin Air Conditioner. All Rights Reserved.
