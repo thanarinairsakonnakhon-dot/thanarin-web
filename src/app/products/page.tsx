@@ -199,74 +199,74 @@ export default function ProductsPage() {
                                 <p>ลองปรับตัวกรองค้นหาดูใหม่นะครับ</p>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem' }}>
-                                {filteredProducts.map((p) => (
-                                    <div key={p.id} className="card-glass product-card-item">
-                                        {/* Image Area */}
-                                        <div style={{
-                                            height: '200px',
-                                            background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            position: 'relative'
-                                        }}>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={p.image}
-                                                alt={p.name}
-                                                style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }}
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).src = '/images/placeholder.png';
-                                                    (e.target as HTMLImageElement).style.opacity = '0.5';
-                                                }}
-                                            />
-                                            {p.inverter && (
-                                                <span style={{
-                                                    position: 'absolute', top: '10px', right: '10px',
-                                                    background: '#22c55e', color: 'white', padding: '0.2rem 0.8rem',
-                                                    borderRadius: '50px', fontSize: '0.75rem', fontWeight: 700
-                                                }}>INVERTER</span>
+
+                            filteredProducts.map((p) => (
+                                <div key={p.id} className="card-glass product-card-item">
+                                    {/* Image Area */}
+                                    <div style={{
+                                        height: '200px',
+                                        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        position: 'relative'
+                                    }}>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={p.image}
+                                            alt={p.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }}
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = '/images/placeholder.png';
+                                                (e.target as HTMLImageElement).style.opacity = '0.5';
+                                            }}
+                                        />
+                                        {p.inverter && (
+                                            <span style={{
+                                                position: 'absolute', top: '10px', right: '10px',
+                                                background: '#22c55e', color: 'white', padding: '0.2rem 0.8rem',
+                                                borderRadius: '50px', fontSize: '0.75rem', fontWeight: 700
+                                            }}>INVERTER</span>
+                                        )}
+                                    </div>
+
+                                    {/* Content Area */}
+                                    <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.2rem' }}>
+                                            {p.brand} | {typeMapping[p.type]?.split(' (')[0] || p.type}
+                                        </div>
+                                        <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', lineHeight: 1.4, minHeight: '2.8rem' }}>{p.name}</h3>
+
+                                        {/* Features Pucks */}
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
+                                            {p.features?.slice(0, 2).map((feat, idx) => (
+                                                <span key={idx} style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#64748b' }}>
+                                                    {feat}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                                            <span style={{ fontSize: '0.8rem', background: '#eff6ff', color: 'var(--color-primary-blue)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                                {p.btu.toLocaleString()} BTU
+                                            </span>
+                                            {(p.seer || 0) > 0 && (
+                                                <span style={{ fontSize: '0.8rem', background: '#fff7ed', color: 'var(--color-action-orange)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                                    SEER {p.seer}
+                                                </span>
                                             )}
                                         </div>
 
-                                        {/* Content Area */}
-                                        <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                            <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.2rem' }}>
-                                                {p.brand} | {typeMapping[p.type]?.split(' (')[0] || p.type}
+                                        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
+                                                ฿{p.price.toLocaleString()}
                                             </div>
-                                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', lineHeight: 1.4, minHeight: '2.8rem' }}>{p.name}</h3>
-
-                                            {/* Features Pucks */}
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
-                                                {p.features?.slice(0, 2).map((feat, idx) => (
-                                                    <span key={idx} style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px', color: '#64748b' }}>
-                                                        {feat}
-                                                    </span>
-                                                ))}
-                                            </div>
-
-                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                                                <span style={{ fontSize: '0.8rem', background: '#eff6ff', color: 'var(--color-primary-blue)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                                                    {p.btu.toLocaleString()} BTU
-                                                </span>
-                                                {(p.seer || 0) > 0 && (
-                                                    <span style={{ fontSize: '0.8rem', background: '#fff7ed', color: 'var(--color-action-orange)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                                                        SEER {p.seer}
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
-                                                    ฿{p.price.toLocaleString()}
-                                                </div>
-                                                <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-                                                    ดูรายละเอียด
-                                                </Link>
-                                            </div>
+                                            <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                                                ดูรายละเอียด
+                                            </Link>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))
+
                         )}
                     </div>
 
