@@ -41,6 +41,7 @@ export type Booking = {
     location_lng?: number;
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
     technician?: string;
+    order_id?: string;
     admin_notes?: string;
     created_at?: string;
 };

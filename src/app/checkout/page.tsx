@@ -58,7 +58,14 @@ export default function CheckoutPage() {
                 .select()
                 .single();
 
-            if (orderError) throw orderError;
+            if (orderError) {
+                console.error('Order Insert Error details:', orderError);
+                throw orderError;
+            }
+
+            if (!orderData) {
+                throw new Error('ไม่ได้รับข้อมูลคำสั่งซื้อที่ส่งกลับมา (Check RLS policies)');
+            }
 
             // Store order ID for success UI
             setSubmittedOrderId(orderData.id);
@@ -77,16 +84,26 @@ export default function CheckoutPage() {
                 .from('order_items')
                 .insert(orderItems);
 
-            if (itemsError) throw itemsError;
+            if (itemsError) {
+                console.error('Order Items Insert Error details:', itemsError);
+                throw itemsError;
+            }
 
             // Success
-            setOrderSuccess(true);
             clearCart();
             window.scrollTo(0, 0);
 
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('เกิดข้อผิดพลาดในการสั่งซื้อ กรุณาลองใหม่อีกครั้ง');
+            // Automatic redirect to booking with context
+            const bookingUrl = `/booking?service=installation&order_id=${orderData.id}&step=2` +
+                `&name=${encodeURIComponent(customerInfo.name)}` +
+                `&phone=${encodeURIComponent(customerInfo.phone)}` +
+                `&model=${encodeURIComponent(items[0]?.name || '')}`;
+
+            router.push(bookingUrl);
+
+        } catch (error: any) {
+            console.error('Full Checkout error:', error);
+            alert(`เกิดข้อผิดพลาดในการสั่งซื้อ: ${error.message || 'กรุณาลองใหม่อีกครั้ง'}`);
         } finally {
             setLoading(false);
         }

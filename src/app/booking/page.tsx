@@ -59,11 +59,14 @@ function BookingContent() {
         if (user) {
             console.log("Booking: User identified, starting auto-fill...", user);
 
-            // Priority 1: User Metadata (Always available if signed up)
+            // Priority 1: User Metadata or URL Parameters (Initial values)
+            const urlName = searchParams.get('name');
+            const urlPhone = searchParams.get('phone');
+
             setFormData(prev => ({
                 ...prev,
-                name: prev.name || user.user_metadata?.full_name || user.user_metadata?.display_name || '',
-                phone: prev.phone || user.user_metadata?.phone || '',
+                name: prev.name || urlName || user.user_metadata?.full_name || user.user_metadata?.display_name || '',
+                phone: prev.phone || urlPhone || user.user_metadata?.phone || '',
             }));
 
             // Priority 2: In-depth Profile from database
