@@ -93,43 +93,77 @@ function AdminLayoutContent({
         { name: 'ตั้งค่าเว็บ', path: '/admin/settings', icon: '⚙️' },
     ];
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 900) {
+                setSidebarOpen(false);
+            } else {
+                setSidebarOpen(true);
+            }
+        };
+
+        // Initial check
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9' }}>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9', position: 'relative' }}>
+
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="admin-sidebar-overlay"
+                    onClick={() => setSidebarOpen(false)}
+                    style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40,
+                        display: 'none' // Hidden by default, shown via CSS query if needed, or purely JS
+                    }}
+                />
+            )}
 
             {/* Sidebar */}
-            <aside style={{
-                width: isSidebarOpen ? '250px' : '80px',
-                background: '#0F172A',
-                color: 'white',
-                padding: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'width 0.3s ease',
-                position: 'sticky',
-                top: 0,
-                height: '100vh',
-                zIndex: 50,
-                flexShrink: 0
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '3rem' }}>
+            <aside
+                className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}
+                style={{
+                    width: isSidebarOpen ? '250px' : '80px',
+                    background: '#0F172A',
+                    color: 'white',
+                    padding: '1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'all 0.3s ease',
+                    position: 'sticky',
+                    top: 0,
+                    height: '100vh',
+                    zIndex: 50,
+                    flexShrink: 0
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '3rem', overflow: 'hidden' }}>
                     <div style={{
-                        width: '40px', height: '40px',
+                        minWidth: '40px', width: '40px', height: '40px',
                         background: 'var(--color-primary-blue)',
                         borderRadius: '10px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.5rem', fontWeight: 800
+                        fontSize: '1.5rem', fontWeight: 800,
+                        flexShrink: 0
                     }}>
                         T
                     </div>
-                    {isSidebarOpen && (
-                        <div>
-                            <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>TH.AIR</div>
-                            <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Admin Console</div>
-                        </div>
-                    )}
+                    <div style={{
+                        opacity: isSidebarOpen ? 1 : 0,
+                        transition: 'opacity 0.2s',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>TH.AIR</div>
+                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Admin Console</div>
+                    </div>
                 </div>
 
-                <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowX: 'hidden' }}>
                     {menuItems.map((item) => {
                         const isActive = pathname === item.path;
                         return (
@@ -147,12 +181,19 @@ function AdminLayoutContent({
                                     textDecoration: 'none',
                                     transition: 'all 0.2s',
                                     justifyContent: isSidebarOpen ? 'flex-start' : 'center',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden'
+                                    whiteSpace: 'nowrap'
                                 }}
                             >
-                                <span style={{ fontSize: '1.2rem', minWidth: '24px', textAlign: 'center' }}>{item.icon}</span>
-                                {isSidebarOpen && <span style={{ fontSize: '0.9rem' }}>{item.name}</span>}
+                                <span style={{ fontSize: '1.2rem', minWidth: '24px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>{item.icon}</span>
+                                <span style={{
+                                    fontSize: '0.9rem',
+                                    opacity: isSidebarOpen ? 1 : 0,
+                                    width: isSidebarOpen ? 'auto' : 0,
+                                    overflow: 'hidden',
+                                    transition: 'all 0.2s'
+                                }}>
+                                    {item.name}
+                                </span>
                             </Link>
                         )
                     })}
@@ -167,7 +208,7 @@ function AdminLayoutContent({
             <main style={{
                 flex: 1,
                 minWidth: 0,
-                padding: '2rem',
+                padding: '1.5rem', // Reduced padding for mobile
                 overflowX: 'hidden'
             }}>
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -178,7 +219,7 @@ function AdminLayoutContent({
                         ☰
                     </button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{ textAlign: 'right' }}>
+                        <div className="desktop-only" style={{ textAlign: 'right' }}> {/* Hide name on very small screens */}
                             <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Admin User</div>
                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Super Admin</div>
                         </div>

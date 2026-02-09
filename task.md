@@ -79,4 +79,10 @@
 - [x] Enable Real-time Dashboard Updates <!-- id: 54 -->
     - [x] Subscribe to `chat_messages` inserts in Admin Dashboard (`admin/page.tsx` or layout)
     - [x] Update 'Unread Chats' count dynamically
+    - [x] Update 'Unread Chats' count dynamically
     - [x] Add browser notification or toast when new message arrives
+
+- [x] Improve Mobile Responsiveness <!-- id: 55 -->
+    - [x] Optimize Admin Sidebar for mobile (Hamburger menu / Overlay)
+    - [x] Adjust Dashboard Grid for single column on small screens
+    - [x] Fix padding and font sizes for mobile readability

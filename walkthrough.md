@@ -94,3 +94,8 @@ The calculation system was still present in the code but had no entry points. I 
 ### 12. Real-time Dashboard
 - **Live Updates:** หน้า Dashboard จะอัปเดตตัวเลข (งานจอง, สินค้า, แชท) แบบ Real-time ทันทีที่มีการเปลี่ยนแปลง
 - **Smart Notifications:** ระบบจะส่ง Browser Notification แจ้งเตือนแอดมินทันทีเมื่อมีข้อความใหม่จากลูกค้า (รองรับเสียงแจ้งเตือนถ้ามีไฟล์เสียง)
+
+### 13. Mobile Responsiveness
+- **Admin Mobile View:** ปรับแต่งหน้า Admin Console ให้ใช้งานบนมือถือได้สะดวกขึ้น
+    - **Sidebar:** เมนู Sidebar จะซ่อนอัตโนมัติและแสดงเป็น Hamburger Menu เมื่อเปิดบนมืองถือ พร้อม Overlay พื้นหลังเพื่อให้โฟกัสเนื้อหาได้ง่าย
+    - **Readable Layout:** ปรับขนาดตัวอักษรและระยะห่าง (Padding) ให้เหมาะสมกับการสัมผัสและอ่านง่ายบนหน้าจอเล็ก
