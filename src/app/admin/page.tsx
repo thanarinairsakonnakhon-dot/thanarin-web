@@ -18,9 +18,10 @@ interface Booking {
     id: string;
     customer_name: string;
     service_type: string;
-    booking_date: string;
-    booking_time: string;
+    date: string;
+    time: string;
     status: string;
+    created_at: string;
 }
 
 
@@ -100,11 +101,11 @@ export default function AdminDashboard() {
             .from('products')
             .select('*');
 
-        // Load bookings
+        // Load bookings (most recent first)
         const { data: bookings } = await supabase
             .from('bookings')
             .select('*')
-            .order('booking_date', { ascending: true })
+            .order('created_at', { ascending: false })
             .limit(10);
 
         // Load chat sessions (only those waiting for reply from admin)
@@ -227,7 +228,7 @@ export default function AdminDashboard() {
                                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{booking.service_type}</div>
                                         </div>
                                         <div className="booking-meta">
-                                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{formatDate(booking.booking_date, booking.booking_time)}</div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{formatDate(booking.date, booking.time)}</div>
                                             <span style={{
                                                 padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem',
                                                 background: style.bg, color: style.color, fontWeight: 600,
