@@ -97,6 +97,7 @@ export default function CheckoutPage() {
             const bookingUrl = `/booking?service=installation&order_id=${orderData.id}&step=2` +
                 `&name=${encodeURIComponent(customerInfo.name)}` +
                 `&phone=${encodeURIComponent(customerInfo.phone)}` +
+                `&address=${encodeURIComponent(customerInfo.address)}` +
                 `&model=${encodeURIComponent(items[0]?.name || '')}`;
 
             router.push(bookingUrl);

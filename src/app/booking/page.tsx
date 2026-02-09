@@ -62,11 +62,16 @@ function BookingContent() {
             // Priority 1: User Metadata or URL Parameters (Initial values)
             const urlName = searchParams.get('name');
             const urlPhone = searchParams.get('phone');
+            const urlAddress = searchParams.get('address');
 
             setFormData(prev => ({
                 ...prev,
                 name: prev.name || urlName || user.user_metadata?.full_name || user.user_metadata?.display_name || '',
                 phone: prev.phone || urlPhone || user.user_metadata?.phone || '',
+                addressDetails: {
+                    ...prev.addressDetails,
+                    houseNo: prev.addressDetails.houseNo || urlAddress || ''
+                }
             }));
 
             // Priority 2: In-depth Profile from database
@@ -415,14 +420,16 @@ function BookingContent() {
                                             </div>
                                         </div>
                                         <button
-                                            onClick={nextStep}
+                                            onClick={searchParams.get('order_id') ? handleSubmitBooking : nextStep}
                                             className="btn-wow"
+                                            disabled={isSubmitting}
                                             style={{
                                                 padding: '0.6rem 1.5rem', fontSize: '1rem',
                                                 display: 'flex', alignItems: 'center', gap: '0.5rem'
                                             }}
                                         >
-                                            ยืนยันเวลา <span style={{ fontSize: '1.2rem' }}>→</span>
+                                            {isSubmitting ? 'กำลังบันทึก...' :
+                                                searchParams.get('order_id') ? 'ยืนยันการนัดหมาย ✅' : 'ยืนยันเวลา →'}
                                         </button>
                                     </div>
                                 )}
