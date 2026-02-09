@@ -380,21 +380,41 @@ h6 {
 }
 
 /* Footer Mobile */
+/* Footer Mobile */
 @media (max-width: 768px) {
   .footer-section {
-    padding: 3rem 0 2rem !important;
+    padding: 2rem 0 1.5rem !important;
   }
 
   .footer-grid {
-    gap: 2rem !important;
-    margin-bottom: 2rem !important;
+    gap: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
     text-align: center;
+    grid-template-columns: 1fr !important;
   }
 
   .footer-grid>div {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.5rem !important;
+  }
+
+  /* Reduce font sizes */
+  .footer-grid h3 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .footer-grid h4 {
+    margin-bottom: 0.8rem !important;
+    font-size: 1.1rem !important;
+  }
+
+  .footer-grid p,
+  .footer-grid li {
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
   }
 }
 
