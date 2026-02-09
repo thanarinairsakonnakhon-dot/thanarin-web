@@ -245,14 +245,21 @@ function BookingContent() {
                 }]) : Promise.resolve({ error: null })
             ]);
 
-            if (bookingResult.error) throw bookingResult.error;
-            if (profileResult.error) console.error('Error updating profile:', profileResult.error);
+            if (bookingResult.error) {
+                console.error('Booking Insert Error details:', bookingResult.error);
+                throw bookingResult.error;
+            }
+            if (profileResult.error) {
+                console.error('Profile Upsert Error details:', profileResult.error);
+                // We might not want to block the whole booking if just the profile fails, 
+                // but for debugging let's see it.
+            }
 
             alert('จองคิวสำเร็จ! 🎉 เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันภายใน 15 นาที');
             router.push('/'); // Redirect home
-        } catch (error) {
-            console.error('Booking failed:', error);
-            alert('เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
+        } catch (error: any) {
+            console.error('Full Booking error:', error);
+            alert(`เกิดข้อผิดพลาดในการจอง: ${error.message || 'กรุณาลองใหม่อีกครั้ง'} ${error.details || ''}`);
         } finally {
             setIsSubmitting(false);
         }
