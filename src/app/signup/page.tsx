@@ -18,7 +18,7 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const { sendEmailOTP, verifyOTP } = useAuth();
+    const { sendEmailOTP, verifyOTP, loginWithGoogle } = useAuth();
     const router = useRouter();
 
     const handleSendOTP = async (e: React.FormEvent) => {

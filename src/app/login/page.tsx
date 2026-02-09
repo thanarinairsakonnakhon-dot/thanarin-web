@@ -14,7 +14,7 @@ function LoginForm() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { sendEmailOTP, verifyOTP, user } = useAuth();
+    const { sendEmailOTP, verifyOTP, loginWithGoogle, user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/products';
