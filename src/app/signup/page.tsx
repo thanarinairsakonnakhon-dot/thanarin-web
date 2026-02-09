@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function SignupPage() {
     const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [step, setStep] = useState(1); // 1: Info, 2: OTP
 
@@ -18,15 +18,15 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const { sendPhoneOTP, verifyOTP } = useAuth();
+    const { sendEmailOTP, verifyOTP } = useAuth();
     const router = useRouter();
 
     const handleSendOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
-        if (phone.length < 9) {
-            setError('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง');
+        if (!email.includes('@')) {
+            setError('กรุณากรอกอีเมลให้ถูกต้อง');
             return;
         }
 
@@ -36,7 +36,7 @@ export default function SignupPage() {
         }
 
         setLoading(true);
-        const { error } = await sendPhoneOTP(phone);
+        const { error } = await sendEmailOTP(email);
 
         if (error) {
             setError(error);
@@ -57,21 +57,19 @@ export default function SignupPage() {
         }
 
         setLoading(true);
-        const { error } = await verifyOTP(phone, otp);
+        const { error } = await verifyOTP(email, otp, 'email');
 
         if (error) {
             setError(error);
             setLoading(false);
         } else {
-            // OTP Verified! Profile session is handled by Supabase
-            // Now ensure the profile is created/updated in our profiles table
             const { data: { user } } = await supabase.auth.getUser();
 
             if (user) {
                 const { error: profileError } = await supabase.from('profiles').upsert([{
                     id: user.id,
                     full_name: name,
-                    phone: phone,
+                    email: email,
                     updated_at: new Date().toISOString()
                 }]);
 
@@ -94,7 +92,7 @@ export default function SignupPage() {
                         <div style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>✅</div>
                         <h1 style={{ fontSize: '1.75rem', marginBottom: '1.25rem', color: '#0F172A' }}>ยินดีต้อนรับสมาชิกใหม่</h1>
                         <p style={{ color: '#475569', marginBottom: '2.5rem', lineHeight: 1.8, fontSize: '1rem' }}>
-                            การยืนยันตัวตนเสร็จสมบูรณ์แล้วครับ คุณ <span style={{ fontWeight: 600 }}>{name}</span><br /><br />
+                            การยืนยันตัวตนผ่านอีเมลเสร็จสมบูรณ์แล้วครับ คุณ <span style={{ fontWeight: 600 }}>{name}</span><br /><br />
                             ท่านสามารถเริ่มต้นใช้บริการจองคิวและเลือกซื้อสินค้าแอร์คุณภาพจากเราได้ทันที<br />
                             <strong>ขอขอบพระคุณที่ให้ความไว้วางใจ ธนรินทร์แอร์</strong>
                         </p>
@@ -116,7 +114,7 @@ export default function SignupPage() {
                 <div className="card-glass" style={{ width: '100%', maxWidth: '500px', padding: '2.5rem' }}>
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                         <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>สมัครสมาชิก</h1>
-                        <p style={{ color: '#64748b' }}>{step === 1 ? 'ร่วมเป็นส่วนหนึ่งของ ธนรินทร์แอร์' : 'กรุณากรอกรหัส 6 หลักที่ส่งไปยังเบอร์ ' + phone}</p>
+                        <p style={{ color: '#64748b' }}>{step === 1 ? 'ร่วมเป็นส่วนหนึ่งของ ธนรินทร์แอร์' : 'กรุณากรอกรหัส 6 หลักที่ส่งไปยังอีเมล ' + email}</p>
                     </div>
 
                     {error && (
@@ -139,14 +137,14 @@ export default function SignupPage() {
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>เบอร์โทรศัพท์ <span className="text-red-500">*</span></label>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>อีเมล <span className="text-red-500">*</span></label>
                                 <input
                                     required
-                                    type="tel"
-                                    placeholder="0xx-xxx-xxxx"
+                                    type="email"
+                                    placeholder="name@example.com"
                                     style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    value={phone}
-                                    onChange={e => setPhone(e.target.value)}
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
                                 />
                             </div>
 
@@ -156,7 +154,7 @@ export default function SignupPage() {
                                 className="btn-wow"
                                 style={{ width: '100%', padding: '0.8rem', marginTop: '1rem', opacity: loading ? 0.7 : 1 }}
                             >
-                                {loading ? 'กำลังส่ง OTP...' : 'ส่งรหัสยืนยัน (OTP)'}
+                                {loading ? 'กำลังส่ง OTP...' : 'ส่งรหัสยืนยันไปยังอีเมล'}
                             </button>
                         </form>
                     ) : (
@@ -192,7 +190,7 @@ export default function SignupPage() {
                                 onClick={() => setStep(1)}
                                 style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.9rem', cursor: 'pointer' }}
                             >
-                                ← เปลี่ยนเบอร์โทรศัพท์
+                                ← เปลี่ยนอีเมล
                             </button>
                         </form>
                     )}
