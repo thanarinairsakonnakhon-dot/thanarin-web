@@ -262,12 +262,12 @@ export default function BookingPage() {
 
                         {/* Step 2: Date & Time */}
                         {step === 2 && (
-                            <div className="animate-fade-in">
+                            <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
                                 <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>เลือกวันและเวลาที่สะดวก</h2>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
                                     {dates.map((date) => (
                                         <div key={date}>
-                                            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--color-text-sub)' }}>
+                                            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--color-text-sub)', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
                                                 {new Date(date).toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' })}
                                             </h3>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -281,17 +281,33 @@ export default function BookingPage() {
                                                             key={time}
                                                             disabled={isBooked}
                                                             onClick={() => handleSelectSlot(date, time)}
-                                                            className={`
-                                                                px-6 py-3 rounded-xl border font-semibold transition-all
-                                                                ${isSelected
-                                                                    ? 'bg-blue-600 text-white border-blue-600'
-                                                                    : isBooked
-                                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-blue-400 hover:text-blue-600'
-                                                                }
-                                                            `}
+                                                            style={{
+                                                                padding: '0.8rem 1.5rem',
+                                                                borderRadius: '12px',
+                                                                border: isSelected ? '2px solid #0A84FF' : '1px solid #e2e8f0',
+                                                                background: isSelected ? '#0A84FF' : isBooked ? '#f1f5f9' : 'white',
+                                                                color: isSelected ? 'white' : isBooked ? '#cbd5e1' : '#334155',
+                                                                fontWeight: isSelected ? 700 : 500,
+                                                                cursor: isBooked ? 'not-allowed' : 'pointer',
+                                                                transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+                                                                boxShadow: isSelected ? '0 4px 12px rgba(10, 132, 255, 0.3)' : 'none',
+                                                                transition: 'all 0.2s',
+                                                                position: 'relative',
+                                                                minWidth: '100px'
+                                                            }}
                                                         >
                                                             {time}
+                                                            {isSelected && (
+                                                                <div style={{
+                                                                    position: 'absolute', top: '-8px', right: '-8px',
+                                                                    background: '#22c55e', color: 'white',
+                                                                    borderRadius: '50%', width: '20px', height: '20px',
+                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                    fontSize: '0.8rem', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                                }}>
+                                                                    ✓
+                                                                </div>
+                                                            )}
                                                         </button>
                                                     );
                                                 })}
@@ -299,6 +315,37 @@ export default function BookingPage() {
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Floating Summary Bar for Mobile/Desktop */}
+                                {formData.selectedDate && formData.selectedTime && (
+                                    <div style={{
+                                        position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)',
+                                        background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)',
+                                        padding: '1rem 2rem', borderRadius: '50px',
+                                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                                        display: 'flex', alignItems: 'center', gap: '1.5rem',
+                                        zIndex: 100, border: '1px solid #e2e8f0',
+                                        animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                        width: '90%', maxWidth: '500px'
+                                    }}>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>เวลานัดหมาย</div>
+                                            <div style={{ fontWeight: 700, color: '#0F172A' }}>
+                                                {new Date(formData.selectedDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })} — {formData.selectedTime} น.
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={nextStep}
+                                            className="btn-wow"
+                                            style={{
+                                                padding: '0.6rem 1.5rem', fontSize: '1rem',
+                                                display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                            }}
+                                        >
+                                            ยืนยันเวลา <span style={{ fontSize: '1.2rem' }}>→</span>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
