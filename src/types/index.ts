@@ -42,6 +42,7 @@ export type Booking = {
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
     technician?: string;
     order_id?: string;
+    note?: string;
     admin_notes?: string;
     created_at?: string;
 };
