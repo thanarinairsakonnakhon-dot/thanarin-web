@@ -12,6 +12,7 @@ interface AuthContextType {
     signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } | null }>;
     sendEmailOTP: (email: string) => Promise<{ error: string | null }>;
     verifyOTP: (email: string, token: string, type: 'email' | 'sms') => Promise<{ error: string | null }>;
+    loginWithGoogle: () => Promise<{ error: string | null }>;
     resetPassword: (email: string) => Promise<{ error: string | null }>;
     updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
@@ -95,6 +96,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null };
     };
 
+    const loginWithGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            }
+        });
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
     const resetPassword = async (email: string) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/reset-password`,
@@ -115,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider value={{
-            user, session, isLoading, login, signUp, sendEmailOTP, verifyOTP, resetPassword, updatePassword, logout
+            user, session, isLoading, login, signUp, sendEmailOTP, verifyOTP, loginWithGoogle, resetPassword, updatePassword, logout
         }}>
             {children}
         </AuthContext.Provider>

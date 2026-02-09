@@ -195,6 +195,38 @@ export default function SignupPage() {
                         </form>
                     )}
 
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0', color: '#cbd5e1' }}>
+                        <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
+                        <span style={{ padding: '0 1rem', fontSize: '0.8rem', color: '#94a3b8' }}>หรือดำเนินการต่อด้วย</span>
+                        <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => loginWithGoogle()}
+                        style={{
+                            width: '100%',
+                            padding: '0.8rem',
+                            borderRadius: '10px',
+                            border: '1px solid #cbd5e1',
+                            background: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.75rem',
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            color: '#334155',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={e => e.currentTarget.style.background = '#f8fafc'}
+                        onMouseOut={e => e.currentTarget.style.background = 'white'}
+                    >
+                        <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
+                        สมัครสมาชิกด้วย Gmail
+                    </button>
+
                     <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem', color: '#64748b' }}>
                         มีบัญชีอยู่แล้ว? <Link href="/login" style={{ color: 'var(--color-primary-blue)', fontWeight: 600, textDecoration: 'none' }}>เข้าสู่ระบบ</Link>
                     </div>
