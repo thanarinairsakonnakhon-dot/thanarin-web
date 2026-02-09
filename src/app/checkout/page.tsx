@@ -23,6 +23,19 @@ export default function CheckoutPage() {
         notes: ''
     });
 
+    // Auth Guard - Redirect guest to login
+    React.useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login?redirect=/checkout');
+        } else if (user && !customerInfo.name) {
+            // Auto-fill name from profile
+            setCustomerInfo(prev => ({
+                ...prev,
+                name: user.user_metadata?.full_name || user.email?.split('@')[0] || ''
+            }));
+        }
+    }, [user, authLoading, router, customerInfo.name]);
+
     const handleOrderSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (items.length === 0) return;
