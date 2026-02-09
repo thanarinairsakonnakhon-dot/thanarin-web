@@ -8,12 +8,13 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 function LoginForm() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
+    const [otp, setOtp] = useState('');
+    const [step, setStep] = useState(1); // 1: Phone, 2: OTP
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { login, user } = useAuth();
+    const { sendPhoneOTP, verifyOTP, user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/products';
@@ -24,12 +25,39 @@ function LoginForm() {
         }
     }, [user, router, redirect]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSendOTP = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
-        const result = await login(email, password);
+        if (phone.length < 9) {
+            setError('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง');
+            setLoading(false);
+            return;
+        }
+
+        const result = await sendPhoneOTP(phone);
+        if (result.error) {
+            setError(result.error);
+            setLoading(false);
+        } else {
+            setStep(2);
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        if (otp.length !== 6) {
+            setError('กรุณากรอกรหัส OTP 6 หลัก');
+            setLoading(false);
+            return;
+        }
+
+        const result = await verifyOTP(phone, otp);
         if (result.error) {
             setError(result.error);
             setLoading(false);
@@ -41,52 +69,76 @@ function LoginForm() {
     return (
         <div className="card-glass" style={{ width: '100%', maxWidth: '450px', padding: '2.5rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>เข้าสู่ระบบลูกค้า</h1>
-                <p style={{ color: '#64748b' }}>ยินดีต้อนรับกลับสู่ ธนรินทร์แอร์</p>
+                <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>เข้าสู่ระบบ</h1>
+                <p style={{ color: '#64748b' }}>{step === 1 ? 'ยินดีต้อนรับกลับสู่ ธนรินทร์แอร์' : 'กรุณากรอกรหัส 6 หลักที่ส่งไปยังเบอร์ ' + phone}</p>
             </div>
 
             {error && (
                 <div style={{ background: '#fef2f2', color: '#ef4444', padding: '0.8rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', textAlign: 'center' }}>
-                    {error === 'Invalid login credentials' ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : error}
+                    {error}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>อีเมล</label>
-                    <input
-                        required
-                        type="email"
-                        placeholder="name@example.com"
-                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>รหัสผ่าน</label>
-                        <Link href="/reset-password" style={{ fontSize: '0.85rem', color: 'var(--color-primary-blue)', textDecoration: 'none' }}>ลืมรหัสผ่าน?</Link>
+            {step === 1 ? (
+                <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>เบอร์โทรศัพท์</label>
+                        <input
+                            required
+                            type="tel"
+                            placeholder="0xx-xxx-xxxx"
+                            style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                            value={phone}
+                            onChange={e => setPhone(e.target.value)}
+                        />
                     </div>
-                    <input
-                        required
-                        type="password"
-                        placeholder="••••••••"
-                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                    />
-                </div>
 
-                <button
-                    disabled={loading}
-                    type="submit"
-                    className="btn-wow"
-                    style={{ width: '100%', padding: '0.8rem', marginTop: '0.5rem', opacity: loading ? 0.7 : 1 }}
-                >
-                    {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
-                </button>
-            </form>
+                    <button
+                        disabled={loading}
+                        type="submit"
+                        className="btn-wow"
+                        style={{ width: '100%', padding: '0.8rem', marginTop: '0.5rem', opacity: loading ? 0.7 : 1 }}
+                    >
+                        {loading ? 'กำลังส่ง OTP...' : 'ส่งรหัสยืนยัน (OTP)'}
+                    </button>
+                </form>
+            ) : (
+                <form onSubmit={handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem', textAlign: 'center' }}>รหัสยืนยัน 6 หลัก</label>
+                        <input
+                            required
+                            type="text"
+                            maxLength={6}
+                            placeholder="• • • • • •"
+                            style={{
+                                width: '100%', padding: '1rem', borderRadius: '10px', border: '2px solid var(--color-primary-blue)',
+                                textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem', fontWeight: 700
+                            }}
+                            value={otp}
+                            onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                            autoFocus
+                        />
+                    </div>
+
+                    <button
+                        disabled={loading}
+                        type="submit"
+                        className="btn-wow"
+                        style={{ width: '100%', padding: '0.8rem', opacity: loading ? 0.7 : 1 }}
+                    >
+                        {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.9rem', cursor: 'pointer' }}
+                    >
+                        ← เปลี่ยนเบอร์โทรศัพท์
+                    </button>
+                </form>
+            )}
 
             <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem', color: '#64748b' }}>
                 ยังไม่มีบัญชี? <Link href="/signup" style={{ color: 'var(--color-primary-blue)', fontWeight: 600, textDecoration: 'none' }}>สมัครสมาชิกใหม่</Link>

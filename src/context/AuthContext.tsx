@@ -10,6 +10,8 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ error: string | null }>;
     signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } | null }>;
+    sendPhoneOTP: (phone: string) => Promise<{ error: string | null }>;
+    verifyOTP: (phone: string, token: string) => Promise<{ error: string | null }>;
     resetPassword: (email: string) => Promise<{ error: string | null }>;
     updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
@@ -65,6 +67,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null, data };
     };
 
+    const sendPhoneOTP = async (phone: string) => {
+        // Formatted phone number should include country code for Supabase
+        const formattedPhone = phone.startsWith('+') ? phone : `+66${phone.startsWith('0') ? phone.slice(1) : phone}`;
+        const { error } = await supabase.auth.signInWithOtp({
+            phone: formattedPhone,
+        });
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
+    const verifyOTP = async (phone: string, token: string) => {
+        const formattedPhone = phone.startsWith('+') ? phone : `+66${phone.startsWith('0') ? phone.slice(1) : phone}`;
+        const { error } = await supabase.auth.verifyOtp({
+            phone: formattedPhone,
+            token,
+            type: 'sms',
+        });
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
     const resetPassword = async (email: string) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/reset-password`,
@@ -85,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider value={{
-            user, session, isLoading, login, signUp, resetPassword, updatePassword, logout
+            user, session, isLoading, login, signUp, sendPhoneOTP, verifyOTP, resetPassword, updatePassword, logout
         }}>
             {children}
         </AuthContext.Provider>
