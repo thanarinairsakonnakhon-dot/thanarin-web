@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Upload, Loader2, Image as ImageIcon, X } from 'lucide-react';
 
 interface Setting {
     id?: string;
@@ -10,11 +11,38 @@ interface Setting {
     setting_type: string;
 }
 
+const resizeImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            let { width, height } = img;
+            if (width > maxWidth || height > maxHeight) {
+                const ratio = Math.min(maxWidth / width, maxHeight / height);
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { reject(new Error('No context')); return; }
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No blob')), 'image/jpeg', quality);
+            URL.revokeObjectURL(url);
+        };
+        img.onerror = () => reject(new Error('Failed to load'));
+        img.src = url;
+    });
+};
+
 export default function AdminSettings() {
     const [settings, setSettings] = useState<Setting[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const settingLabels: Record<string, string> = {
         // Footer Settings
@@ -150,6 +178,78 @@ export default function AdminSettings() {
                                             <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
                                                 ติ๊กเพื่อแสดงผลแบนเนอร์บนหน้าแรก
                                             </span>
+                                        </div>
+                                    ) : setting.setting_key === 'shop_banner_image_url' ? (
+                                        <div>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                ref={fileInputRef}
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (!file) return;
+
+                                                    setUploading(true);
+                                                    try {
+                                                        const resizedBlob = await resizeImage(file, 1920, 1080, 0.85);
+                                                        const fileName = `banner_${Date.now()}.jpg`;
+                                                        const filePath = `banners/${fileName}`;
+
+                                                        const { error: uploadError } = await supabase.storage
+                                                            .from('images')
+                                                            .upload(filePath, resizedBlob, { contentType: 'image/jpeg' });
+
+                                                        if (uploadError) throw uploadError;
+
+                                                        const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+                                                        handleChange(setting.setting_key, data.publicUrl);
+                                                    } catch (error) {
+                                                        console.error('Upload error:', error);
+                                                        setMessage('❌ อัปโหลดรูปภาพไม่สำเร็จ');
+                                                        setTimeout(() => setMessage(''), 3000);
+                                                    } finally {
+                                                        setUploading(false);
+                                                    }
+                                                }}
+                                                style={{ display: 'none' }}
+                                            />
+                                            <div
+                                                onClick={() => fileInputRef.current?.click()}
+                                                style={{
+                                                    width: '100%', height: '180px',
+                                                    border: '2px dashed #cbd5e1', borderRadius: '12px',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer', background: '#f8fafc',
+                                                    overflow: 'hidden', position: 'relative', transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                {uploading ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', color: '#0A84FF' }}>
+                                                        <Loader2 size={32} className="animate-spin" />
+                                                        <span>กำลังอัปโหลด...</span>
+                                                    </div>
+                                                ) : setting.setting_value ? (
+                                                    <>
+                                                        <img src={setting.setting_value} alt="Banner Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <div style={{
+                                                            position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            opacity: 0, transition: 'opacity 0.2s', color: 'white'
+                                                        }}
+                                                            onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                                                            onMouseOut={(e) => e.currentTarget.style.opacity = '0'}
+                                                        >
+                                                            <div style={{ background: 'rgba(0,0,0,0.6)', padding: '0.5rem 1rem', borderRadius: '8px' }}>คลิกเพื่อเปลี่ยนรูป</div>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div style={{ textAlign: 'center', color: '#64748b' }}>
+                                                        <Upload size={24} style={{ marginBottom: '0.5rem' }} />
+                                                        <div style={{ fontWeight: 500 }}>คลิกเพื่ออัปโหลดรูปแบนเนอร์</div>
+                                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>แนะนำขนาด 1920 x 600 px</div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     ) : setting.setting_key === 'footer_description' || setting.setting_key === 'address' || setting.setting_key === 'shop_banner_subtitle' ? (
                                         <textarea
