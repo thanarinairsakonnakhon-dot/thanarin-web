@@ -700,6 +700,60 @@ h6 {
   }
 }
 
+/* --- Print Styles --- */
+@media print {
+
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the print container and its children */
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  /* Reset layout for printing */
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white !important;
+  }
+
+  /* Hide common UI components */
+  nav,
+  aside,
+  button,
+  .no-print,
+  [role="dialog"] button {
+    display: none !important;
+  }
+
+  /* Ensure colors are printed */
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  /* Job Sheet specific tweaks */
+  .job-sheet {
+    color: black !important;
+    box-shadow: none !important;
+    border: 1px solid #eee !important;
+  }
+}
+
 /* Service Badges Mobile */
 @media (max-width: 600px) {
   .service-badges {
