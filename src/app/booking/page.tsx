@@ -223,7 +223,8 @@ function BookingContent() {
                     location_lng: formData.addressDetails.lng,
                     note: formData.note,
                     status: 'pending',
-                    user_id: user?.id
+                    user_id: user?.id,
+                    order_id: searchParams.get('order_id') // Link to order items
                 }]),
                 user ? supabase.from('profiles').upsert([{
                     id: user.id,

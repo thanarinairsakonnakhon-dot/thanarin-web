@@ -26,7 +26,7 @@ export default function AdminOrdersPage() {
         try {
             const { data, error } = await supabase
                 .from('orders')
-                .select('*, order_items(*)')
+                .select('*, order_items(*), bookings(id)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -154,8 +154,16 @@ export default function AdminOrdersPage() {
                                 <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', marginBottom: '0.5rem' }}>ข้อมูลลูกค้า</h3>
                                 <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{selectedOrder.customer_name}</div>
                                 <div style={{ marginBottom: '0.5rem' }}>📞 {selectedOrder.customer_phone}</div>
-                                <div style={{ fontSize: '0.9rem', color: '#475569', background: '#f8fafc', padding: '0.75rem', borderRadius: '8px' }}>
+                                <div style={{ fontSize: '0.9rem', color: '#475569', background: '#f8fafc', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem' }}>
                                     📍 <strong>ที่อยู่:</strong> <br /> {selectedOrder.customer_address}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: '#10b981', background: '#f0fdf4', padding: '0.75rem', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                                    📋 <strong>ข้อมูลการจอง:</strong> <br />
+                                    {(selectedOrder as any).bookings?.length > 0 ? (
+                                        <span>🟢 มีการเลื่อนนัด/จองคิวติดตั้งแล้ว</span>
+                                    ) : (
+                                        <span style={{ color: '#ef4444' }}>🔴 ยังไม่มีการจองคิวช่าง</span>
+                                    )}
                                 </div>
                             </div>
                             <div>

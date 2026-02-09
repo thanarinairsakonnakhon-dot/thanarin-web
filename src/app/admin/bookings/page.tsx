@@ -448,6 +448,11 @@ export default function AdminBookingsPage() {
                                                     {editingBooking.service_type === 'repair' && '🔧 ซ่อม'}
                                                     {editingBooking.service_type === 'inspection' && '🔍 เช็ค'}
                                                 </div>
+                                                {editingBooking.order_id && (
+                                                    <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, marginTop: '2px' }}>
+                                                        📦 Order: #{editingBooking.order_id.slice(0, 8)}
+                                                    </div>
+                                                )}
                                                 <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
                                                     {new Date(editingBooking.date).toLocaleDateString('th-TH')} • {editingBooking.time}
                                                 </div>

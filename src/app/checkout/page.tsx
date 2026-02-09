@@ -15,6 +15,7 @@ export default function CheckoutPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState(false);
+    const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null);
 
     const [customerInfo, setCustomerInfo] = useState({
         name: '',
@@ -59,6 +60,9 @@ export default function CheckoutPage() {
 
             if (orderError) throw orderError;
 
+            // Store order ID for success UI
+            setSubmittedOrderId(orderData.id);
+
             // 2. Insert Order Items
             const orderItems = items.map(item => ({
                 order_id: orderData.id,
@@ -100,9 +104,18 @@ export default function CheckoutPage() {
                             ขอบคุณที่ใช้บริการธนรินทร์แอร์ครับ <br />
                             เจ้าหน้าที่จะติดต่อกลับที่เบอร์ {customerInfo.phone} เพื่อยืนยันการสั่งซื้อและนัดหมายการจัดส่ง/ติดตั้งครับ
                         </p>
-                        <Link href="/products" className="btn-wow" style={{ padding: '0.8rem 2rem', textDecoration: 'none' }}>
-                            กลับไปดูสินค้าอื่น
-                        </Link>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <Link
+                                href={`/booking?service=installation&order_id=${submittedOrderId}&step=2&model=${encodeURIComponent(items[0]?.name || '')}`}
+                                className="btn-wow"
+                                style={{ padding: '1rem 2rem', textDecoration: 'none', background: 'var(--color-primary-blue)' }}
+                            >
+                                📅 จองคิวติดตั้งทันที (นัดหมายช่าง)
+                            </Link>
+                            <Link href="/products" style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.9rem' }}>
+                                กลับไปดูสินค้าอื่น
+                            </Link>
+                        </div>
                     </div>
                 </div>
                 <Footer />
