@@ -107,83 +107,82 @@ export default function ProductsPage() {
                     </button>
                 </div>
 
+                {/* Mobile Overlay - Moved out of grid */}
+                <div
+                    className={`filter-overlay ${isFilterOpen ? 'open' : ''}`}
+                    onClick={() => setIsFilterOpen(false)}
+                ></div>
+
                 <div className="grid-sidebar-layout">
 
                     {/* Sidebar Filters */}
-                    <>
-                        {/* Mobile Overlay */}
-                        <div
-                            className={`filter-overlay ${isFilterOpen ? 'open' : ''}`}
-                            onClick={() => setIsFilterOpen(false)}
-                        ></div>
+                    <aside className={`sidebar-filter ${isFilterOpen ? 'open' : ''} card-glass`}>
+                        <div className="filter-header" style={{ display: 'none', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '1.2rem', margin: 0 }}>🔍 ค้นหาแบบละเอียด</h3>
+                            <button onClick={() => setIsFilterOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
+                        </div>
 
-                        <aside className={`sidebar-filter ${isFilterOpen ? 'open' : ''} card-glass`}>
-                            <div className="filter-header" style={{ display: 'none', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>🔍 ค้นหาแบบละเอียด</h3>
-                                <button onClick={() => setIsFilterOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
+                        <h3 className="desktop-filter-title" style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>🔍 ค้นหาแบบละเอียด</h3>
+
+                        {/* Brand Filter */}
+                        <div style={{ marginBottom: '2rem' }}>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>ยี่ห้อ (Brand)</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                {brands.map(brand => (
+                                    <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                        <input
+                                            type="radio"
+                                            name="brand"
+                                            checked={selectedBrand === brand}
+                                            onChange={() => setSelectedBrand(brand)}
+                                            style={{ accentColor: 'var(--color-primary-blue)' }}
+                                        />
+                                        {brand === 'All' ? 'ทั้งหมด' : brand}
+                                    </label>
+                                ))}
                             </div>
+                        </div>
 
-                            <h3 className="desktop-filter-title" style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }}>🔍 ค้นหาแบบละเอียด</h3>
-
-                            {/* Brand Filter */}
-                            <div style={{ marginBottom: '2rem' }}>
-                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>ยี่ห้อ (Brand)</label>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    {brands.map(brand => (
-                                        <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                                            <input
-                                                type="radio"
-                                                name="brand"
-                                                checked={selectedBrand === brand}
-                                                onChange={() => setSelectedBrand(brand)}
-                                                style={{ accentColor: 'var(--color-primary-blue)' }}
-                                            />
-                                            {brand === 'All' ? 'ทั้งหมด' : brand}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Type Filter */}
-                            <div style={{ marginBottom: '2rem' }}>
-                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>ประเภท (Type)</label>
-                                <select
-                                    value={selectedType}
-                                    onChange={(e) => setSelectedType(e.target.value)}
-                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
-                                >
-                                    {types.map(t => <option key={t} value={t}>{typeMapping[t]}</option>)}
-                                </select>
-                            </div>
-
-                            {/* BTU Filter */}
-                            <div>
-                                <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>BTU ขั้นต่ำ</label>
-                                <input
-                                    type="range"
-                                    min="0" max="36000" step="1000"
-                                    value={minBtu}
-                                    onChange={(e) => setMinBtu(parseInt(e.target.value))}
-                                    style={{ width: '100%', accentColor: 'var(--color-primary-blue)' }}
-                                />
-                                <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#64748b' }}>
-                                    {minBtu > 0 ? `> ${minBtu.toLocaleString()} BTU` : 'ทั้งหมด'}
-                                </div>
-                            </div>
-
-                            <button
-                                className="mobile-apply-btn"
-                                onClick={() => setIsFilterOpen(false)}
-                                style={{
-                                    display: 'none', width: '100%', marginTop: '2rem',
-                                    padding: '1rem', background: 'var(--color-primary-blue)', color: 'white',
-                                    border: 'none', borderRadius: '12px', fontWeight: 600
-                                }}
+                        {/* Type Filter */}
+                        <div style={{ marginBottom: '2rem' }}>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>ประเภท (Type)</label>
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}
                             >
-                                ดูผลลัพธ์ ({filteredProducts.length})
-                            </button>
-                        </aside>
-                    </>
+                                {types.map(t => <option key={t} value={t}>{typeMapping[t]}</option>)}
+                            </select>
+                        </div>
+
+                        {/* BTU Filter */}
+                        <div>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>BTU ขั้นต่ำ</label>
+                            <input
+                                type="range"
+                                min="0" max="36000" step="1000"
+                                value={minBtu}
+                                onChange={(e) => setMinBtu(parseInt(e.target.value))}
+                                style={{ width: '100%', accentColor: 'var(--color-primary-blue)' }}
+                            />
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#64748b' }}>
+                                {minBtu > 0 ? `> ${minBtu.toLocaleString()} BTU` : 'ทั้งหมด'}
+                            </div>
+                        </div>
+
+                        <button
+                            className="mobile-apply-btn"
+                            onClick={() => setIsFilterOpen(false)}
+                            style={{
+                                display: 'none', width: '100%', marginTop: '2rem',
+                                padding: '1rem', background: 'var(--color-primary-blue)', color: 'white',
+                                border: 'none', borderRadius: '12px', fontWeight: 600
+                            }}
+                        >
+                            ดูผลลัพธ์ ({filteredProducts.length})
+                        </button>
+                    </aside>
+
 
                     {/* Product Grid */}
                     <div className="product-grid-container">
