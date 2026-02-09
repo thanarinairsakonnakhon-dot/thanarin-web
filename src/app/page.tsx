@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Testimonials from '@/components/Testimonials';
 import ServiceBadges from '@/components/ServiceBadges';
 import PromotionBanner from '@/components/PromotionBanner';
+import ShopBanner from '@/components/ShopBanner';
 
 
 
@@ -161,6 +162,8 @@ export default function Home() {
 
             {/* Service Badges */}
             <ServiceBadges />
+
+            <ShopBanner />
 
             {/* Testimonials Section */}
             <Testimonials />

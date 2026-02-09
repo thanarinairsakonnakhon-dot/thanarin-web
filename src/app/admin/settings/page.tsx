@@ -23,7 +23,12 @@ export default function AdminSettings() {
         'line_id': 'Line ID',
         'address': 'ที่อยู่ร้าน',
         'services_list': 'รายการบริการ (คั่นด้วยเครื่องหมายคอมม่า ,)',
-        'map_iframe_url': 'พิกัดแผนที่ร้าน (Google Maps Embed URL)'
+        'map_iframe_url': 'พิกัดแผนที่ร้าน (Google Maps Embed URL)',
+        'shop_banner_image_url': 'รูปภาพแบนเนอร์ร้าน (Banner Image URL)',
+        'shop_banner_title': 'หัวข้อแบนเนอร์ (Banner Title)',
+        'shop_banner_subtitle': 'คำบรรยายแบนเนอร์ (Banner Subtitle)',
+        'shop_banner_link': 'ลิงก์ปุ่มแบนเนอร์ (Banner Link URL)',
+        'shop_banner_is_active': 'เปิดใช้งานแบนเนอร์ (true/false)'
     };
 
     const defaultSettings: Setting[] = Object.keys(settingLabels).map(key => ({
@@ -134,7 +139,19 @@ export default function AdminSettings() {
                                     <label style={{ fontWeight: 600, color: '#1e293b', display: 'block', marginBottom: '0.5rem' }}>
                                         {settingLabels[setting.setting_key]}
                                     </label>
-                                    {setting.setting_key === 'footer_description' || setting.setting_key === 'address' ? (
+                                    {setting.setting_key === 'shop_banner_is_active' ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={setting.setting_value === 'true'}
+                                                onChange={(e) => handleChange(setting.setting_key, e.target.checked ? 'true' : 'false')}
+                                                style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                            />
+                                            <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                                                ติ๊กเพื่อแสดงผลแบนเนอร์บนหน้าแรก
+                                            </span>
+                                        </div>
+                                    ) : setting.setting_key === 'footer_description' || setting.setting_key === 'address' || setting.setting_key === 'shop_banner_subtitle' ? (
                                         <textarea
                                             value={setting.setting_value || ''}
                                             onChange={(e) => handleChange(setting.setting_key, e.target.value)}
