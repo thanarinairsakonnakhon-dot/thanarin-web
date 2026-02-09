@@ -38,9 +38,9 @@ export default function Footer() {
     const services = settings.services_list.split(',').map(s => s.trim()).filter(s => s);
 
     return (
-        <footer style={{ background: '#0F172A', color: 'white', padding: '5rem 0 2rem' }}>
+        <footer className="footer-section">
             <div className="container">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '4rem', marginBottom: '4rem' }}>
+                <div className="footer-grid">
                     <div>
                         <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1.5rem' }}>TH.AIR</h3>
                         <p style={{ color: '#94A3B8', lineHeight: 1.6 }}>
