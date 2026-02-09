@@ -57,31 +57,48 @@ function BookingContent() {
     // Auto-fill from profile & metadata
     useEffect(() => {
         if (user) {
+            console.log("Booking: User identified, starting auto-fill...", user);
+
             // Priority 1: User Metadata (Always available if signed up)
-            if (user.user_metadata?.full_name) {
-                setFormData(prev => ({ ...prev, name: prev.name || user.user_metadata.full_name }));
-            }
+            setFormData(prev => ({
+                ...prev,
+                name: prev.name || user.user_metadata?.full_name || user.user_metadata?.display_name || '',
+                phone: prev.phone || user.user_metadata?.phone || '',
+            }));
 
             // Priority 2: In-depth Profile from database
             const fetchProfile = async () => {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
 
-                if (data) {
-                    setFormData(prev => ({
-                        ...prev,
-                        name: data.full_name || prev.name || user.user_metadata?.full_name || '',
-                        phone: data.phone || prev.phone,
-                        addressDetails: {
-                            ...prev.addressDetails,
-                            ...(data.address_details || {}),
-                            lat: data.location_lat || prev.addressDetails.lat,
-                            lng: data.location_lng || prev.addressDetails.lng
-                        }
-                    }));
+                    if (error && error.code !== 'PGRST116') {
+                        console.error('Error fetching profile:', error);
+                    }
+
+                    if (data) {
+                        console.log("Booking: Profile data found:", data);
+                        setFormData(prev => ({
+                            ...prev,
+                            name: data.full_name || prev.name,
+                            phone: data.phone || prev.phone,
+                            addressDetails: {
+                                ...prev.addressDetails,
+                                // Spread existing details from DB
+                                ...(data.address_details || {}),
+                                // Explicitly set lat/lng if available at top level
+                                lat: data.location_lat !== undefined ? data.location_lat : prev.addressDetails.lat,
+                                lng: data.location_lng !== undefined ? data.location_lng : prev.addressDetails.lng
+                            }
+                        }));
+                    } else {
+                        console.log("Booking: No profile record found for this user ID.");
+                    }
+                } catch (err) {
+                    console.error('Booking: Unexpected error fetching profile:', err);
                 }
             };
             fetchProfile();
