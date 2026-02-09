@@ -155,9 +155,43 @@ export default function AdminSettings() {
                                         </p>
                                     )}
                                     {setting.setting_key === 'map_iframe_url' && (
-                                        <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                                            * นำโค้ดจาก Google Maps (Share {'->'} Embed a map) มาเฉพาะส่วน src="..." หรือวางทั้งกิฟต์ก็ได้ระบบจะพยายามล้างให้ครับ
-                                        </p>
+                                        <div style={{ marginTop: '0.5rem' }}>
+                                            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem' }}>
+                                                * นำโค้ดจาก Google Maps (Share {'->'} Embed a map) มาวางได้เลยครับ (ระบบจะดึงเฉพาะลิงก์ออกมาให้เอง)
+                                            </p>
+
+                                            {/* Map Preview Area */}
+                                            {setting.setting_value && (
+                                                <div style={{
+                                                    marginTop: '1rem',
+                                                    background: '#f1f5f9',
+                                                    borderRadius: '12px',
+                                                    padding: '1rem',
+                                                    border: '1px dashed #cbd5e1'
+                                                }}>
+                                                    <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.5rem' }}>📣 ตัวอย่างการแสดงผล:</p>
+                                                    <div style={{ height: '200px', borderRadius: '8px', overflow: 'hidden', background: '#e2e8f0' }}>
+                                                        <iframe
+                                                            src={(() => {
+                                                                const input = setting.setting_value;
+                                                                if (!input) return '';
+                                                                const match = input.match(/src=["']([^"']+)["']/);
+                                                                return match ? match[1] : input;
+                                                            })()}
+                                                            width="100%"
+                                                            height="100%"
+                                                            style={{ border: 0 }}
+                                                            loading="lazy"
+                                                        ></iframe>
+                                                    </div>
+                                                    {!setting.setting_value.includes('google.com/maps/embed') && !setting.setting_value.includes('src=') && (
+                                                        <p style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+                                                            ⚠️ คำแนะนำ: ลิงก์ที่วางอาจไม่ใช่ "ลิงก์สำหรับฝัง (Embed)" กรุณาใช้ปุ่ม "ฝังแผนที่" ใน Google Maps ครับ
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             ))}

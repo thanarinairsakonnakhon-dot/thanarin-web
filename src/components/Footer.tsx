@@ -66,7 +66,12 @@ export default function Footer() {
                     {settings.map_iframe_url && (
                         <div className="footer-map-container" style={{ gridColumn: 'span 1', height: '150px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #1E293B' }}>
                             <iframe
-                                src={settings.map_iframe_url.includes('src="') ? settings.map_iframe_url.split('src="')[1].split('"')[0] : settings.map_iframe_url}
+                                src={(() => {
+                                    const input = settings.map_iframe_url;
+                                    if (!input) return '';
+                                    const match = input.match(/src=["']([^"']+)["']/);
+                                    return match ? match[1] : input;
+                                })()}
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
