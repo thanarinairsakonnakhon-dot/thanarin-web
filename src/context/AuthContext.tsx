@@ -6,6 +6,7 @@ import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
     user: User | null;
+    profile: any | null;
     session: Session | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -16,27 +17,48 @@ interface AuthContextType {
     resetPassword: (email: string) => Promise<{ error: string | null }>;
     updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<any | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const fetchProfile = async (userId: string) => {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (!error && data) {
+            setProfile(data);
+        } else {
+            setProfile(null);
+        }
+    };
 
     useEffect(() => {
         // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
-            setUser(session?.user ?? null);
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+            if (currentUser) fetchProfile(currentUser.id);
             setIsLoading(false);
         });
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
-            setUser(session?.user ?? null);
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+            if (currentUser) fetchProfile(currentUser.id);
+            else setProfile(null);
             setIsLoading(false);
         });
 
@@ -125,9 +147,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
     };
 
+    const refreshProfile = async () => {
+        if (user) await fetchProfile(user.id);
+    };
+
     return (
         <AuthContext.Provider value={{
-            user, session, isLoading, login, signUp, sendEmailOTP, verifyOTP, loginWithGoogle, resetPassword, updatePassword, logout
+            user, profile, session, isLoading, login, signUp, sendEmailOTP, verifyOTP, loginWithGoogle, resetPassword, updatePassword, logout, refreshProfile
         }}>
             {children}
         </AuthContext.Provider>

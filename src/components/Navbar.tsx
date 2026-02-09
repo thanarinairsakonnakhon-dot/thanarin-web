@@ -11,7 +11,7 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(0);
     const { itemCount } = useCart();
-    const { user, logout } = useAuth();
+    const { user, profile, logout } = useAuth();
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -204,10 +204,10 @@ export default function Navbar() {
                                             className="nav-profile-btn"
                                         >
                                             <div style={{ width: '32px', height: '32px', background: 'var(--color-primary-blue)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>
-                                                {user.email?.charAt(0).toUpperCase()}
+                                                {(profile?.full_name || user.email)?.charAt(0).toUpperCase()}
                                             </div>
                                             <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                                {profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}
                                             </span>
                                         </button>
                                     ) : (
@@ -440,11 +440,11 @@ export default function Navbar() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', background: '#eff6ff', borderRadius: '12px' }}>
                                         <div style={{ width: '40px', height: '40px', background: 'var(--color-primary-blue)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>
-                                            {user.email?.charAt(0).toUpperCase()}
+                                            {(profile?.full_name || user.email)?.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
                                             <div style={{ fontWeight: 600, fontSize: '1rem', color: '#1e293b' }}>
-                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                                {profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0]}
                                             </div>
                                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{user.email}</div>
                                         </div>

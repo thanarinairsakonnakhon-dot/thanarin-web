@@ -486,6 +486,16 @@ export default function AdminBookingsPage() {
                                                 </a>
                                             )}
                                         </div>
+
+                                        {/* Notes Section (AC Model / Product Context) */}
+                                        {editingBooking.note && (
+                                            <div style={{ marginTop: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                                <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>📝 หมายเหตุ / รุ่นสินค้า</div>
+                                                <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 500 }}>
+                                                    {editingBooking.note}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div>
