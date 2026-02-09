@@ -257,11 +257,15 @@ export default function ProductsPage() {
                                             )}
                                         </div>
 
-                                        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
-                                                ฿{p.price.toLocaleString()}
+                                        <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>ราคาปกติ</div>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-primary-blue)' }}>
+                                                    ฿{p.price.toLocaleString()}
+                                                </div>
                                             </div>
-                                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -269,15 +273,32 @@ export default function ProductsPage() {
                                                     }}
                                                     className="btn-wow"
                                                     style={{
-                                                        padding: '0.4rem 0.8rem',
+                                                        padding: '0.6rem 0.4rem',
                                                         fontSize: '0.85rem',
                                                         background: 'var(--color-action-orange)',
-                                                        boxShadow: '0 4px 8px rgba(249, 115, 22, 0.2)'
+                                                        boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.2)',
+                                                        borderRadius: '10px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '4px'
                                                     }}
                                                 >
-                                                    🛒 ลงรถเข็น
+                                                    <span style={{ fontSize: '1rem' }}>🛒</span> ลงรถเข็น
                                                 </button>
-                                                <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                                                <Link
+                                                    href={`/products/${p.id}`}
+                                                    className="btn-wow"
+                                                    style={{
+                                                        padding: '0.6rem 0.4rem',
+                                                        fontSize: '0.85rem',
+                                                        borderRadius: '10px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        textDecoration: 'none'
+                                                    }}
+                                                >
                                                     รายละเอียด
                                                 </Link>
                                             </div>
