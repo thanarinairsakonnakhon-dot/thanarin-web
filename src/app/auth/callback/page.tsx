@@ -9,12 +9,27 @@ export default function AuthCallbackPage() {
 
     useEffect(() => {
         const handleCallback = async () => {
-            const { error } = await supabase.auth.getSession();
+            const { data: { session }, error } = await supabase.auth.getSession();
             if (error) {
                 console.error('Auth error:', error.message);
                 router.push('/login?error=' + encodeURIComponent(error.message));
+            } else if (session?.user) {
+                const user = session.user;
+                // Sync profile data from Google metadata
+                const { error: profileError } = await supabase.from('profiles').upsert([{
+                    id: user.id,
+                    full_name: user.user_metadata.full_name || user.user_metadata.name || 'User',
+                    email: user.email,
+                    updated_at: new Date().toISOString()
+                }]);
+
+                if (profileError) {
+                    console.error('Profile sync error:', profileError);
+                }
+
+                router.push('/products');
             } else {
-                router.push('/products'); // Or your preferred redirect
+                router.push('/login');
             }
         };
 
