@@ -1,0 +1,82 @@
+# Tasks
+
+- [x] Audit project structure and database schema <!-- id: 0 -->
+- [x] Deploy to GitHub <!-- id: 1 -->
+- [x] Deploy to Supabase (Create Instructions) <!-- id: 2 -->
+- [x] Deploy to Vercel (Create Instructions) <!-- id: 3 -->
+- [x] Fix missing data in product detail page (Image, Features, SEER) <!-- id: 6 -->
+- [x] Fix missing images in product listing page <!-- id: 10 -->
+- [x] Verify database content for SEER and Features <!-- id: 7 -->
+- [x] Add mock data fallback for empty fields <!-- id: 8 -->
+- [x] Fix Admin data persistence for SEER and Features <!-- id: 11 -->
+- [x] Add cache revalidation for product detail page <!-- id: 12 -->
+- [x] Restore BTU Calculator link in Navbar <!-- id: 15 -->
+- [x] Add BTU Calculator card to Homepage <!-- id: 13 -->
+- [x] Implement editable Footer settings in Admin panel <!-- id: 17 -->
+    - [x] Create dynamic `Footer.tsx` component <!-- id: 18 -->
+    - [x] Update `AdminSettings` page with footer labels <!-- id: 19 -->
+    - [x] Integrate Footer into Homepage, Products, and Prices pages <!-- id: 20 -->
+- [x] Implement hoverable Mega Menu for Portfolio <!-- id: 21 -->
+    - [x] Redesign `Navbar.tsx` with Thumbnail Cards and "Learn More" buttons <!-- id: 22 -->
+    - [x] Fix CSS "upside down" bug by targeting specific caret icon <!-- id: 24 -->
+    - [x] Optimize Mega Menu layout for different screen sizes <!-- id: 23 -->
+- [x] Integrate "Spare Parts" and "Repair Work" into main navigation <!-- id: 25 -->
+- [x] Fix Portfolio Mega Menu filtering bug (Reactive URL params) <!-- id: 26 -->
+- [x] Fix Promotion Banner date filtering logic <!-- id: 27 -->
+- [x] Create FIX_MISSING_TABLES.sql for Supabase schema errors <!-- id: 28 -->
+- [x] Fix Review Admin page (Missing table handling & feedback) <!-- id: 29 -->
+- [x] Implement Real-time Rating Summary on Home Page <!-- id: 30 -->
+- [x] Enlarge Hero Slider component (Height 450px, Premium Layout) <!-- id: 31 -->
+- [x] Convert Hero Slider to static image showcase (Remove links) <!-- id: 32 -->
+- [~] Add Logo to Hero Slider header (Removed per user request) <!-- id: 33 -->
+- [x] Remove "Our Works & Updates" text from Hero Slider <!-- id: 34 -->
+- [x] Remove "Highlight" text from Hero Slider (Header removed) <!-- id: 35 -->
+- [x] Reduce spacing between Hero Slider and Promotion Banner <!-- id: 36 -->
+- [x] Adjust Footer settings in Admin Panel <!-- id: 37 -->
+    - [x] Design database schema for Footer settings (Handled dynamically)
+    - [x] Create Admin page for Footer editing
+    - [x] Update Footer component to fetch data dynamically
+- [x] Refine Admin Menu: Rename "AC Prices" to "Manage Brands" <!-- id: 38 -->
+    - [x] Rename menu item in Sidebar
+    - [x] Update page title and description in `page.tsx`
+    - [x] Remove/Hide legacy Series/Model management references
+- [x] Add Image Upload to Reviews <!-- id: 39 -->
+    - [x] Create SQL script to add `review_image_url` column
+    - [x] Update Admin Reviews page to support image upload
+    - [x] Update Testimonials component to display review images
+- [x] Refine Chat Notification Logic <!-- id: 41 -->
+    - [x] Add `last_message_sender` column to `chat_sessions` table (via SQL script)
+    - [x] Update ChatWidget to set `last_message_sender = 'user'`
+    - [x] Update Admin Chat Page to set `last_message_sender = 'admin'`
+    - [x] Update Admin Dashboard to count only `last_message_sender = 'user'`
+- [x] Display Brand Images in Price List <!-- id: 42 -->
+    - [x] Update `src/app/prices/page.tsx` to handle case-insensitive brand matching and robust logo fetching
+- [x] Update documentation for GitHub Actions and Supabase Integration <!-- id: 9 -->
+- [x] Add Product Details with Auto-Formatting <!-- id: 43 -->
+    - [x] Create SQL script to add `description` column to `products` table
+    - [x] Update `Product` interface in `src/types/index.ts`
+    - [x] Update `src/app/admin/products/page.tsx` with "Smart Paste" textarea
+    - [x] Update `src/app/products/[id]/page.tsx` to render formatted description
+- [x] Add Inverter/Fix-Speed selection to Admin Product Form <!-- id: 49 -->
+- [x] Implement Admin Manual Scheduling (Month View / Full Calendar) <!-- id: 50 -->
+- [x] Implement Booking System <!-- id: 44 -->
+    - [x] Create `bookings` table SQL script <!-- id: 45 -->
+    - [x] Update `AdminContext` with booking logic <!-- id: 46 -->
+    - [x] Create Admin Bookings page (`src/app/admin/bookings/page.tsx`) <!-- id: 47 -->
+    - [x] Connect Client Booking page (`src/app/booking/page.tsx`) to Supabase <!-- id: 48 -->
+- [x] Enhance Customer Booking Selection UI (Stamp & Summary) <!-- id: 51 -->
+- [x] Implement Daily Technician Summary Report <!-- id: 52 -->
+    - [x] Add "Daily Summary" button to Admin Bookings Page
+    - [x] Create Summary Modal with Date Picker
+    - [x] Implement grouping logic by Technician
+    - [x] Design print-friendly layout
+
+- [x] Debug Unverified Chat Sessions <!-- id: 53 -->
+    - [x] Investigate `src/context/ChatContext.tsx` and admin logic
+    - [x] Ensure only active/valid sessions are displayed to Admin
+    - [x] Fix "Guest" session creation logic if necessary
+
+- [x] Enable Real-time Dashboard Updates <!-- id: 54 -->
+    - [x] Subscribe to `chat_messages` inserts in Admin Dashboard (`admin/page.tsx` or layout)
+    - [x] Update 'Unread Chats' count dynamically
+    - [x] Add browser notification or toast when new message arrives

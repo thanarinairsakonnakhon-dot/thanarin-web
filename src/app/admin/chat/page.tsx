@@ -41,6 +41,8 @@ export default function AdminChatPage() {
             const { data } = await supabase
                 .from('chat_sessions')
                 .select('*')
+                .neq('last_message', '')  // Filter out empty messages
+                .not('last_message', 'is', null) // Filter out null messages
                 .order('last_message_at', { ascending: false });
 
             if (data) {

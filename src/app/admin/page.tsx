@@ -39,6 +39,57 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         loadDashboardData();
+
+        // Real-time subscription for Bookings
+        const bookingChannel = supabase
+            .channel('dashboard_bookings')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+                loadDashboardData();
+            })
+            .subscribe();
+
+        // Real-time subscription for Chat
+        const chatChannel = supabase
+            .channel('dashboard_chat')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, async (payload) => {
+                const newMessage = payload.new as any;
+                if (newMessage.sender === 'user') {
+                    // Play notification sound
+                    try {
+                        const audio = new Audio('/notification.mp3'); // Assuming you might have one, or just use browser API
+                        audio.play().catch(() => { }); // Ignore auto-play errors
+                    } catch (e) { }
+
+                    // Show browser notification
+                    if (Notification.permission === 'granted') {
+                        new Notification('ข้อความใหม่จากลูกค้า', {
+                            body: newMessage.message || 'ส่งรูปภาพ/สติ๊กเกอร์',
+                            icon: '/icons/chat-icon.png' // Optional
+                        });
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                new Notification('ข้อความใหม่จากลูกค้า', {
+                                    body: newMessage.message || 'ส่งรูปภาพ/สติ๊กเกอร์'
+                                });
+                            }
+                        });
+                    }
+
+                    loadDashboardData();
+                }
+            })
+            .subscribe();
+
+        // Request notification permission on mount
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+
+        return () => {
+            supabase.removeChannel(bookingChannel);
+            supabase.removeChannel(chatChannel);
+        };
     }, []);
 
     const loadDashboardData = async () => {
