@@ -6,8 +6,10 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
+import { useCart } from '@/context/CartContext';
 
 export default function ProductsPage() {
+    const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedBrand, setSelectedBrand] = useState<string>('All');
@@ -259,9 +261,26 @@ export default function ProductsPage() {
                                             <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
                                                 ฿{p.price.toLocaleString()}
                                             </div>
-                                            <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-                                                ดูรายละเอียด
-                                            </Link>
+                                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        addToCart(p);
+                                                    }}
+                                                    className="btn-wow"
+                                                    style={{
+                                                        padding: '0.4rem 0.8rem',
+                                                        fontSize: '0.85rem',
+                                                        background: 'var(--color-action-orange)',
+                                                        boxShadow: '0 4px 8px rgba(249, 115, 22, 0.2)'
+                                                    }}
+                                                >
+                                                    🛒 ลงรถเข็น
+                                                </button>
+                                                <Link href={`/products/${p.id}`} className="btn-wow" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                                                    รายละเอียด
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

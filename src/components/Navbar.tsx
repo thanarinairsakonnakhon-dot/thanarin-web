@@ -3,10 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useCart } from '@/context/CartContext';
+import CartDrawer from './CartDrawer';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(0);
+    const { itemCount } = useCart();
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     // Check window width on client side
     useEffect(() => {
@@ -175,6 +179,44 @@ export default function Navbar() {
                             </nav>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                {/* Shopping Cart Icon */}
+                                <button
+                                    onClick={() => setIsCartOpen(true)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        position: 'relative',
+                                        padding: '10px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'var(--color-primary-blue)'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '1.5rem' }}>🛒</span>
+                                    {itemCount > 0 && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: '2px',
+                                            right: '2px',
+                                            background: '#ef4444',
+                                            color: 'white',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 700,
+                                            width: '18px',
+                                            height: '18px',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                        }}>
+                                            {itemCount}
+                                        </span>
+                                    )}
+                                </button>
+
                                 <Link href="/booking" className="btn-wow" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', textDecoration: 'none' }}>
                                     จองคิวช่าง
                                 </Link>
@@ -226,6 +268,42 @@ export default function Navbar() {
                             }}></span>
                         </button>
                     )}
+
+                    {/* Mobile Cart Button */}
+                    <button
+                        onClick={() => setIsCartOpen(true)}
+                        style={{
+                            position: 'absolute',
+                            right: '70px',
+                            top: '20px',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '10px',
+                            display: isMobile ? 'block' : 'none'
+                        }}
+                    >
+                        <span style={{ fontSize: '1.4rem' }}>🛒</span>
+                        {itemCount > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '5px',
+                                right: '5px',
+                                background: '#ef4444',
+                                color: 'white',
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                {itemCount}
+                            </span>
+                        )}
+                    </button>
                 </div>
             </header>
 
@@ -432,6 +510,12 @@ export default function Navbar() {
                     </nav>
                 </div>
             )}
+
+            {/* Cart Drawer */}
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+            />
         </>
     );
 }

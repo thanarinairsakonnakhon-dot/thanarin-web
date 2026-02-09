@@ -85,6 +85,7 @@ function AdminLayoutContent({
         { name: 'คลังสินค้า', path: '/admin/inventory', icon: '🏭' },
         { name: 'จัดการแบรนด์', path: '/admin/ac-prices', icon: '💰' },
         { name: 'รายการจอง', path: '/admin/bookings', icon: '📅' },
+        { name: 'รายการสั่งซื้อ', path: '/admin/orders', icon: '🛍️' },
         { name: 'โปรโมชั่น', path: '/admin/promotions', icon: '🎉' },
         { name: 'รีวิวลูกค้า', path: '/admin/reviews', icon: '⭐' },
         { name: 'แชทลูกค้า', path: '/admin/chat', icon: '💬' },
