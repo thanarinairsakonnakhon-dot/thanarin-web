@@ -5,10 +5,14 @@ import { useCart } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
     const { items, subtotal, clearCart } = useCart();
+    const { user, isLoading: authLoading } = useAuth();
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState(false);
 
@@ -29,6 +33,7 @@ export default function CheckoutPage() {
             const { data: orderData, error: orderError } = await supabase
                 .from('orders')
                 .insert([{
+                    user_id: user?.id,
                     customer_name: customerInfo.name,
                     customer_phone: customerInfo.phone,
                     customer_address: customerInfo.address,

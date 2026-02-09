@@ -9,6 +9,9 @@ interface AuthContextType {
     session: Session | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ error: string | null }>;
+    signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null }>;
+    resetPassword: (email: string) => Promise<{ error: string | null }>;
+    updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
 }
 
@@ -43,9 +46,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             password,
         });
 
-        if (error) {
-            return { error: error.message };
-        }
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
+    const signUp = async (email: string, password: string, displayName: string) => {
+        const { error, data } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: displayName,
+                }
+            }
+        });
+
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
+    const resetPassword = async (email: string) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) return { error: error.message };
+        return { error: null };
+    };
+
+    const updatePassword = async (password: string) => {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) return { error: error.message };
         return { error: null };
     };
 
@@ -54,7 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, isLoading, login, logout }}>
+        <AuthContext.Provider value={{
+            user, session, isLoading, login, signUp, resetPassword, updatePassword, logout
+        }}>
             {children}
         </AuthContext.Provider>
     );

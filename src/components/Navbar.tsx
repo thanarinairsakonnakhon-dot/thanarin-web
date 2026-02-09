@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import CartDrawer from './CartDrawer';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [windowWidth, setWindowWidth] = useState(0);
     const { itemCount } = useCart();
+    const { user, logout } = useAuth();
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     // Check window width on client side
     useEffect(() => {
@@ -178,7 +181,96 @@ export default function Navbar() {
                                 </div>
                             </nav>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                {/* User Profile / Login */}
+                                <div style={{ position: 'relative' }}>
+                                    {user ? (
+                                        <button
+                                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                padding: '8px 12px',
+                                                borderRadius: '50px',
+                                                color: 'var(--color-text-main)',
+                                                fontWeight: 600,
+                                                fontSize: '0.9rem',
+                                                transition: 'background 0.2s'
+                                            }}
+                                            className="nav-profile-btn"
+                                        >
+                                            <div style={{ width: '32px', height: '32px', background: 'var(--color-primary-blue)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>
+                                                {user.email?.charAt(0).toUpperCase()}
+                                            </div>
+                                            <span style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                            </span>
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href="/login"
+                                            style={{
+                                                fontSize: '0.9rem',
+                                                fontWeight: 600,
+                                                color: 'var(--color-primary-blue)',
+                                                textDecoration: 'none',
+                                                padding: '8px 16px',
+                                                borderRadius: '50px',
+                                                background: '#eff6ff'
+                                            }}
+                                        >
+                                            เข้าสู่ระบบ
+                                        </Link>
+                                    )}
+
+                                    {isProfileOpen && user && (
+                                        <>
+                                            <div
+                                                onClick={() => setIsProfileOpen(false)}
+                                                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90 }}
+                                            />
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '100%',
+                                                right: 0,
+                                                width: '200px',
+                                                background: 'white',
+                                                borderRadius: '16px',
+                                                boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                                                padding: '0.5rem',
+                                                marginTop: '12px',
+                                                zIndex: 100,
+                                                border: '1px solid #f1f5f9',
+                                                animation: 'fadeInUp 0.2s ease-out'
+                                            }}>
+                                                <Link
+                                                    href="/history"
+                                                    onClick={() => setIsProfileOpen(false)}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.8rem 1rem', textDecoration: 'none', color: '#1e293b', fontSize: '0.9rem', borderRadius: '10px', transition: 'background 0.2s' }}
+                                                    className="dropdown-item"
+                                                >
+                                                    <span>📋</span> ประวัติการสั่งซื้อ
+                                                </Link>
+                                                <div style={{ height: '1px', background: '#f1f5f9', margin: '0.4rem 0.5rem' }} />
+                                                <button
+                                                    onClick={() => {
+                                                        logout();
+                                                        setIsProfileOpen(false);
+                                                    }}
+                                                    style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '0.8rem 1rem', cursor: 'pointer', color: '#ef4444', fontSize: '0.9rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                                    className="dropdown-item logout"
+                                                >
+                                                    <span>🚪</span> ออกจากระบบ
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
                                 {/* Shopping Cart Icon */}
                                 <button
                                     onClick={() => setIsCartOpen(true)}
@@ -194,7 +286,7 @@ export default function Navbar() {
                                         color: 'var(--color-primary-blue)'
                                     }}
                                 >
-                                    <span style={{ fontSize: '1.5rem' }}>🛒</span>
+                                    <span style={{ fontSize: '1.4rem' }}>🛒</span>
                                     {itemCount > 0 && (
                                         <span style={{
                                             position: 'absolute',
@@ -210,14 +302,14 @@ export default function Navbar() {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                            boxShadow: '0 2px 4px rgba(239, 68, 68, 0.3)'
                                         }}>
                                             {itemCount}
                                         </span>
                                     )}
                                 </button>
 
-                                <Link href="/booking" className="btn-wow" style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem', textDecoration: 'none' }}>
+                                <Link href="/booking" className="btn-wow" style={{ padding: '0.6rem 1.25rem', fontSize: '0.85rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                                     จองคิวช่าง
                                 </Link>
                             </div>
