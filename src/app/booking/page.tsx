@@ -12,7 +12,7 @@ const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00
 function BookingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { user } = useAuth();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]); // Format: "YYYY-MM-DD-HH:mm"
@@ -42,14 +42,27 @@ function BookingContent() {
         { id: 4, title: 'ยืนยัน' }
     ];
 
+    // Auth Guard: Redirect if not logged in
+    useEffect(() => {
+        if (!isAuthLoading && !user) {
+            router.push(`/login?redirect=/booking&service=${formData.serviceType}${searchParams.get('model') ? `&model=${searchParams.get('model')}` : ''}`);
+        }
+    }, [user, isAuthLoading, router]);
+
     // Fetch existing bookings to determine availability
     useEffect(() => {
         fetchBookedSlots();
     }, []);
 
-    // Auto-fill from profile
+    // Auto-fill from profile & metadata
     useEffect(() => {
         if (user) {
+            // Priority 1: User Metadata (Always available if signed up)
+            if (user.user_metadata?.full_name) {
+                setFormData(prev => ({ ...prev, name: prev.name || user.user_metadata.full_name }));
+            }
+
+            // Priority 2: In-depth Profile from database
             const fetchProfile = async () => {
                 const { data, error } = await supabase
                     .from('profiles')
@@ -60,7 +73,7 @@ function BookingContent() {
                 if (data) {
                     setFormData(prev => ({
                         ...prev,
-                        name: data.full_name || prev.name,
+                        name: data.full_name || prev.name || user.user_metadata?.full_name || '',
                         phone: data.phone || prev.phone,
                         addressDetails: {
                             ...prev.addressDetails,
