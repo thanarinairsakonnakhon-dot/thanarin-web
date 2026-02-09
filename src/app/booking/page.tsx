@@ -503,14 +503,14 @@ export default function BookingPage() {
                         )}
 
                         {/* Navigation Buttons */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3rem', paddingBottom: step === 2 ? '80px' : '0' }}>
                             {step > 1 && (
                                 <button onClick={prevStep} className="btn" style={{ background: 'transparent', border: '1px solid #cbd5e1' }}>
                                     ← ย้อนกลับ
                                 </button>
                             )}
                             <div style={{ flex: 1 }}></div>
-                            {step < 4 && (
+                            {step < 4 && !(step === 2 && formData.selectedDate && formData.selectedTime) && (
                                 <button onClick={nextStep} className="btn-wow">
                                     ถัดไป →
                                 </button>
