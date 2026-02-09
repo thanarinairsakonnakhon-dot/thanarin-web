@@ -128,7 +128,7 @@ export default function Home() {
                                 background: 'white',
                                 color: '#1e293b'
                             }}>
-                                จองคิวล้างแอร์ →
+                                จองคิวช่าง →
                             </Link>
 
                             {/* Decorative background element */}
