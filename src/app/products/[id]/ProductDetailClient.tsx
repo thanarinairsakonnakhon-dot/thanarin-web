@@ -19,7 +19,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     const isSelected = isInCompare(product.id);
 
     const handleBookNow = () => {
-        const bookingUrl = `/booking?service=installation&model=${encodeURIComponent(`${product.brand} - ${product.name}`)}`;
+        const bookingUrl = `/booking?service=installation&model=${encodeURIComponent(`${product.brand} - ${product.name}`)}&step=2`;
         if (user) {
             router.push(bookingUrl);
         } else {

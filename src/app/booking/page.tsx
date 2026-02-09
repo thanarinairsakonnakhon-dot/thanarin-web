@@ -13,7 +13,7 @@ function BookingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { user, isLoading: isAuthLoading } = useAuth();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(Number(searchParams.get('step')) || 1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]); // Format: "YYYY-MM-DD-HH:mm"
 
