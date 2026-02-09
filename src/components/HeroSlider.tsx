@@ -108,14 +108,13 @@ export default function HeroSlider() {
 
     return (
         <section style={{
-            paddingTop: '120px',
+            paddingTop: '1rem',
             paddingBottom: '1rem',
             background: '#F8FAFC'
         }}>
             <div className="container" style={{ position: 'relative' }}>
                 {/* Slider Header */}
-                {/* Slider Header */}
-                <div style={{ marginBottom: '2.5rem' }}></div>
+                <div style={{ marginBottom: '1rem' }}></div>
 
                 {/* Slider Container */}
                 <div

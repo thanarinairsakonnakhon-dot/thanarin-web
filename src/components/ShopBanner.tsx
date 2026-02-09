@@ -48,11 +48,11 @@ export default function ShopBanner() {
     if (isLoading || !banner) return null;
 
     return (
-        <section style={{ padding: '4rem 0' }}>
+        <section style={{ padding: '80px 0 1rem 0' }}>
             <div className="container">
                 <div style={{
                     position: 'relative',
-                    height: '400px',
+                    height: '320px',
                     borderRadius: '32px',
                     overflow: 'hidden',
                     boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
