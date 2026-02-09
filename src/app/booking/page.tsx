@@ -210,20 +210,34 @@ function BookingContent() {
                 return;
             }
 
-            const { error } = await supabase.from('bookings').insert([{
-                service_type: formData.serviceType,
-                date: formData.selectedDate,
-                time: formData.selectedTime,
-                customer_name: formData.name,
-                customer_phone: formData.phone,
-                address_details: formData.addressDetails,
-                location_lat: formData.addressDetails.lat,
-                location_lng: formData.addressDetails.lng,
-                note: formData.note,
-                status: 'pending'
-            }]);
+            // Promise.all to handle both booking and profile update
+            const [bookingResult, profileResult] = await Promise.all([
+                supabase.from('bookings').insert([{
+                    service_type: formData.serviceType,
+                    date: formData.selectedDate,
+                    time: formData.selectedTime,
+                    customer_name: formData.name,
+                    customer_phone: formData.phone,
+                    address_details: formData.addressDetails,
+                    location_lat: formData.addressDetails.lat,
+                    location_lng: formData.addressDetails.lng,
+                    note: formData.note,
+                    status: 'pending',
+                    user_id: user?.id
+                }]),
+                user ? supabase.from('profiles').upsert([{
+                    id: user.id,
+                    full_name: formData.name,
+                    phone: formData.phone,
+                    address_details: formData.addressDetails,
+                    location_lat: formData.addressDetails.lat,
+                    location_lng: formData.addressDetails.lng,
+                    updated_at: new Date().toISOString()
+                }]) : Promise.resolve({ error: null })
+            ]);
 
-            if (error) throw error;
+            if (bookingResult.error) throw bookingResult.error;
+            if (profileResult.error) console.error('Error updating profile:', profileResult.error);
 
             alert('จองคิวสำเร็จ! 🎉 เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันภายใน 15 นาที');
             router.push('/'); // Redirect home
