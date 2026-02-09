@@ -658,3 +658,43 @@ h6 {
     opacity: 1;
   }
 }
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .summary-print-area,
+  .summary-print-area * {
+    visibility: visible;
+  }
+
+  .summary-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 2rem;
+  }
+
+  /* Hide modal controls during print */
+  .modal-content button,
+  .modal-content input,
+  .modal-content h2,
+  .modal-overlay {
+    background: white;
+    position: static;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: block;
+  }
+
+  /* Ensure the modal overlay doesn't block or create gray background */
+  .modal-overlay {
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+}
