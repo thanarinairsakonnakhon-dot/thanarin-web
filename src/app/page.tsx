@@ -12,7 +12,7 @@ import ShopBanner from '@/components/ShopBanner';
 export default function Home() {
     return (
         <main style={{ minHeight: '100vh', background: '#F8FAFC' }}>
-            <Navbar />
+            <ShopBanner />
 
             <HeroSlider />
 
@@ -162,8 +162,6 @@ export default function Home() {
 
             {/* Service Badges */}
             <ServiceBadges />
-
-            <ShopBanner />
 
             {/* Testimonials Section */}
             <Testimonials />
