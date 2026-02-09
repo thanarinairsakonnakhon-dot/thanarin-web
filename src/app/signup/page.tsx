@@ -16,15 +16,6 @@ export default function SignupPage() {
 
     // New Profile Fields
     const [phone, setPhone] = useState('');
-    const [addressDetails, setAddressDetails] = useState({
-        houseNo: '',
-        village: '',
-        subdistrict: '',
-        district: '',
-        province: '',
-        lat: null as number | null,
-        lng: null as number | null
-    });
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -32,35 +23,6 @@ export default function SignupPage() {
 
     const { signUp } = useAuth();
     const router = useRouter();
-
-    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setAddressDetails(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleGetLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setAddressDetails(prev => ({
-                        ...prev,
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    }));
-                    alert("ดึงพิกัดตำแหน่งเรียบร้อย! 📍");
-                },
-                (error) => {
-                    console.error("Error getting location:", error);
-                    alert("ไม่สามารถดึงตำแหน่งได้ กรุณาเปิด Location Service");
-                }
-            );
-        } else {
-            alert("Browser ของคุณไม่รองรับการระบุตำแหน่ง");
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,15 +50,12 @@ export default function SignupPage() {
             setError(result.error);
             setLoading(false);
         } else {
-            // Insert profile data
+            // Insert profile data (Basic info only)
             if (result.data?.user) {
                 const { error: profileError } = await supabase.from('profiles').insert([{
                     id: result.data.user.id,
                     full_name: name,
-                    phone: phone,
-                    address_details: addressDetails,
-                    location_lat: addressDetails.lat,
-                    location_lng: addressDetails.lng
+                    phone: phone
                 }]);
 
                 if (profileError) {
@@ -111,6 +70,7 @@ export default function SignupPage() {
     };
 
     if (success) {
+        // ... (Success view remains unchanged)
         return (
             <main style={{ minHeight: '100vh', background: '#F8FAFC' }}>
                 <Navbar />
@@ -137,7 +97,7 @@ export default function SignupPage() {
             <Navbar />
 
             <div className="container" style={{ paddingTop: '150px', paddingBottom: '100px', display: 'flex', justifyContent: 'center' }}>
-                <div className="card-glass" style={{ width: '100%', maxWidth: '600px', padding: '2.5rem' }}>
+                <div className="card-glass" style={{ width: '100%', maxWidth: '500px', padding: '2.5rem' }}>
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                         <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>สมัครสมาชิกใหม่</h1>
                         <p style={{ color: '#64748b' }}>ร่วมเป็นส่วนหนึ่งของ ธนรินทร์แอร์</p>
@@ -208,64 +168,6 @@ export default function SignupPage() {
                                 value={confirmPassword}
                                 onChange={e => setConfirmPassword(e.target.value)}
                             />
-                        </div>
-
-                        {/* Address Section */}
-                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem', marginTop: '0.5rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                                <label style={{ fontWeight: 600, fontSize: '0.9rem' }}>ที่อยู่สำหรับติดตั้ง (Optional)</label>
-                                <button
-                                    type="button"
-                                    onClick={handleGetLocation}
-                                    style={{
-                                        fontSize: '0.8rem', color: 'var(--color-primary-blue)',
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        display: 'flex', alignItems: 'center', gap: '0.3rem'
-                                    }}
-                                >
-                                    📍 ปักหมุดตำแหน่งปัจจุบัน
-                                </button>
-                            </div>
-
-                            <div style={{ display: 'grid', gap: '1rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                    <input
-                                        type="text" name="houseNo" placeholder="บ้านเลขที่"
-                                        value={addressDetails.houseNo} onChange={handleAddressChange}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    />
-                                    <input
-                                        type="text" name="village" placeholder="หมู่บ้าน / อาคาร"
-                                        value={addressDetails.village} onChange={handleAddressChange}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                                    <input
-                                        type="text" name="subdistrict" placeholder="ตำบล"
-                                        value={addressDetails.subdistrict} onChange={handleAddressChange}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    />
-                                    <input
-                                        type="text" name="district" placeholder="อำเภอ"
-                                        value={addressDetails.district} onChange={handleAddressChange}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    />
-                                    <input
-                                        type="text" name="province" placeholder="จังหวัด"
-                                        value={addressDetails.province} onChange={handleAddressChange}
-                                        style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                                    />
-                                </div>
-                                {addressDetails.lat && (
-                                    <div style={{
-                                        background: '#f0fdf4', color: '#166534', padding: '0.8rem',
-                                        borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
-                                    }}>
-                                        ✅ พิกัด GPS: {addressDetails.lat.toFixed(6)}, {addressDetails.lng?.toFixed(6)}
-                                    </div>
-                                )}
-                            </div>
                         </div>
 
                         <button
