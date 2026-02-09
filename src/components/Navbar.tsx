@@ -434,6 +434,49 @@ export default function Navbar() {
                     }}
                 >
                     <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {/* Mobile User Section */}
+                        <div style={{ padding: '0.5rem', marginBottom: '0.5rem', borderBottom: '1px solid #f1f5f9' }}>
+                            {user ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', background: '#eff6ff', borderRadius: '12px' }}>
+                                        <div style={{ width: '40px', height: '40px', background: 'var(--color-primary-blue)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>
+                                            {user.email?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontWeight: 600, fontSize: '1rem', color: '#1e293b' }}>
+                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                                            </div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{user.email}</div>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href="/history"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        style={{ padding: '1rem 1.25rem', fontWeight: 500, color: '#475569', borderRadius: '12px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1rem' }}
+                                    >
+                                        📋 ประวัติการสั่งซื้อ
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            logout();
+                                            setIsMenuOpen(false);
+                                        }}
+                                        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '1rem 1.25rem', cursor: 'pointer', color: '#ef4444', fontSize: '1rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '10px' }}
+                                    >
+                                        🚪 ออกจากระบบ
+                                    </button>
+                                </div>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    style={{ padding: '1rem 1.25rem', fontWeight: 600, color: 'var(--color-primary-blue)', borderRadius: '12px', background: '#eff6ff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', justifyContent: 'center' }}
+                                >
+                                    🔑 เข้าสู่ระบบลูกค้า
+                                </Link>
+                            )}
+                        </div>
+
                         <Link
                             href="/"
                             onClick={() => setIsMenuOpen(false)}
