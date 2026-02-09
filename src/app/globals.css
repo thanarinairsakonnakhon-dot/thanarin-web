@@ -383,14 +383,15 @@ h6 {
 /* Footer Mobile */
 @media (max-width: 768px) {
   .footer-section {
-    padding: 2rem 0 1.5rem !important;
+    padding: 1.5rem 0 1rem !important;
   }
 
   .footer-grid {
+    display: flex !important;
+    flex-direction: column;
     gap: 1.5rem !important;
     margin-bottom: 1.5rem !important;
     text-align: center;
-    grid-template-columns: 1fr !important;
   }
 
   .footer-grid>div {
@@ -400,21 +401,37 @@ h6 {
     gap: 0.5rem !important;
   }
 
-  /* Reduce font sizes */
+  /* Reduce font sizes aggressively */
   .footer-grid h3 {
-    font-size: 1.5rem !important;
-    margin-bottom: 0.5rem !important;
+    /* TH.AIR */
+    font-size: 1.25rem !important;
+    margin-bottom: 0.25rem !important;
   }
 
   .footer-grid h4 {
-    margin-bottom: 0.8rem !important;
-    font-size: 1.1rem !important;
+    /* Services/Contact Headers */
+    margin-bottom: 0.5rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
   }
 
   .footer-grid p,
-  .footer-grid li {
-    font-size: 0.9rem !important;
+  .footer-grid li,
+  .footer-grid a {
+    font-size: 0.8rem !important;
     line-height: 1.4 !important;
+  }
+
+  .footer-grid ul,
+  .footer-grid div[style*="flex-direction: column"] {
+    gap: 0.3rem !important;
+  }
+
+  /* Copyright Section */
+  .footer-section .container>div:last-child {
+    padding-top: 1rem !important;
+    font-size: 0.7rem !important;
+    margin-top: 0 !important;
   }
 }
 
