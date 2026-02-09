@@ -465,6 +465,33 @@ h6 {
     opacity: 1;
     visibility: visible;
   }
+
+  .admin-content {
+    padding: 1rem !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Dashboard Responsive */
+  .dashboard-stats-grid,
+  .dashboard-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .booking-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.5rem;
+  }
+
+  .booking-item .booking-meta {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
 }
 
 /* ==================== DESKTOP PRODUCT PAGE LAYOUT ==================== */
@@ -644,33 +671,6 @@ h6 {
   }
 }
 
-
-.admin-content {
-  padding: 1rem !important;
-}
-
-.desktop-only {
-  display: none !important;
-}
-
-/* Dashboard Responsive */
-.dashboard-stats-grid,
-.dashboard-content-grid {
-  grid-template-columns: 1fr !important;
-}
-
-.booking-item {
-  flex-direction: column;
-  align-items: flex-start !important;
-  gap: 0.5rem;
-}
-
-.booking-item .booking-meta {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
 
 
 /* Chat Widget Mobile */
