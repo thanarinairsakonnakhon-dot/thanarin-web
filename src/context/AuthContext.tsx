@@ -9,7 +9,7 @@ interface AuthContextType {
     session: Session | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ error: string | null }>;
-    signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null }>;
+    signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } | null }>;
     resetPassword: (email: string) => Promise<{ error: string | null }>;
     updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
@@ -61,8 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         });
 
-        if (error) return { error: error.message };
-        return { error: null };
+        if (error) return { error: error.message, data: null };
+        return { error: null, data };
     };
 
     const resetPassword = async (email: string) => {

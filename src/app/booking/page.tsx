@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 // Define available time slots
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
@@ -11,6 +12,7 @@ const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00
 function BookingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]); // Format: "YYYY-MM-DD-HH:mm"
@@ -44,6 +46,34 @@ function BookingContent() {
     useEffect(() => {
         fetchBookedSlots();
     }, []);
+
+    // Auto-fill from profile
+    useEffect(() => {
+        if (user) {
+            const fetchProfile = async () => {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (data) {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.full_name || prev.name,
+                        phone: data.phone || prev.phone,
+                        addressDetails: {
+                            ...prev.addressDetails,
+                            ...(data.address_details || {}),
+                            lat: data.location_lat || prev.addressDetails.lat,
+                            lng: data.location_lng || prev.addressDetails.lng
+                        }
+                    }));
+                }
+            };
+            fetchProfile();
+        }
+    }, [user]);
 
     const fetchBookedSlots = async () => {
         try {
