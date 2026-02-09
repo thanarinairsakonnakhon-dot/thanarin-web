@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Order {
     id: string;
@@ -10,6 +11,8 @@ interface Order {
     customer_name: string;
     customer_phone: string;
     customer_address: string;
+    location_lat?: number;
+    location_lng?: number;
     total_price: number;
     status: string;
     admin_notes?: string;
@@ -165,6 +168,26 @@ export default function AdminOrdersPage() {
                                         <span style={{ color: '#ef4444' }}>🔴 ยังไม่มีการจองคิวช่าง</span>
                                     )}
                                 </div>
+
+                                {selectedOrder.location_lat && selectedOrder.location_lng && (
+                                    <div style={{ marginTop: '1rem', textAlign: 'center', padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, marginBottom: '8px' }}>📍 พิกัดหน้างาน (Scan นำทาง)</div>
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', background: 'white', padding: '10px', borderRadius: '8px', width: 'fit-content', margin: '0 auto 8px' }}>
+                                            <QRCodeSVG
+                                                value={`https://www.google.com/maps?q=${selectedOrder.location_lat},${selectedOrder.location_lng}`}
+                                                size={120}
+                                            />
+                                        </div>
+                                        <a
+                                            href={`https://www.google.com/maps?q=${selectedOrder.location_lat},${selectedOrder.location_lng}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ fontSize: '0.8rem', color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}
+                                        >
+                                            ดูใน Google Maps ↗
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <h3 style={{ fontSize: '0.9rem', color: '#64748b', textTransform: 'uppercase', marginBottom: '0.5rem' }}>จัดการสถานะ</h3>
