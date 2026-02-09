@@ -8,13 +8,13 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 function LoginForm() {
-    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
-    const [step, setStep] = useState(1); // 1: Phone, 2: OTP
+    const [step, setStep] = useState(1); // 1: Email, 2: OTP
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { sendPhoneOTP, verifyOTP, user } = useAuth();
+    const { sendEmailOTP, verifyOTP, user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirect = searchParams.get('redirect') || '/products';
@@ -30,13 +30,13 @@ function LoginForm() {
         setLoading(true);
         setError(null);
 
-        if (phone.length < 9) {
-            setError('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง');
+        if (!email.includes('@')) {
+            setError('กรุณากรอกอีเมลให้ถูกต้อง');
             setLoading(false);
             return;
         }
 
-        const result = await sendPhoneOTP(phone);
+        const result = await sendEmailOTP(email);
         if (result.error) {
             setError(result.error);
             setLoading(false);
@@ -57,7 +57,7 @@ function LoginForm() {
             return;
         }
 
-        const result = await verifyOTP(phone, otp);
+        const result = await verifyOTP(email, otp, 'email');
         if (result.error) {
             setError(result.error);
             setLoading(false);
@@ -70,7 +70,7 @@ function LoginForm() {
         <div className="card-glass" style={{ width: '100%', maxWidth: '450px', padding: '2.5rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>เข้าสู่ระบบ</h1>
-                <p style={{ color: '#64748b' }}>{step === 1 ? 'ยินดีต้อนรับกลับสู่ ธนรินทร์แอร์' : 'กรุณากรอกรหัส 6 หลักที่ส่งไปยังเบอร์ ' + phone}</p>
+                <p style={{ color: '#64748b' }}>{step === 1 ? 'ยินดีต้อนรับกลับสู่ ธนรินทร์แอร์' : 'กรุณากรอกรหัส 6 หลักที่ส่งไปยังอีเมล ' + email}</p>
             </div>
 
             {error && (
@@ -82,14 +82,14 @@ function LoginForm() {
             {step === 1 ? (
                 <form onSubmit={handleSendOTP} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>เบอร์โทรศัพท์</label>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.9rem' }}>อีเมล</label>
                         <input
                             required
-                            type="tel"
-                            placeholder="0xx-xxx-xxxx"
+                            type="email"
+                            placeholder="name@example.com"
                             style={{ width: '100%', padding: '0.8rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
-                            value={phone}
-                            onChange={e => setPhone(e.target.value)}
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                         />
                     </div>
 
@@ -99,7 +99,7 @@ function LoginForm() {
                         className="btn-wow"
                         style={{ width: '100%', padding: '0.8rem', marginTop: '0.5rem', opacity: loading ? 0.7 : 1 }}
                     >
-                        {loading ? 'กำลังส่ง OTP...' : 'ส่งรหัสยืนยัน (OTP)'}
+                        {loading ? 'กำลังส่ง OTP...' : 'ส่งรหัสยืนยันไปที่อีเมล'}
                     </button>
                 </form>
             ) : (
@@ -135,7 +135,7 @@ function LoginForm() {
                         onClick={() => setStep(1)}
                         style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.9rem', cursor: 'pointer' }}
                     >
-                        ← เปลี่ยนเบอร์โทรศัพท์
+                        ← เปลี่ยนอีเมล
                     </button>
                 </form>
             )}

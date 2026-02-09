@@ -10,8 +10,8 @@ interface AuthContextType {
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ error: string | null }>;
     signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null; data?: { user: User | null; session: Session | null } | null }>;
-    sendPhoneOTP: (phone: string) => Promise<{ error: string | null }>;
-    verifyOTP: (phone: string, token: string) => Promise<{ error: string | null }>;
+    sendEmailOTP: (email: string) => Promise<{ error: string | null }>;
+    verifyOTP: (email: string, token: string, type: 'email' | 'sms') => Promise<{ error: string | null }>;
     resetPassword: (email: string) => Promise<{ error: string | null }>;
     updatePassword: (password: string) => Promise<{ error: string | null }>;
     logout: () => Promise<void>;
@@ -67,23 +67,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: null, data };
     };
 
-    const sendPhoneOTP = async (phone: string) => {
-        // Formatted phone number should include country code for Supabase
-        const formattedPhone = phone.startsWith('+') ? phone : `+66${phone.startsWith('0') ? phone.slice(1) : phone}`;
+    const sendEmailOTP = async (email: string) => {
         const { error } = await supabase.auth.signInWithOtp({
-            phone: formattedPhone,
+            email,
+            options: {
+                shouldCreateUser: true, // Allow signup via OTP
+            }
         });
         if (error) return { error: error.message };
         return { error: null };
     };
 
-    const verifyOTP = async (phone: string, token: string) => {
-        const formattedPhone = phone.startsWith('+') ? phone : `+66${phone.startsWith('0') ? phone.slice(1) : phone}`;
-        const { error } = await supabase.auth.verifyOtp({
-            phone: formattedPhone,
+    const verifyOTP = async (identifier: string, token: string, type: 'email' | 'sms' = 'email') => {
+        const verifyData: any = {
             token,
-            type: 'sms',
-        });
+            type: type === 'email' ? 'email' : 'sms',
+        };
+
+        if (type === 'email') {
+            verifyData.email = identifier;
+        } else {
+            verifyData.phone = identifier.startsWith('+') ? identifier : `+66${identifier.startsWith('0') ? identifier.slice(1) : identifier}`;
+        }
+
+        const { error } = await supabase.auth.verifyOtp(verifyData);
         if (error) return { error: error.message };
         return { error: null };
     };
@@ -108,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider value={{
-            user, session, isLoading, login, signUp, sendPhoneOTP, verifyOTP, resetPassword, updatePassword, logout
+            user, session, isLoading, login, signUp, sendEmailOTP, verifyOTP, resetPassword, updatePassword, logout
         }}>
             {children}
         </AuthContext.Provider>
