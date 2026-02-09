@@ -42,29 +42,29 @@ export default function Footer() {
             <div className="container">
                 <div className="footer-grid">
                     <div>
-                        <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1.5rem' }}>TH.AIR</h3>
+                        <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem' }}>TH.AIR</h3>
                         <p style={{ color: '#94A3B8', lineHeight: 1.6 }}>
                             {settings.footer_description}
                         </p>
                     </div>
                     <div>
-                        <h4 style={{ marginBottom: '1.5rem', color: 'white' }}>บริการของเรา</h4>
-                        <ul style={{ listStyle: 'none', color: '#94A3B8', display: 'flex', flexDirection: 'column', gap: '0.8rem', padding: 0 }}>
+                        <h4 style={{ marginBottom: '1rem', color: 'white', fontSize: '1.1rem' }}>บริการของเรา</h4>
+                        <ul style={{ listStyle: 'none', color: '#94A3B8', display: 'flex', flexDirection: 'column', gap: '0.6rem', padding: 0 }}>
                             {services.map((service, index) => (
                                 <li key={index}>{service}</li>
                             ))}
                         </ul>
                     </div>
                     <div>
-                        <h4 style={{ marginBottom: '1.5rem', color: 'white' }}>ติดต่อเรา</h4>
-                        <div style={{ color: '#94A3B8', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                        <h4 style={{ marginBottom: '1rem', color: 'white', fontSize: '1.1rem' }}>ติดต่อเรา</h4>
+                        <div style={{ color: '#94A3B8', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                             <p style={{ margin: 0 }}>📞 {settings.phone_number}</p>
                             <p style={{ margin: 0 }}>💬 Line: {settings.line_id}</p>
                             <p style={{ margin: 0 }}>📍 {settings.address}</p>
                         </div>
                     </div>
                 </div>
-                <div style={{ textAlign: 'center', borderTop: '1px solid #1E293B', paddingTop: '2rem', color: '#475569', fontSize: '0.9rem' }}>
+                <div style={{ textAlign: 'center', borderTop: '1px solid #1E293B', paddingTop: '1.5rem', color: '#475569', fontSize: '0.85rem' }}>
                     © {new Date().getFullYear()} Thanarin Air Conditioner. All Rights Reserved.
                 </div>
             </div>
