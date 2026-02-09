@@ -465,8 +465,37 @@ h6 {
     opacity: 1;
     visibility: visible;
   }
+}
 
-  /* ==================== PRODUCT PAGE MOBILE ==================== */
+/* ==================== DESKTOP PRODUCT PAGE LAYOUT ==================== */
+@media (min-width: 901px) {
+  .grid-sidebar-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .sidebar-filter {
+    position: sticky;
+    top: 120px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .product-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* ==================== PRODUCT PAGE MOBILE ==================== */
+@media (max-width: 900px) {
   .mobile-filter-toggle {
     display: flex !important;
   }
@@ -609,35 +638,36 @@ h6 {
     padding: 0.3rem !important;
     font-size: 0.7rem !important;
   }
-
-
-  .admin-content {
-    padding: 1rem !important;
-  }
-
-  .desktop-only {
-    display: none !important;
-  }
-
-  /* Dashboard Responsive */
-  .dashboard-stats-grid,
-  .dashboard-content-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .booking-item {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 0.5rem;
-  }
-
-  .booking-item .booking-meta {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-  }
 }
+
+
+.admin-content {
+  padding: 1rem !important;
+}
+
+.desktop-only {
+  display: none !important;
+}
+
+/* Dashboard Responsive */
+.dashboard-stats-grid,
+.dashboard-content-grid {
+  grid-template-columns: 1fr !important;
+}
+
+.booking-item {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: 0.5rem;
+}
+
+.booking-item .booking-meta {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
 
 /* Chat Widget Mobile */
 @media (max-width: 480px) {
