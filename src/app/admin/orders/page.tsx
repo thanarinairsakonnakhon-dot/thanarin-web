@@ -257,7 +257,7 @@ export default function AdminOrdersPage() {
                         <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>
                             <h1 style={{ margin: 0, fontSize: '20pt', fontWeight: 800 }}>THANARIN AIR</h1>
                             <p style={{ margin: '2px 0', fontSize: '12pt' }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
-                            <p style={{ margin: 0, fontSize: '10pt' }}>โทร: 088-888-8888 | www.thanarin-air.com</p>
+                            <p style={{ margin: 0, fontSize: '10pt' }}>โทร: 094-118-80XX | thanarin-air.com</p>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
