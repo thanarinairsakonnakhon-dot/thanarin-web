@@ -19,141 +19,125 @@ export default function Home() {
 
             <PromotionBanner />
 
-            {/* Bento Grid Features Section */}
-            <section style={{ padding: '4rem 0 8rem' }}>
+            {/* Features Section */}
+            <section style={{ padding: '4rem 0' }}>
                 <div className="container">
-                    <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                        <span style={{
-                            color: 'var(--color-primary-blue)',
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.1em',
-                            fontSize: '0.9rem'
-                        }}>Why Choose Us</span>
-                        <h2 style={{ fontSize: '2.5rem', marginTop: '1rem' }}>
-                            มากกว่าแค่ความเย็น <br />
-                            คือ <span className="text-gradient-blue">มาตรฐานที่คุณวางใจ</span>
-                        </h2>
-                    </div>
-
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(12, 1fr)',
-                        gridTemplateRows: 'repeat(2, minmax(250px, auto))',
-                        gap: '1.5rem'
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+                        gap: '2rem'
                     }}>
 
-                        {/* Feature 1: Large Box */}
+                        {/* BTU Calculator */}
                         <div className="card-glass" style={{
-                            gridColumn: 'span 7',
-                            gridRow: 'span 2',
                             padding: '3rem',
+                            background: 'white',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
-                            background: 'linear-gradient(135deg, #FFFFFF 0%, #F0F9FF 100%)'
-                        }}>
-                            <div>
+                            border: '1px solid #E2E8F0',
+                            transition: 'all 0.3s ease',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            borderRadius: '32px'
+                        }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-10px)';
+                                e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}>
+                            <div style={{ position: 'relative', zIndex: 1 }}>
                                 <div style={{
                                     width: '60px', height: '60px',
-                                    background: 'var(--color-primary-blue)',
+                                    background: '#F0F9FF',
                                     borderRadius: '16px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontSize: '1.8rem', marginBottom: '2rem', color: 'white'
-                                }}>🛠️</div>
-                                <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>งานติดตั้งระดับ Masterpiece</h3>
-                                <p style={{ fontSize: '1.1rem', color: 'var(--color-text-sub)', maxWidth: '400px' }}>
-                                    เราใช้อุปกรณ์เกรดพรีเมียมทุกชิ้น ท่อน้ำยาหนาพิเศษ งานเดินท่อสวยเนี๊ยบเหมือนเดินสายไฟบ้านตัวเอง รับประกันงานติดตั้งนาน 1 ปีเต็ม
+                                    fontSize: '1.8rem', marginBottom: '1.5rem', color: '#0A84FF'
+                                }}>📐</div>
+                                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem', color: '#1e293b' }}>คำนวณขนาดแอร์ (BTU)</h3>
+                                <p style={{ fontSize: '1.1rem', color: '#64748b', lineHeight: 1.6, marginBottom: '2rem' }}>
+                                    เลือกแอร์ให้เหมาะกับห้องของคุณด้วยเครื่องมือคำนวณที่แม่นยำที่สุด ช่วยให้คุณประหยัดค่าไฟและได้ความเย็นที่พอดี
                                 </p>
                             </div>
-                            <div style={{
-                                marginTop: '2rem',
-                                height: '200px',
-                                background: 'white',
-                                borderRadius: '1rem',
-                                border: '1px solid #E2E8F0',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color: '#CBD5E1', fontWeight: 700
-                            }}>
-                                [Installation Showcase Image]
-                            </div>
-                        </div>
-
-                        {/* Feature 2: Wide Box Top Right */}
-                        <div className="card-glass" style={{
-                            gridColumn: 'span 5',
-                            padding: '2.5rem',
-                            background: 'white'
-                        }}>
-                            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>💰 ราคาโปร่งใส</h3>
-                            <p style={{ color: 'var(--color-text-sub)' }}>
-                                ใบเสนอราคาชัดเจนทุกรายการ ไม่มีค่าใช้จ่ายแอบแฝง หน้างานจบ งบไม่บานปลาย 100%
-                            </p>
-                            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-                                <span style={{ padding: '0.5rem 1rem', background: '#ECFDF5', color: '#059669', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 600 }}>Free Consultation</span>
-                                <span style={{ padding: '0.5rem 1rem', background: '#EFF6FF', color: '#2563EB', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 600 }}>No Hidden Fee</span>
-                            </div>
-                        </div>
-
-                        {/* Feature 4: Additional Wide Box for Calculator (Replacing or adding) */}
-                        <div className="card-glass" style={{
-                            gridColumn: 'span 5',
-                            padding: '2.5rem',
-                            background: 'linear-gradient(135deg, #0A84FF 0%, #5856d6 100%)',
-                            color: 'white'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'white' }}>🧮 คำนวณขนาดแอร์</h3>
-                                <span style={{ fontSize: '2rem' }}>✨</span>
-                            </div>
-                            <p style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '1.5rem' }}>
-                                ไม่แน่ใจขนาดแอร์? ลองใช้เครื่องมือคำนวณ BTU ฟรีของเรา
-                            </p>
-                            <Link href="/calculator" style={{
-                                background: 'white',
-                                color: '#0A84FF',
-                                padding: '0.8rem 1.5rem',
+                            <Link href="/calculator" className="btn-wow" style={{
+                                padding: '1.2rem 2.5rem',
                                 borderRadius: '50px',
-                                fontWeight: 700,
-                                display: 'inline-block',
-                                textAlign: 'center'
+                                fontSize: '1.1rem',
+                                textAlign: 'center',
+                                textDecoration: 'none'
                             }}>
-                                เริ่มคำนวณ →
+                                เริ่มคำนวณเลย →
                             </Link>
+
+                            {/* Decorative background element */}
+                            <div style={{
+                                position: 'absolute',
+                                right: '-30px',
+                                bottom: '-30px',
+                                fontSize: '10rem',
+                                opacity: 0.05,
+                                zIndex: 0
+                            }}>📏</div>
                         </div>
 
-                        {/* Feature 3: Box Bottom Right (Original Reservation) */}
+                        {/* Online Booking */}
                         <div className="card-glass" style={{
-                            gridColumn: 'span 12', // Make this one wider to fit new layout
-                            padding: '2.5rem',
-                            background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-blue) 100%)',
+                            padding: '3rem',
+                            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
                             color: 'white',
                             display: 'flex',
-                            alignItems: 'center',
+                            flexDirection: 'column',
                             justifyContent: 'space-between',
-                            gap: '2rem'
-                        }}>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
-                                    <h3 style={{ fontSize: '2rem', color: 'white' }}>จองคิวออนไลน์</h3>
-                                    <span style={{ fontSize: '2.5rem' }}>📅</span>
-                                </div>
-                                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem' }}>
-                                    ไม่ต้องรอแอดมินตอบ เลือกเวลาช่างว่างได้ทันทีผ่านเว็บไซต์ รู้ผลไวภายใน 30 วินาที
+                            transition: 'all 0.3s ease',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            borderRadius: '32px'
+                        }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-10px)';
+                                e.currentTarget.style.boxShadow = '0 20px 40px rgba(10, 132, 255, 0.2)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}>
+                            <div style={{ position: 'relative', zIndex: 1 }}>
+                                <div style={{
+                                    width: '60px', height: '60px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '16px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '1.8rem', marginBottom: '1.5rem'
+                                }}>📅</div>
+                                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '1rem', color: 'white' }}>จองคิวออนไลน์</h3>
+                                <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: '2rem' }}>
+                                    นัดหมายบริการล้างแอร์ ซ่อมแอร์ หรือติดตั้งใหม่ ได้ทันทีตลอด 24 ชั่วโมง สะดวก รวดเร็ว ไม่ต้องรอนาน
                                 </p>
                             </div>
-                            <Link href="/booking" style={{
-                                background: 'white',
-                                color: 'var(--color-primary-blue)',
-                                padding: '1.2rem 3rem',
+                            <Link href="/booking" className="btn-wow" style={{
+                                padding: '1.2rem 2.5rem',
                                 borderRadius: '50px',
-                                fontWeight: 800,
-                                fontSize: '1.2rem',
-                                display: 'inline-block',
-                                whiteSpace: 'nowrap'
+                                fontSize: '1.1rem',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                background: 'white',
+                                color: '#1e293b'
                             }}>
-                                จองเลย →
+                                จองคิวล้างแอร์ →
                             </Link>
+
+                            {/* Decorative background element */}
+                            <div style={{
+                                position: 'absolute',
+                                right: '-30px',
+                                bottom: '-30px',
+                                fontSize: '10rem',
+                                opacity: 0.1,
+                                zIndex: 0
+                            }}>✨</div>
                         </div>
 
                     </div>
