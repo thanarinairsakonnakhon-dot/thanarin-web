@@ -458,18 +458,8 @@ function BookingContent() {
 
                                     {/* Address ... (Lines 383-438 unchanged) ... */}
                                     <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <div style={{ marginBottom: '0.5rem' }}>
                                             <label style={{ fontWeight: 600 }}>ที่อยู่หน้างาน</label>
-                                            <button
-                                                onClick={handleGetLocation}
-                                                style={{
-                                                    fontSize: '0.9rem', color: 'var(--color-primary-blue)',
-                                                    background: 'none', border: 'none', cursor: 'pointer',
-                                                    display: 'flex', alignItems: 'center', gap: '0.3rem'
-                                                }}
-                                            >
-                                                📍 ปักหมุดตำแหน่งปัจจุบัน
-                                            </button>
                                         </div>
 
                                         <div style={{ display: 'grid', gap: '1rem' }}>
