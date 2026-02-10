@@ -319,16 +319,16 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                         <p style={{ margin: 0, fontSize: '10pt', color: 'black' }}>โทร: {adminPhone} | thanarin-air.com</p>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem', gap: '2rem' }}>
-                        <div style={{ flex: 1.2 }}>
+                    <div style={{ display: 'flex', width: '100%', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                        <div style={{ width: '60%' }}>
                             <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลลูกค้า (Customer)</h3>
-                            <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
+                            <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt', paddingRight: '1rem' }}>
                                 <strong>ชื่อลูกค้า:</strong> {booking.customer_name} <br />
                                 <strong>เบอร์โทรศัพท์:</strong> {booking.customer_phone} <br />
                                 <strong>สถานที่ติดตั้ง:</strong> <span style={{ wordBreak: 'break-word' }}>{booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}</span>
                             </div>
                         </div>
-                        <div style={{ flex: 0.8, textAlign: 'right', minWidth: '200px' }}>
+                        <div style={{ width: '40%', textAlign: 'right' }}>
                             <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลใบงาน (Job Info)</h3>
                             <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
                                 <strong>เลขที่ใบงาน:</strong> #{booking.id.slice(0, 8).toUpperCase()} <br />
@@ -348,11 +348,11 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
 
                     <div style={{ marginBottom: '1.5rem' }}>
                         <h3 style={{ fontSize: '11pt', fontWeight: 700, borderBottom: '2px solid #000', marginBottom: '0.5rem', color: 'black' }}>รายการสินค้า/อุปกรณ์ (Product List)</h3>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: 'black', border: '1px solid #000' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: 'black' }}>
                             <thead>
                                 <tr style={{ background: '#f1f5f9' }}>
-                                    <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000', fontWeight: 700 }}>รายการสินค้า</th>
-                                    <th style={{ textAlign: 'center', padding: '0.75rem', width: '90px', border: '1px solid #000', fontWeight: 700 }}>จำนวน</th>
+                                    <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000', fontWeight: 700, width: '75%' }}>รายการสินค้า</th>
+                                    <th style={{ textAlign: 'center', padding: '0.75rem', border: '1px solid #000', fontWeight: 700, width: '25%' }}>จำนวน</th>
                                 </tr>
                             </thead>
                             <tbody>
