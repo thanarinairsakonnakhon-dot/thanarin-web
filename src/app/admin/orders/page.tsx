@@ -273,9 +273,9 @@ export default function AdminOrdersPage() {
                 </div>
             )}
 
-            {/* Hidden Print Area */}
+            {/* Hidden Print Area (Visible only when printing) */}
             {selectedOrder && (
-                <div className="print-area">
+                <div className="print-only-section">
                     <div className="job-sheet" style={{ padding: '0.5cm', background: 'white', color: 'black', fontSize: '10pt' }}>
                         <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>
                             <h1 style={{ margin: 0, fontSize: '20pt', fontWeight: 800 }}>THANARIN AIR</h1>

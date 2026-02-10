@@ -93,3 +93,20 @@
     - [x] Fetch site settings in Admin Orders page
     - [x] Update print layout with dynamic phone number
     - [x] Verify changes on printed job sheet
+
+- [x] Integrate Google Reviews <!-- id: 57 -->
+    - [x] Research Google Places API
+    - [x] Get Place ID: `ChIJg5ooCqqPPDER8ODMzUvSfSA`
+    - [x] Request Google Maps API Key from user
+    - [x] Create API route to fetch reviews
+    - [x] Update Testimonials component to display Google Reviews
+
+- [x] Improve Job Sheet Print Layout <!-- id: 58 -->
+    - [x] Update globals.css with unified print styles
+    - [x] Refactor Admin Dashboard print logic
+    - [x] Refactor Admin Orders print logic
+    - [x] Verify print layout
+
+- [x] Fix Job Sheet Print Blank Issue <!-- id: 59 -->
+    - [x] Update globals.css with robust print styles (Fix blank page)
+    - [x] Verify print visibility

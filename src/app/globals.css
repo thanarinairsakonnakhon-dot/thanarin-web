@@ -701,58 +701,6 @@ h6 {
 }
 
 /* --- Print Styles --- */
-@media print {
-
-  /* Hide everything by default */
-  body * {
-    visibility: hidden;
-  }
-
-  /* Show only the print container and its children */
-  .print-area,
-  .print-area * {
-    visibility: visible;
-  }
-
-  /* Reset layout for printing */
-  .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background: white !important;
-  }
-
-  /* Hide common UI components */
-  nav,
-  aside,
-  button,
-  .no-print,
-  [role="dialog"] button {
-    display: none !important;
-  }
-
-  /* Ensure colors are printed */
-  body {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Page setup */
-  @page {
-    size: A4;
-    margin: 1.5cm;
-  }
-
-  /* Job Sheet specific tweaks */
-  .job-sheet {
-    color: black !important;
-    box-shadow: none !important;
-    border: 1px solid #eee !important;
-  }
-}
 
 /* Service Badges Mobile */
 @media (max-width: 600px) {
@@ -1043,41 +991,102 @@ h6 {
 }
 
 /* ==================== PRINT STYLES ==================== */
+/* ==================== PRINT STYLES ==================== */
+
+/* Screen: Hide print sections */
+.print-only-section {
+  display: none;
+}
+
 @media print {
+
+  /* Force background colors and correct color adjustment */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Reset Body */
+  body {
+    background: white !important;
+    visibility: visible !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide common UI components explicitly */
+  nav,
+  aside,
+  header,
+  .no-print,
+  .admin-sidebar,
+  .admin-sidebar-overlay,
+  button,
+  .btn-wow,
+  [role="dialog"] button,
+  .modal-overlay,
+  .desktop-only,
+  .mobile-only {
+    display: none !important;
+  }
+
+  /* 
+     Hide all children involved in the main layout wrapper 
+     EXCEPTION: The print-only-section itself 
+  */
+  /* Hide all elements by default (visibility allows children to override) */
   body * {
     visibility: hidden;
   }
 
-  .summary-print-area,
-  .summary-print-area * {
-    visibility: visible;
+  /* Reset layout containers to position print content relative to page */
+  .admin-content,
+  .admin-content>div,
+  .animate-fade-in {
+    position: static !important;
+    overflow: visible !important;
+    transform: none !important;
+    opacity: 1 !important;
+    display: block !important;
   }
 
+  /* Ensure the Print Section is Visible */
+  .print-only-section {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    opacity: 1 !important;
+    transform: none !important;
+    z-index: 2147483647 !important;
+    /* Max z-index */
+  }
+
+  .print-only-section * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Legacy support if needed */
   .summary-print-area {
-    position: absolute;
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
     left: 0;
     top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 2rem;
+    z-index: 9999;
   }
 
-  /* Hide modal controls during print */
-  .modal-content button,
-  .modal-content input,
-  .modal-content h2,
-  .modal-overlay {
-    background: white;
-    position: static;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    display: block;
-  }
-
-  /* Ensure the modal overlay doesn't block or create gray background */
-  .modal-overlay {
-    background: none !important;
-    backdrop-filter: none !important;
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 0.5cm;
   }
 }
