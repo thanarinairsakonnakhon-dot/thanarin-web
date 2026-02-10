@@ -38,11 +38,54 @@ export default function AdminPromotions() {
         display_order: 0
     });
 
+    const [bannerSettings, setBannerSettings] = useState({
+        title: 'โปรโมชั่นพิเศษ Hot Deals',
+        description: 'ดีลสุดคุ้ม ประจำเดือนนี้ มั่นใจ ชัดเจน เป็นธรรม'
+    });
+    const [savingSettings, setSavingSettings] = useState(false);
+
     useEffect(() => {
         loadPromotions();
+        loadBannerSettings();
     }, []);
 
+    const loadBannerSettings = async () => {
+        const { data } = await supabase
+            .from('site_settings')
+            .select('*')
+            .in('setting_key', ['promotion_banner_title', 'promotion_banner_description']);
+
+        if (data) {
+            const settings = { ...bannerSettings };
+            data.forEach(item => {
+                if (item.setting_key === 'promotion_banner_title') settings.title = item.setting_value;
+                if (item.setting_key === 'promotion_banner_description') settings.description = item.setting_value;
+            });
+            setBannerSettings(settings);
+        }
+    };
+
+    const handleSaveBannerSettings = async () => {
+        setSavingSettings(true);
+        try {
+            const updates = [
+                { setting_key: 'promotion_banner_title', setting_value: bannerSettings.title },
+                { setting_key: 'promotion_banner_description', setting_value: bannerSettings.description }
+            ];
+
+            const { error } = await supabase.from('site_settings').upsert(updates, { onConflict: 'setting_key' });
+            if (error) throw error;
+            alert('บันทึกการตั้งค่าสำเร็จ');
+        } catch (error: any) {
+            console.error('Error saving settings:', error);
+            alert(`บันทึกไม่สำเร็จ: ${error.message}`);
+        } finally {
+            setSavingSettings(false);
+        }
+    };
+
     const loadPromotions = async () => {
+        // ... existing loadPromotions code
         setIsLoading(true);
         const { data } = await supabase
             .from('promotions')
@@ -184,6 +227,50 @@ export default function AdminPromotions() {
                 <button onClick={() => handleOpenModal()} className="btn-wow" style={{ padding: '0.8rem 1.5rem' }}>
                     + เพิ่มโปรโมชั่น
                 </button>
+            </div>
+
+            {/* Banner Theme Settings */}
+            <div style={{
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                padding: '1.5rem',
+                borderRadius: '16px',
+                marginBottom: '2rem',
+                border: '1px solid #e2e8f0',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: '1.5rem',
+                alignItems: 'end'
+            }}>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>หัวข้อใหญ่ (Main Title)</label>
+                    <input
+                        type="text"
+                        value={bannerSettings.title}
+                        onChange={(e) => setBannerSettings(prev => ({ ...prev, title: e.target.value }))}
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                        placeholder="โปรโมชั่นพิเศษ Hot Deals"
+                    />
+                </div>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>คำบรรยาย (Subtitle)</label>
+                    <input
+                        type="text"
+                        value={bannerSettings.description}
+                        onChange={(e) => setBannerSettings(prev => ({ ...prev, description: e.target.value }))}
+                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                        placeholder="ดีลสุดคุ้ม ประจำเดือนนี้..."
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                        onClick={handleSaveBannerSettings}
+                        className="btn-wow"
+                        disabled={savingSettings}
+                        style={{ flex: 1, padding: '0.75rem', background: '#0F172A' }}
+                    >
+                        {savingSettings ? 'กำลังบันทึก...' : '💾 บันทึกหัวข้อ'}
+                    </button>
+                </div>
             </div>
 
             {/* Promotions List */}

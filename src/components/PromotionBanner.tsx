@@ -15,10 +15,31 @@ interface Promotion {
 
 export default function PromotionBanner() {
     const [promotions, setPromotions] = useState<Promotion[]>([]);
+    const [bannerSettings, setBannerSettings] = useState({
+        title: 'โปรโมชั่นพิเศษ Hot Deals',
+        description: 'ดีลสุดคุ้ม ประจำเดือนนี้ มั่นใจ ชัดเจน เป็นธรรม'
+    });
 
     useEffect(() => {
         loadPromotions();
+        loadBannerSettings();
     }, []);
+
+    const loadBannerSettings = async () => {
+        const { data } = await supabase
+            .from('site_settings')
+            .select('*')
+            .in('setting_key', ['promotion_banner_title', 'promotion_banner_description']);
+
+        if (data && data.length > 0) {
+            const settings = { ...bannerSettings };
+            data.forEach(item => {
+                if (item.setting_key === 'promotion_banner_title') settings.title = item.setting_value;
+                if (item.setting_key === 'promotion_banner_description') settings.description = item.setting_value;
+            });
+            setBannerSettings(settings);
+        }
+    };
 
     const loadPromotions = async () => {
         try {
@@ -62,10 +83,16 @@ export default function PromotionBanner() {
             <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
                     <h2 style={{ fontSize: "2.8rem", fontWeight: 900, marginBottom: "0.8rem", color: "#1e293b", letterSpacing: '-1px' }}>
-                        โปรโมชั่นพิเศษ <span style={{ color: '#0A84FF' }}>Hot Deals</span>
+                        {bannerSettings.title.includes('Hot Deals') ? (
+                            <>
+                                {bannerSettings.title.split('Hot Deals')[0]}
+                                <span style={{ color: '#0A84FF' }}>Hot Deals</span>
+                                {bannerSettings.title.split('Hot Deals')[1]}
+                            </>
+                        ) : bannerSettings.title}
                     </h2>
                     <p style={{ color: "#64748b", fontSize: "1.2rem", fontWeight: 500 }}>
-                        ดีลสุดคุ้ม ประจำเดือนนี้ มั่นใจ ชัดเจน เป็นธรรม
+                        {bannerSettings.description}
                     </p>
                 </div>
 
