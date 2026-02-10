@@ -118,13 +118,39 @@ export default function AdminDashboard() {
             .from('products')
             .select('*');
 
-        // Load bookings (most recent first)
-        const { data: bookings } = await supabase
+        // Load bookings for Technician Queue (Pending & Confirmed, sorted by upcoming)
+        const { data: queueBookings } = await supabase
             .from('bookings')
             .select('*')
-            .order('created_at', { ascending: false })
-            .limit(10);
+            .in('status', ['pending', 'confirmed']) // Show only active jobs
+            .order('date', { ascending: true })
+            .order('time', { ascending: true });
 
+        // Get counts for stats
+        const { count: completedCount } = await supabase
+            .from('bookings')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'completed');
+
+        const { count: pendingCount } = await supabase
+            .from('bookings')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pending');
+
+        const { count: confirmedCount } = await supabase
+            .from('bookings')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'confirmed');
+
+        if (queueBookings) {
+            setRecentBookings(queueBookings); // Show ALL active jobs
+            setStats(prev => ({
+                ...prev,
+                pendingBookings: pendingCount || 0,
+                confirmedBookings: confirmedCount || 0,
+                completedBookings: completedCount || 0
+            }));
+        }
         // Load chat sessions (only those waiting for reply from admin)
         const { data: chatSessions } = await supabase
             .from('chat_sessions')
@@ -239,18 +265,18 @@ export default function AdminDashboard() {
 
             <div className="dashboard-content-grid">
 
-                {/* Recent Bookings */}
+                {/* Technician Queue */}
                 <div className="dashboard-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>📅 งานล่าสุด</h3>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>👷 คิวงานช่าง (เรียงตามเวลา)</h3>
                         <Link href="/admin/bookings" style={{ color: '#3b82f6', fontWeight: 600, fontSize: '0.9rem' }}>ดูทั้งหมด</Link>
                     </div>
                     {recentBookings.length === 0 ? (
                         <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                            ยังไม่มีการจอง
+                            ✅ ไม่มีงานค้างในคิว (ว่าง)
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '500px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                             {recentBookings.map((booking) => {
                                 const style = getStatusStyle(booking.status);
                                 return (

@@ -115,3 +115,10 @@
     - [x] Create `PriceList.tsx` reusable component
     - [x] Refactor `src/app/prices/page.tsx` to use `PriceList`
     - [x] Add `PriceList` to `src/app/page.tsx` (after Features section)
+
+- [x] **Dashboard Improvements**
+    - [x] **Technician Job Queue**
+        - [x] Rename "Recent Jobs" to "Technician Queue"
+        - [x] Show ALL pending/confirmed jobs (remove limit)
+        - [x] Sort by Date/Time (Upcoming first)
+        - [x] Add scrollable list view
