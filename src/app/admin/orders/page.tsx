@@ -276,89 +276,90 @@ export default function AdminOrdersPage() {
             {/* Hidden Print Area (Visible only when printing) */}
             {selectedOrder && (
                 <div className="print-only-section">
-                    <div className="job-sheet" style={{ padding: '0.5cm', background: 'white', color: 'black', fontSize: '10pt' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2px solid #000', paddingBottom: '0.5rem' }}>
-                            <h1 style={{ margin: 0, fontSize: '20pt', fontWeight: 800 }}>THANARIN AIR</h1>
-                            <p style={{ margin: '2px 0', fontSize: '12pt' }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
+                    <div className="job-sheet" style={{ padding: '0', background: 'white', color: 'black', fontSize: '10pt' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2.5px solid #000', paddingBottom: '1rem' }}>
+                            <h1 style={{ margin: 0, fontSize: '24pt', fontWeight: 800 }}>THANARIN AIR</h1>
+                            <p style={{ margin: '4px 0', fontSize: '12pt', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
                             <p style={{ margin: 0, fontSize: '10pt' }}>โทร: {settings.phone_number || '086-238-7571'} | thanarin-air.com</p>
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <div style={{ flex: 1 }}>
-                                <h2 style={{ fontSize: '12pt', margin: '0 0 0.3rem 0', borderBottom: '1px solid #eee' }}>ข้อมูลลูกค้า (Customer)</h2>
-                                <div style={{ fontSize: '11pt', lineHeight: '1.4' }}>
+                        <div style={{ display: 'flex', width: '100%', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                            <div style={{ width: '60%' }}>
+                                <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', textDecoration: 'underline' }}>ข้อมูลลูกค้า (Customer)</h3>
+                                <div style={{ lineHeight: 1.6, fontSize: '10pt', paddingRight: '1rem' }}>
                                     <strong>ชื่อผู้รับ:</strong> {selectedOrder.customer_name} <br />
                                     <strong>เบอร์โทรศัพท์:</strong> {selectedOrder.customer_phone} <br />
-                                    <strong>ที่อยู่ติดตั้ง:</strong> {selectedOrder.customer_address}
+                                    <strong>ที่อยู่ติดตั้ง:</strong> <span style={{ wordBreak: 'break-word' }}>{selectedOrder.customer_address}</span>
                                 </div>
                             </div>
-                            <div style={{ width: '220px', textAlign: 'right' }}>
-                                <h2 style={{ fontSize: '12pt', margin: '0 0 0.3rem 0', borderBottom: '1px solid #eee' }}>ข้อมูลทั่วไป</h2>
-                                <div style={{ fontSize: '11pt', lineHeight: '1.4' }}>
-                                    <strong>เลขที่สั่งซื้อ:</strong> #{selectedOrder.id.slice(0, 8)} <br />
+                            <div style={{ width: '40%', textAlign: 'right' }}>
+                                <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', textDecoration: 'underline' }}>ข้อมูลทั่วไป (Order Info)</h3>
+                                <div style={{ lineHeight: 1.6, fontSize: '10pt' }}>
+                                    <strong>เลขที่สั่งซื้อ:</strong> #{selectedOrder.id.slice(0, 8).toUpperCase()} <br />
                                     <strong>วันที่สั่งซื้อ:</strong> {new Date(selectedOrder.created_at).toLocaleDateString('th-TH')} <br />
-                                    <strong>สถานะ:</strong> {selectedOrder.status}
+                                    <strong>สถานะ:</strong> <span style={{ textTransform: 'uppercase' }}>{selectedOrder.status}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1rem' }}>
-                            <thead>
-                                <tr style={{ background: '#f8fafc' }}>
-                                    <th style={{ textAlign: 'left', padding: '8px', border: '1px solid #000', fontSize: '11pt' }}>รายการสินค้า (Product List)</th>
-                                    <th style={{ textAlign: 'center', padding: '8px', border: '1px solid #000', width: '60px', fontSize: '11pt' }}>จำนวน</th>
-                                    <th style={{ textAlign: 'right', padding: '8px', border: '1px solid #000', width: '100px', fontSize: '11pt' }}>รวม (บาท)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(selectedOrder as any).order_items?.map((item: any) => (
-                                    <tr key={item.id}>
-                                        <td style={{ padding: '8px', border: '1px solid #000', fontSize: '10pt' }}>
-                                            <strong>{item.product_name}</strong>
-                                        </td>
-                                        <td style={{ textAlign: 'center', padding: '8px', border: '1px solid #000', fontSize: '10pt' }}>{item.quantity}</td>
-                                        <td style={{ textAlign: 'right', padding: '8px', border: '1px solid #000', fontSize: '10pt' }}>{item.price.toLocaleString()}</td>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '11pt', fontWeight: 700, borderBottom: '2px solid #000', marginBottom: '0.5rem' }}>รายการสินค้า (Product List)</h3>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt' }}>
+                                <thead>
+                                    <tr style={{ background: '#f1f5f9' }}>
+                                        <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000', fontWeight: 700, width: '60%' }}>รายการสินค้า</th>
+                                        <th style={{ textAlign: 'center', padding: '0.75rem', border: '1px solid #000', fontWeight: 700, width: '15%' }}>จำนวน</th>
+                                        <th style={{ textAlign: 'right', padding: '0.75rem', border: '1px solid #000', fontWeight: 700, width: '25%' }}>รวม (บาท)</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colSpan={2} style={{ textAlign: 'right', padding: '8px', fontWeight: 700, border: '1px solid #000', fontSize: '11pt' }}>รวมยอดเงินสุทธิ</td>
-                                    <td style={{ textAlign: 'right', padding: '8px', fontWeight: 800, border: '1px solid #000', fontSize: '12pt', background: '#f8fafc' }}>฿{selectedOrder.total_price.toLocaleString()}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {(selectedOrder as any).order_items?.map((item: any, idx: number) => (
+                                        <tr key={idx}>
+                                            <td style={{ padding: '0.75rem', border: '1px solid #000' }}>{item.product_name}</td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center', border: '1px solid #000' }}>{item.quantity}</td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'right', border: '1px solid #000' }}>{item.price.toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan={2} style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 700, border: '1px solid #000' }}>รวมยอดเงินสุทธิ</td>
+                                        <td style={{ textAlign: 'right', padding: '0.75rem', fontWeight: 800, border: '1px solid #000', background: '#f8fafc', fontSize: '12pt' }}>฿{selectedOrder.total_price.toLocaleString()}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '1.5rem', alignItems: 'start' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: '1.5rem', marginBottom: '2rem' }}>
+                            <div style={{ border: '1px solid #000', padding: '1rem', borderRadius: '8px', minHeight: '100px' }}>
+                                <strong style={{ fontSize: '10pt', textDecoration: 'underline' }}>หมายเหตุเพิ่มเติม (Notes):</strong> <br />
+                                <div style={{ fontSize: '10pt', marginTop: '0.5rem', whiteSpace: 'pre-wrap' }}>{selectedOrder.admin_notes || '-'}</div>
+                            </div>
                             {selectedOrder.location_lat && (
-                                <div style={{ textAlign: 'center', border: '1.5px solid #000', padding: '0.5rem', borderRadius: '8px' }}>
-                                    <div style={{ fontSize: '9pt', fontWeight: 700, marginBottom: '0.3rem' }}>📍 พิกัด (Map Scan)</div>
-                                    <div style={{ background: 'white', padding: '5px', display: 'inline-block', borderRadius: '4px' }}>
-                                        <QRCodeSVG value={`https://www.google.com/maps?q=${selectedOrder.location_lat},${selectedOrder.location_lng}`} size={110} />
+                                <div style={{ textAlign: 'center', border: '1px solid #000', padding: '0.75rem', borderRadius: '8px' }}>
+                                    <div style={{ fontSize: '9pt', fontWeight: 700, marginBottom: '0.5rem' }}>📍 แผนที่หน้างาน</div>
+                                    <div style={{ background: 'white', padding: '5px', display: 'inline-block' }}>
+                                        <QRCodeSVG value={`https://www.google.com/maps?q=${selectedOrder.location_lat},${selectedOrder.location_lng}`} size={120} />
                                     </div>
-                                    <div style={{ fontSize: '7pt', marginTop: '2px', color: '#666' }}>สแกนเพื่อนำทาง</div>
+                                    <div style={{ fontSize: '7pt', color: '#666', marginTop: '0.3rem' }}>สแกนเพื่อนำทาง</div>
                                 </div>
                             )}
-                            <div style={{ border: '1px solid #000', padding: '0.8rem', borderRadius: '8px', minHeight: '120px' }}>
-                                <h3 style={{ fontSize: '11pt', margin: '0 0 0.3rem 0', fontWeight: 700 }}>หมายเหตุเพิ่มเติม:</h3>
-                                <div style={{ fontSize: '10pt', lineHeight: '1.4' }}>
-                                    {selectedOrder.admin_notes || '-'}
-                                </div>
+                        </div>
+
+                        <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ textAlign: 'center', width: '230px' }}>
+                                <div style={{ borderBottom: '1.5px solid #000', marginBottom: '0.5rem', height: '40px' }}></div>
+                                <div style={{ fontSize: '10pt', fontWeight: 600 }}>ลงชื่อ......................................................</div>
+                                <div style={{ fontSize: '9pt' }}>ผู้จัดเตรียมสินค้า (Technician)</div>
+                            </div>
+                            <div style={{ textAlign: 'center', width: '230px' }}>
+                                <div style={{ borderBottom: '1.5px solid #000', marginBottom: '0.5rem', height: '40px' }}></div>
+                                <div style={{ fontSize: '10pt', fontWeight: 600 }}>ลงชื่อ......................................................</div>
+                                <div style={{ fontSize: '9pt' }}>ผู้รับสินค้า (Customer)</div>
                             </div>
                         </div>
 
-                        <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ textAlign: 'center', width: '180px' }}>
-                                <div style={{ borderBottom: '1px solid #000', marginBottom: '3px', height: '25px' }}></div>
-                                <div style={{ fontSize: '9pt' }}>ผู้จัดเตรียมสินค้า</div>
-                            </div>
-                            <div style={{ textAlign: 'center', width: '180px' }}>
-                                <div style={{ borderBottom: '1px solid #000', marginBottom: '3px', height: '25px' }}></div>
-                                <div style={{ fontSize: '9pt' }}>ผู้รับสินค้า (ลูกค้า)</div>
-                            </div>
-                        </div>
-
-                        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '9pt', color: '#444', borderTop: '1px dashed #ccc', paddingTop: '0.5rem' }}>
+                        <div style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '9pt', color: '#444', borderTop: '1px dashed #ccc', paddingTop: '0.8rem' }}>
                             ขอบคุณที่ไว้วางใจ ธนรินทร์แอร์ สกลนคร | บริการด้วยใจ ใส่ใจทุกขั้นตอน
                         </div>
                     </div>
