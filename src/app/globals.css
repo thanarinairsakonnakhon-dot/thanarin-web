@@ -1021,40 +1021,41 @@ h6 {
     position: relative !important;
   }
 
-  /* Hide common UI components explicitly */
-  nav,
-  aside,
-  header,
-  .no-print,
-  .admin-sidebar,
-  .admin-sidebar-overlay,
-  button,
-  .btn-wow,
-  [role="dialog"] button,
-  .desktop-only,
-  .mobile-only {
-    display: none !important;
+  /* Robust Visibility-based Print Logic */
+  body * {
+    visibility: hidden;
   }
 
-  /* 
-     Hide all children involved in the main layout wrapper 
-     EXCEPTION: The print-only-section and .modal-overlay containing .printable-card
-  */
-  body>*:not(.print-only-section):not(.modal-overlay) {
-    display: none !important;
-  }
-
-  /* Ensure modal overlay is visible if it's the target for printing */
-  .modal-overlay {
-    background: white !important;
-    position: static !important;
-    display: block !important;
-    padding: 0 !important;
+  .printable-card,
+  .printable-card *,
+  .summary-print-area,
+  .summary-print-area *,
+  .print-only-section,
+  .print-only-section * {
     visibility: visible !important;
   }
 
-  /* Remove modal constraints during print */
+  .printable-card,
+  .summary-print-area,
+  .print-only-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Reset layout containers to avoid nested hiding */
+  .modal-overlay {
+    visibility: visible !important;
+    background: white !important;
+    position: static !important;
+    display: block !important;
+  }
+
   .modal-content {
+    visibility: visible !important;
     box-shadow: none !important;
     max-width: none !important;
     width: 100% !important;
