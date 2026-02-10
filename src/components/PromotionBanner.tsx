@@ -64,87 +64,110 @@ export default function PromotionBanner() {
 
     if (promotions.length === 0) return null;
 
-    const current = promotions[currentIndex];
+    // Show only the top 4 active promotions
+    const displayPromotions = promotions.slice(0, 4);
 
     return (
-        <section style={{ padding: '1rem 0' }}>
+        <section style={{ padding: '4rem 0', background: '#f8fafc' }}>
             <div className="container">
+                <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+                    <h2 style={{ fontSize: "2.5rem", fontWeight: 800, marginBottom: "0.5rem", color: "#1e293b" }}>
+                        โปรโมชั่นพิเศษ (Hot Promotions)
+                    </h2>
+                    <p style={{ color: "#64748b", fontSize: "1.1rem" }}>
+                        ดีลดีที่สุดเพื่อคุณ มั่นใจ ชัดเจน เป็นธรรม
+                    </p>
+                </div>
+
                 <div style={{
-                    background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)',
-                    borderRadius: '20px',
-                    padding: '2rem 3rem',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    boxShadow: '0 10px 40px rgba(251, 191, 36, 0.3)'
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                    gap: '2rem',
+                    justifyContent: 'center'
                 }}>
-                    {/* Decorative Elements */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        fontSize: '8rem',
-                        opacity: 0.2
-                    }}>🎉</div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem', position: 'relative', zIndex: 1 }}>
-                        <div style={{ flex: 1, minWidth: '250px' }}>
-                            {current.discount_text && (
-                                <span style={{
-                                    background: '#ef4444',
-                                    color: 'white',
-                                    padding: '0.3rem 0.8rem',
-                                    borderRadius: '50px',
-                                    fontSize: '0.85rem',
-                                    fontWeight: 700,
-                                    display: 'inline-block',
-                                    marginBottom: '0.75rem'
-                                }}>
-                                    🔥 {current.discount_text}
-                                </span>
-                            )}
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.5rem' }}>
-                                {current.title}
-                            </h3>
-                            {current.description && (
-                                <p style={{ color: '#78350f', fontSize: '0.95rem' }}>
-                                    {current.description}
-                                </p>
-                            )}
-                        </div>
-
-                        <Link
-                            href={current.link_url || '/products'}
-                            className="btn-wow"
+                    {displayPromotions.map((promo) => (
+                        <div
+                            key={promo.id}
+                            className="card-glass"
                             style={{
-                                textDecoration: 'none',
-                                padding: '1rem 2rem',
-                                whiteSpace: 'nowrap'
+                                background: 'white',
+                                borderRadius: '32px',
+                                overflow: 'hidden',
+                                border: '1px solid #e2e8f0',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                transition: 'all 0.3s ease',
+                                height: '100%',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-10px)';
+                                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
                             }}
                         >
-                            ดูเลย →
-                        </Link>
-                    </div>
+                            {/* Card Header (Gradient background like reference) */}
+                            <div style={{
+                                background: 'linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%)', // Pink gradient for style
+                                padding: '1.2rem',
+                                textAlign: 'center',
+                                color: 'white'
+                            }}>
+                                <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>{promo.title}</h4>
+                            </div>
 
-                    {/* Dots Indicator */}
-                    {promotions.length > 1 && (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem' }}>
-                            {promotions.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentIndex(index)}
+                            {/* Card Content */}
+                            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                                <div style={{ color: '#64748b', fontSize: '1rem', marginBottom: '1rem' }}>
+                                    พิเศษราคา
+                                </div>
+                                <div style={{
+                                    fontSize: '2.5rem',
+                                    fontWeight: 900,
+                                    color: '#FF1493', // Deep pink for price focus
+                                    marginBottom: '1.5rem',
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    gap: '4px'
+                                }}>
+                                    {promo.discount_text && promo.discount_text.replace(/[^\d]/g, '') ? (
+                                        <>
+                                            {promo.discount_text.replace(/[^\d]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                            <span style={{ fontSize: '1.2rem' }}>.-</span>
+                                        </>
+                                    ) : (
+                                        promo.discount_text || 'Hot Deal'
+                                    )}
+                                </div>
+
+                                <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+                                    {promo.description}
+                                </p>
+
+                                <Link
+                                    href={promo.link_url || '/products'}
+                                    className="btn-wow"
                                     style={{
-                                        width: '8px',
-                                        height: '8px',
-                                        borderRadius: '50%',
-                                        border: 'none',
-                                        background: index === currentIndex ? '#1e293b' : 'rgba(0,0,0,0.2)',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s'
+                                        marginTop: 'auto',
+                                        width: '100%',
+                                        padding: '1rem',
+                                        borderRadius: '16px',
+                                        textDecoration: 'none',
+                                        textAlign: 'center',
+                                        background: 'linear-gradient(135deg, #FF69B4 0%, #FF1493 100%)',
+                                        color: 'white',
+                                        display: 'block',
+                                        boxShadow: '0 4px 15px rgba(255, 20, 147, 0.3)'
                                     }}
-                                />
-                            ))}
+                                >
+                                    รายละเอียดเพิ่มเติม →
+                                </Link>
+                            </div>
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
         </section>
