@@ -123,3 +123,7 @@
         - [x] Show ALL pending/confirmed jobs (remove limit)
         - [x] Sort by Date/Time (Upcoming first)
         - [x] Add scrollable list view
+    - [x] **Job Detail View**
+        - [x] Fetch `order_items` for booking
+        - [x] Display product list in `BookingDetailModal`
+        - [x] Add "Product List" section to print view

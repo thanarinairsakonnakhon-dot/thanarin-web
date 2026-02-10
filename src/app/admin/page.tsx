@@ -16,6 +16,15 @@ interface DashboardStats {
     activeChatSessions: number;
 }
 
+interface OrderItem {
+    product_name: string;
+    quantity: number;
+}
+
+interface Order {
+    order_items: OrderItem[];
+}
+
 interface Booking {
     id: string;
     customer_name: string;
@@ -35,6 +44,7 @@ interface Booking {
     location_lng?: number;
     admin_notes?: string;
     technician?: string;
+    order?: Order; // Linked order
 }
 
 
@@ -119,9 +129,10 @@ export default function AdminDashboard() {
             .select('*');
 
         // Load bookings for Technician Queue (Pending & Confirmed, sorted by upcoming)
+        // Link to orders to get product details
         const { data: queueBookings } = await supabase
             .from('bookings')
-            .select('*')
+            .select('*, order:orders(order_items(product_name, quantity))')
             .in('status', ['pending', 'confirmed']) // Show only active jobs
             .order('date', { ascending: true })
             .order('time', { ascending: true });
@@ -363,6 +374,8 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
         ? `https://www.google.com/maps/search/?api=1&query=${booking.location_lat},${booking.location_lng}`
         : null;
 
+    const orderItems = booking.order?.order_items || [];
+
     return (
         <div className="modal-overlay" style={{
             position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
@@ -400,7 +413,7 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                         <p style={{ fontSize: '1rem', color: 'black' }}>ร้านธนรินทร์แอร์ สกลนคร | โทร. {adminPhone}</p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>ข้อมูลลูกค้า</h3>
                             <div style={{ lineHeight: 1.6 }}>
@@ -418,6 +431,29 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                             </div>
                         </div>
                     </div>
+
+                    {/* Product List Section */}
+                    {orderItems.length > 0 && (
+                        <div style={{ marginBottom: '2rem' }}>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>รายการสินค้า</h3>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid #ddd' }}>
+                                        <th style={{ textAlign: 'left', padding: '0.5rem' }}>สินค้า</th>
+                                        <th style={{ textAlign: 'center', padding: '0.5rem', width: '80px' }}>จำนวน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orderItems.map((item, idx) => (
+                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                                            <td style={{ padding: '0.5rem' }}>{item.product_name}</td>
+                                            <td style={{ padding: '0.5rem', textAlign: 'center' }}>{item.quantity}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
 
                     {booking.admin_notes && (
                         <div style={{ marginTop: '2rem', border: '1px solid #000', padding: '1rem', borderRadius: '8px' }}>
