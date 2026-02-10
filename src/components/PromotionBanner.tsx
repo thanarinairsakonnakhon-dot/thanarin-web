@@ -104,67 +104,134 @@ export default function PromotionBanner() {
                             {/* Card Header (Image or Brand Blue Gradient) */}
                             <div style={{
                                 width: '100%',
-                                height: '180px',
+                                paddingTop: '70%', // Professional 16:11-ish aspect ratio
                                 background: promo.image_url
-                                    ? 'white'
+                                    ? '#f8fafc'
                                     : 'linear-gradient(135deg, #0A84FF 0%, #0070E0 100%)',
-                                overflow: 'hidden',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                position: 'relative'
+                                position: 'relative',
+                                overflow: 'hidden'
                             }}>
                                 {promo.image_url ? (
                                     <img
                                         src={promo.image_url}
                                         alt={promo.title}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0, left: 0,
+                                            width: '100%', height: '100%',
+                                            objectFit: 'cover'
+                                        }}
                                     />
                                 ) : (
-                                    <div style={{ padding: '1.5rem', textAlign: 'center', color: 'white' }}>
-                                        <h4 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{promo.title}</h4>
+                                    <div style={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        padding: '1.5rem',
+                                        textAlign: 'center',
+                                        color: 'white',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <h4 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, lineHeight: 1.3 }}>{promo.title}</h4>
+                                    </div>
+                                )}
+
+                                {/* Premium Floating Badge */}
+                                {promo.discount_text && !promo.discount_text.match(/\d/) ? null : (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '1rem',
+                                        left: '1rem',
+                                        background: 'rgba(255, 255, 255, 0.95)',
+                                        backdropFilter: 'blur(8px)',
+                                        color: '#0A84FF',
+                                        padding: '0.4rem 0.8rem',
+                                        borderRadius: '10px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 800,
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        zIndex: 2,
+                                        textTransform: 'uppercase'
+                                    }}>
+                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e' }}></span>
+                                        Promotion active
                                     </div>
                                 )}
                             </div>
 
                             {/* Card Content */}
-                            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                                {promo.image_url && (
-                                    <h4 style={{
-                                        margin: '0 0 1rem 0',
-                                        fontSize: '1.2rem',
-                                        fontWeight: 800,
-                                        color: '#1e293b',
-                                        lineHeight: 1.4
-                                    }}>
-                                        {promo.title}
-                                    </h4>
-                                )}
-                                <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                    พิเศษเพียง
-                                </div>
+                            <div style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                                <h4 style={{
+                                    margin: '0 0 1.2rem 0',
+                                    fontSize: '1.25rem',
+                                    fontWeight: 800,
+                                    color: '#1e293b',
+                                    lineHeight: 1.4,
+                                    height: '3.5rem', // Fixed height for 2 lines
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                }}>
+                                    {promo.title}
+                                </h4>
+
                                 <div style={{
-                                    fontSize: '3rem',
+                                    color: '#94a3b8',
+                                    fontSize: '0.75rem',
+                                    marginBottom: '0.4rem',
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1.5px'
+                                }}>
+                                    ราคาพิเศษเริ่มเพียง
+                                </div>
+
+                                <div style={{
+                                    fontSize: '2.8rem',
                                     fontWeight: 900,
                                     color: '#1e293b',
                                     marginBottom: '1.5rem',
                                     display: 'flex',
                                     alignItems: 'baseline',
-                                    gap: '2px',
+                                    gap: '4px',
                                     lineHeight: 1
                                 }}>
                                     {promo.discount_text && promo.discount_text.replace(/[^\d]/g, '') ? (
                                         <>
-                                            <span style={{ fontSize: '1.5rem', color: '#0A84FF' }}>฿</span>
+                                            <span style={{ fontSize: '1.3rem', color: '#0A84FF', fontWeight: 800 }}>฿</span>
                                             {promo.discount_text.replace(/[^\d]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                                            <span style={{ fontSize: '1.2rem', color: '#94a3b8' }}>.-</span>
+                                            <span style={{ fontSize: '1.1rem', color: '#94a3b8', fontWeight: 500 }}>.-</span>
                                         </>
                                     ) : (
-                                        <span style={{ fontSize: '2rem', color: '#0A84FF' }}>{promo.discount_text || 'Hot Deal'}</span>
+                                        <div style={{
+                                            padding: '0.4rem 1.2rem',
+                                            background: '#f1f5f9',
+                                            borderRadius: '50px',
+                                            fontSize: '1.2rem',
+                                            color: '#475569',
+                                            fontWeight: 700
+                                        }}>
+                                            {promo.discount_text || 'Hot Deal'}
+                                        </div>
                                     )}
                                 </div>
 
-                                <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+                                <p style={{
+                                    color: '#64748b',
+                                    fontSize: '0.9rem',
+                                    lineHeight: 1.6,
+                                    margin: '0 0 2rem 0',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    height: '4.5rem' // Fixed height for 3 lines
+                                }}>
                                     {promo.description}
                                 </p>
 
@@ -175,18 +242,19 @@ export default function PromotionBanner() {
                                         marginTop: 'auto',
                                         width: '100%',
                                         padding: '1.1rem',
-                                        borderRadius: '16px',
+                                        borderRadius: '14px',
                                         textDecoration: 'none',
                                         textAlign: 'center',
-                                        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                                        background: '#0F172A',
                                         color: 'white',
                                         display: 'block',
-                                        fontSize: '1rem',
+                                        fontSize: '0.9rem',
                                         fontWeight: 700,
-                                        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)'
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)'
                                     }}
                                 >
-                                    คลิกดูรายละเอียด →
+                                    จองรับสิทธิ์เลย →
                                 </Link>
                             </div>
                         </div>
