@@ -35,9 +35,10 @@ const brandColors: { [key: string]: string } = {
     'default': '#0A84FF'
 };
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function PriceTablePage() {
+function PriceTableContent() {
     const searchParams = useSearchParams();
     const brand = searchParams.get('brand');
 
@@ -120,5 +121,13 @@ export default function PriceTablePage() {
             </div>
             <Footer />
         </main>
+    );
+}
+
+export default function PriceTablePage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-aurora flex items-center justify-center">Loading...</div>}>
+            <PriceTableContent />
+        </Suspense>
     );
 }
