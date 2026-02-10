@@ -137,123 +137,125 @@ export default function AdminBookingsPage() {
 
     return (
         <div style={{ paddingBottom: '4rem' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                <h1 className="text-gradient-blue" style={{ fontSize: '2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <CalendarIcon size={32} /> ตารางงาน (Calendar)
-                </h1>
+            <div className="no-print">
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                    <h1 className="text-gradient-blue" style={{ fontSize: '2rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <CalendarIcon size={32} /> ตารางงาน (Calendar)
+                    </h1>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <button
-                        onClick={() => {
-                            setSummaryDate(new Date().toISOString().split('T')[0]);
-                            setShowSummaryModal(true);
-                        }}
-                        className="btn-wow"
-                        style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    >
-                        📋 สรุปงานรายวัน
-                    </button>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'white', padding: '0.5rem', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                        <button onClick={() => navMonth(-1)} style={{ padding: '0.5rem', cursor: 'pointer', border: 'none', background: 'none' }}>
-                            <ChevronLeft size={24} color="#64748b" />
-                        </button>
-                        <span style={{ fontWeight: 800, fontSize: '1.2rem', minWidth: '160px', textAlign: 'center', color: '#1e293b' }}>
-                            {MONTHS[month]} {year}
-                        </span>
-                        <button onClick={() => navMonth(1)} style={{ padding: '0.5rem', cursor: 'pointer', border: 'none', background: 'none' }}>
-                            <ChevronRight size={24} color="#64748b" />
-                        </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <button
-                            onClick={() => setCurrentDate(new Date())}
-                            style={{ padding: '0.4rem 0.8rem', background: '#eff6ff', color: '#0A84FF', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
+                            onClick={() => {
+                                setSummaryDate(new Date().toISOString().split('T')[0]);
+                                setShowSummaryModal(true);
+                            }}
+                            className="btn-wow"
+                            style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                            Today
+                            📋 สรุปงานรายวัน
                         </button>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'white', padding: '0.5rem', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                            <button onClick={() => navMonth(-1)} style={{ padding: '0.5rem', cursor: 'pointer', border: 'none', background: 'none' }}>
+                                <ChevronLeft size={24} color="#64748b" />
+                            </button>
+                            <span style={{ fontWeight: 800, fontSize: '1.2rem', minWidth: '160px', textAlign: 'center', color: '#1e293b' }}>
+                                {MONTHS[month]} {year}
+                            </span>
+                            <button onClick={() => navMonth(1)} style={{ padding: '0.5rem', cursor: 'pointer', border: 'none', background: 'none' }}>
+                                <ChevronRight size={24} color="#64748b" />
+                            </button>
+                            <button
+                                onClick={() => setCurrentDate(new Date())}
+                                style={{ padding: '0.4rem 0.8rem', background: '#eff6ff', color: '#0A84FF', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
+                            >
+                                Today
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Calendar Grid */}
-            <div className="calendar-wrapper">
-                {/* ... existing calendar grid ... */}
-                {/* Header */}
-                <div className="calendar-grid" style={{ marginBottom: '1px' }}>
-                    {DAYS.map(day => (
-                        <div key={day} className="calendar-header-cell">
-                            {day}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Days */}
-                <div className="calendar-grid">
-                    {/* Empty cells */}
-                    {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                        <div key={`empty-${i}`} className="calendar-cell" style={{ background: '#f8fafc', cursor: 'default' }} />
-                    ))}
-
-                    {/* Date Cells */}
-                    {Array.from({ length: daysInMonth }).map((_, i) => {
-                        const day = i + 1;
-                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'cancelled');
-                        const isToday = new Date().toISOString().split('T')[0] === dateStr;
-
-                        return (
-                            <div
-                                key={day}
-                                className={`calendar-cell ${isToday ? 'today' : ''}`}
-                                onClick={(e) => {
-                                    if (e.target === e.currentTarget) handleOpenModal(dateStr);
-                                }}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                                    <div className="calendar-date-badge">{day}</div>
-                                    <button
-                                        className="add-btn"
-                                        onClick={() => handleOpenModal(dateStr)}
-                                        title="Add Booking"
-                                    >
-                                        +
-                                    </button>
-                                </div>
-
-                                <div style={{ flex: 1, overflowY: 'auto' }}>
-                                    {dayBookings.map(booking => {
-                                        let typeClass = 'calendar-event';
-                                        if (booking.service_type === 'installation') typeClass += ' install';
-                                        if (booking.service_type === 'cleaning') typeClass += ' cleaning';
-                                        if (booking.service_type === 'repair') typeClass += ' repair';
-
-                                        return (
-                                            <div
-                                                key={booking.id}
-                                                className={typeClass}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleOpenModal(dateStr, booking);
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
-                                                    <Clock size={10} /> {booking.time}
-                                                </div>
-                                                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                    {booking.customer_name}
-                                                </div>
-                                                {booking.technician && (
-                                                    <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: '2px' }}>
-                                                        🔧 {booking.technician}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                {/* Calendar Grid */}
+                <div className="calendar-wrapper">
+                    {/* ... existing calendar grid ... */}
+                    {/* Header */}
+                    <div className="calendar-grid" style={{ marginBottom: '1px' }}>
+                        {DAYS.map(day => (
+                            <div key={day} className="calendar-header-cell">
+                                {day}
                             </div>
-                        );
-                    })}
+                        ))}
+                    </div>
+
+                    {/* Days */}
+                    <div className="calendar-grid">
+                        {/* Empty cells */}
+                        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                            <div key={`empty-${i}`} className="calendar-cell" style={{ background: '#f8fafc', cursor: 'default' }} />
+                        ))}
+
+                        {/* Date Cells */}
+                        {Array.from({ length: daysInMonth }).map((_, i) => {
+                            const day = i + 1;
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'cancelled');
+                            const isToday = new Date().toISOString().split('T')[0] === dateStr;
+
+                            return (
+                                <div
+                                    key={day}
+                                    className={`calendar-cell ${isToday ? 'today' : ''}`}
+                                    onClick={(e) => {
+                                        if (e.target === e.currentTarget) handleOpenModal(dateStr);
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                        <div className="calendar-date-badge">{day}</div>
+                                        <button
+                                            className="add-btn"
+                                            onClick={() => handleOpenModal(dateStr)}
+                                            title="Add Booking"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div style={{ flex: 1, overflowY: 'auto' }}>
+                                        {dayBookings.map(booking => {
+                                            let typeClass = 'calendar-event';
+                                            if (booking.service_type === 'installation') typeClass += ' install';
+                                            if (booking.service_type === 'cleaning') typeClass += ' cleaning';
+                                            if (booking.service_type === 'repair') typeClass += ' repair';
+
+                                            return (
+                                                <div
+                                                    key={booking.id}
+                                                    className={typeClass}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleOpenModal(dateStr, booking);
+                                                    }}
+                                                >
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
+                                                        <Clock size={10} /> {booking.time}
+                                                    </div>
+                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        {booking.customer_name}
+                                                    </div>
+                                                    {booking.technician && (
+                                                        <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: '2px' }}>
+                                                            🔧 {booking.technician}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
