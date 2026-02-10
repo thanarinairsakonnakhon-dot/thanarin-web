@@ -59,7 +59,8 @@ async function checkLatestBooking() {
         if (!booking.order) {
             console.error("ERROR: order_id is set but 'order' relation is NULL. Check foreign key relationship.");
         } else {
-            console.log("Order found. Items:", booking.order.order_items);
+            const order = Array.isArray(booking.order) ? booking.order[0] : booking.order;
+            console.log("Order found. Items:", (order as any).order_items);
         }
     }
 }
