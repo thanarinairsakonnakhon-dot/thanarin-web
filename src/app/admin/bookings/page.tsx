@@ -228,23 +228,45 @@ export default function AdminBookingsPage() {
                                             if (booking.service_type === 'cleaning') typeClass += ' cleaning';
                                             if (booking.service_type === 'repair') typeClass += ' repair';
 
+                                            const isPending = booking.status === 'pending';
+                                            const isCompleted = booking.status === 'completed';
+
                                             return (
                                                 <div
                                                     key={booking.id}
                                                     className={typeClass}
+                                                    style={{
+                                                        opacity: isCompleted ? 0.7 : 1,
+                                                        borderLeftWidth: '4px',
+                                                        position: 'relative',
+                                                        background: isPending ? '#fff7ed' : (isCompleted ? '#f0fdf4' : undefined),
+                                                        borderColor: isPending ? '#f97316' : (isCompleted ? '#22c55e' : undefined),
+                                                    }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleOpenModal(dateStr, booking);
                                                     }}
                                                 >
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700 }}>
-                                                        <Clock size={10} /> {booking.time}
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800 }}>
+                                                            <Clock size={10} /> {booking.time}
+                                                        </div>
+                                                        {isPending && (
+                                                            <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: '#f97316', color: 'white', borderRadius: '4px', fontWeight: 700 }}>
+                                                                รอคอนเฟิร์ม
+                                                            </span>
+                                                        )}
+                                                        {isCompleted && (
+                                                            <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: '#22c55e', color: 'white', borderRadius: '4px', fontWeight: 700 }}>
+                                                                เสร็จแล้ว
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 600 }}>
                                                         {booking.customer_name}
                                                     </div>
                                                     {booking.technician && (
-                                                        <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: '2px' }}>
+                                                        <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: '2px', fontWeight: 600 }}>
                                                             🔧 {booking.technician}
                                                         </div>
                                                     )}
@@ -305,7 +327,17 @@ export default function AdminBookingsPage() {
                                                         <div key={b.id} style={{ background: 'white', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, marginBottom: '0.5rem' }}>
                                                                 <div>🕒 {b.time} น.</div>
-                                                                <div style={{ color: '#ef4444' }}>{b.status === 'confirmed' ? 'ยืนยันแล้ว' : 'รอดำเนินการ'}</div>
+                                                                <div style={{
+                                                                    fontSize: '0.75rem',
+                                                                    padding: '2px 8px',
+                                                                    borderRadius: '6px',
+                                                                    fontWeight: 700,
+                                                                    background: b.status === 'completed' ? '#f0fdf4' : (b.status === 'confirmed' ? '#eff6ff' : '#fff7ed'),
+                                                                    color: b.status === 'completed' ? '#22c55e' : (b.status === 'confirmed' ? '#0A84FF' : '#f97316'),
+                                                                    border: `1px solid ${b.status === 'completed' ? '#22c55e' : (b.status === 'confirmed' ? '#0A84FF' : '#f97316')}`
+                                                                }}>
+                                                                    {b.status === 'completed' ? '🏁 เสร็จสิ้น' : (b.status === 'confirmed' ? '✅ ยืนยันแล้ว' : '⏳ รอดำเนินการ')}
+                                                                </div>
                                                             </div>
                                                             <div>{b.customer_name} ({b.customer_phone})</div>
                                                             <div style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0.5rem' }}>📍 {b.address_details?.subdistrict} {b.address_details?.district}</div>
