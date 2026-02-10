@@ -230,6 +230,7 @@ export default function AdminBookingsPage() {
                                             if (booking.service_type === 'repair') typeClass += ' repair';
 
                                             const isPending = booking.status === 'pending';
+                                            const isConfirmed = booking.status === 'confirmed';
                                             const isCompleted = booking.status === 'completed';
 
                                             return (
@@ -240,8 +241,8 @@ export default function AdminBookingsPage() {
                                                         opacity: isCompleted ? 0.7 : 1,
                                                         borderLeftWidth: '4px',
                                                         position: 'relative',
-                                                        background: isPending ? '#fff7ed' : (isCompleted ? '#f0fdf4' : undefined),
-                                                        borderColor: isPending ? '#f97316' : (isCompleted ? '#22c55e' : undefined),
+                                                        background: isPending ? '#fff7ed' : (isCompleted ? '#f0fdf4' : (isConfirmed ? '#eff6ff' : undefined)),
+                                                        borderColor: isPending ? '#f97316' : (isCompleted ? '#22c55e' : (isConfirmed ? '#0A84FF' : undefined)),
                                                     }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -255,6 +256,11 @@ export default function AdminBookingsPage() {
                                                         {isPending && (
                                                             <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: '#f97316', color: 'white', borderRadius: '4px', fontWeight: 700 }}>
                                                                 รอคอนเฟิร์ม
+                                                            </span>
+                                                        )}
+                                                        {isConfirmed && (
+                                                            <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: '#0A84FF', color: 'white', borderRadius: '4px', fontWeight: 700 }}>
+                                                                ยืนยันแล้ว
                                                             </span>
                                                         )}
                                                         {isCompleted && (
