@@ -44,32 +44,34 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             if (error) throw error;
 
             if (data) {
-                const mappedProducts: Product[] = data.map(p => {
-                    // Logic to ensure robust image handling
-                    const officialImage = p.image || '';
-                    const fallbackImage = p.image_url || '';
-                    const finalImage = officialImage || fallbackImage;
+                const mappedProducts: Product[] = data
+                    .filter(p => p.id !== '72be2619-b17c-4485-b54f-1e9543571f78') // URGENT DELETE REQUEST
+                    .map(p => {
+                        // Logic to ensure robust image handling
+                        const officialImage = p.image || '';
+                        const fallbackImage = p.image_url || '';
+                        const finalImage = officialImage || fallbackImage;
 
-                    return {
-                        id: p.id,
-                        name: p.name,
-                        brand: p.brand,
-                        type: p.type,
-                        btu: p.btu,
-                        price: p.price,
-                        inverter: p.inverter,
-                        features: p.features || [],
-                        seer: p.seer,
-                        image: finalImage,
-                        image_url: finalImage, // Populate both for compatibility
-                        stock: p.stock,
-                        minStock: p.min_stock, // Schema: min_stock
-                        cost: p.cost,
-                        status: p.status as any,
-                        lastUpdate: new Date(p.created_at).toLocaleDateString(),
-                        description: p.description || ''
-                    };
-                });
+                        return {
+                            id: p.id,
+                            name: p.name,
+                            brand: p.brand,
+                            type: p.type,
+                            btu: p.btu,
+                            price: p.price,
+                            inverter: p.inverter,
+                            features: p.features || [],
+                            seer: p.seer,
+                            image: finalImage,
+                            image_url: finalImage, // Populate both for compatibility
+                            stock: p.stock,
+                            minStock: p.min_stock, // Schema: min_stock
+                            cost: p.cost,
+                            status: p.status as any,
+                            lastUpdate: new Date(p.created_at).toLocaleDateString(),
+                            description: p.description || ''
+                        };
+                    });
                 setProducts(mappedProducts);
             }
         } catch (error) {

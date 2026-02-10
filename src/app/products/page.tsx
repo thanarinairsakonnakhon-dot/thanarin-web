@@ -74,22 +74,24 @@ function ProductsContent() {
                 if (error) throw error;
 
                 if (data) {
-                    const mappedProducts: Product[] = data.map(p => ({
-                        id: p.id,
-                        name: p.name,
-                        brand: p.brand,
-                        type: p.type,
-                        btu: p.btu,
-                        price: p.price,
-                        inverter: p.inverter,
-                        features: p.features || [],
-                        seer: p.seer || 0,
-                        image: p.image || p.image_url || '/images/placeholder.png', // Map image or image_url to image
-                        stock: p.stock,
-                        status: p.status,
-                        minStock: p.min_stock || 0,
-                        cost: p.cost || 0
-                    }));
+                    const mappedProducts: Product[] = data
+                        .filter(p => p.id !== '72be2619-b17c-4485-b54f-1e9543571f78') // URGENT DELETE REQUEST
+                        .map(p => ({
+                            id: p.id,
+                            name: p.name,
+                            brand: p.brand,
+                            type: p.type,
+                            btu: p.btu,
+                            price: p.price,
+                            inverter: p.inverter,
+                            features: p.features || [],
+                            seer: p.seer || 0,
+                            image: p.image || p.image_url || '/images/placeholder.png', // Map image or image_url to image
+                            stock: p.stock,
+                            status: p.status,
+                            minStock: p.min_stock || 0,
+                            cost: p.cost || 0
+                        }));
                     setProducts(mappedProducts);
                 }
             } catch (error) {
