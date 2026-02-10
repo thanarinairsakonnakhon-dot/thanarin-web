@@ -1007,13 +1007,18 @@ h6 {
     color-adjust: exact !important;
   }
 
+
   /* Reset Body */
+  html,
   body {
     background: white !important;
     visibility: visible !important;
     overflow: visible !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
   }
 
   /* Hide common UI components explicitly */
@@ -1037,8 +1042,8 @@ h6 {
      EXCEPTION: The print-only-section itself 
   */
   /* Hide all elements by default (visibility allows children to override) */
-  body * {
-    visibility: hidden;
+  body>*:not(.print-only-section) {
+    display: none !important;
   }
 
   /* Reset layout containers to position print content relative to page */
@@ -1056,16 +1061,18 @@ h6 {
   .print-only-section {
     display: block !important;
     visibility: visible !important;
-    position: absolute !important;
+    position: fixed !important;
     left: 0 !important;
     top: 0 !important;
-    width: 100% !important;
+    width: 100vw !important;
+    height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
     opacity: 1 !important;
     transform: none !important;
     z-index: 2147483647 !important;
+    overflow: visible !important;
     /* Max z-index */
   }
 
