@@ -1043,8 +1043,7 @@ h6 {
   .lucide,
   header,
   nav,
-  footer,
-  .modal-overlay:not(.printable-card) {
+  footer {
     display: none !important;
   }
 
