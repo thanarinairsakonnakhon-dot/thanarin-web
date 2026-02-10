@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAdmin } from '@/context/AdminContext';
 import { Booking } from '@/types';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Plus, X, User } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -502,22 +503,32 @@ export default function AdminBookingsPage() {
                                                 {editingBooking.address_details?.province}
                                             </div>
 
-                                            {/* Google Maps Link */}
+                                            {/* Google Maps Link & QR */}
                                             {editingBooking.location_lat && editingBooking.location_lng && (
-                                                <a
-                                                    href={`https://www.google.com/maps/search/?api=1&query=${editingBooking.location_lat},${editingBooking.location_lng}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                                                        marginTop: '0.8rem', padding: '0.5rem 1rem',
-                                                        background: '#eff6ff', color: '#0A84FF',
-                                                        borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600,
-                                                        textDecoration: 'none'
-                                                    }}
-                                                >
-                                                    🗺️ เปิดแผนที่ (Google Maps)
-                                                </a>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem' }}>
+                                                    <a
+                                                        href={`https://www.google.com/maps/search/?api=1&query=${editingBooking.location_lat},${editingBooking.location_lng}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                                                            padding: '0.5rem 1rem',
+                                                            background: '#eff6ff', color: '#0A84FF',
+                                                            borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600,
+                                                            textDecoration: 'none'
+                                                        }}
+                                                    >
+                                                        🗺️ เปิดแผนที่ (Google Maps)
+                                                    </a>
+
+                                                    <div style={{ textAlign: 'center', background: 'white', padding: '8px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+                                                        <QRCodeSVG
+                                                            value={`https://www.google.com/maps/search/?api=1&query=${editingBooking.location_lat},${editingBooking.location_lng}`}
+                                                            size={80}
+                                                        />
+                                                        <div style={{ fontSize: '0.6rem', color: '#64748b', marginTop: '4px', fontWeight: 700 }}>สแกนเพื่อนำทาง</div>
+                                                    </div>
+                                                </div>
                                             )}
                                         </div>
 
