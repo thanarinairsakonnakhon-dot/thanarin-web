@@ -43,6 +43,7 @@ function ProductsContent() {
     const [selectedBrand, setSelectedBrand] = useState<string>(initialBrand);
     const [selectedType, setSelectedType] = useState<string>('All');
     const [minBtu, setMinBtu] = useState<number>(initialBtu);
+    const [isExactBtu, setIsExactBtu] = useState<boolean>(!!urlBtu);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Update state if URL changes
@@ -53,7 +54,10 @@ function ProductsContent() {
         }
         if (urlBtu) {
             const parsed = parseInt(urlBtu);
-            if (!isNaN(parsed)) setMinBtu(parsed);
+            if (!isNaN(parsed)) {
+                setMinBtu(parsed);
+                setIsExactBtu(true);
+            }
         }
     }, [urlBrand, urlBtu]);
 
@@ -103,11 +107,14 @@ function ProductsContent() {
         return products.filter((p) => {
             const matchBrand = selectedBrand === 'All' || p.brand === selectedBrand;
             const matchType = selectedType === 'All' || p.type === selectedType;
-            // Allow a small buffer for match, or strict? strictly >= minBtu
-            const matchBtu = p.btu >= minBtu;
+
+            // If from URL calculator, show EXACT match. 
+            // If user moves slider, show >= match.
+            const matchBtu = minBtu === 0 ? true : (isExactBtu ? p.btu === minBtu : p.btu >= minBtu);
+
             return matchBrand && matchType && matchBtu;
         });
-    }, [products, selectedBrand, selectedType, minBtu]);
+    }, [products, selectedBrand, selectedType, minBtu, isExactBtu]);
 
     // Mapping for Category Types to Thai
     const typeMapping: { [key: string]: string } = {
@@ -198,16 +205,23 @@ function ProductsContent() {
 
                         {/* BTU Filter */}
                         <div>
-                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>BTU ขั้นต่ำ</label>
+                            <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.8rem' }}>
+                                {isExactBtu ? 'ขนาด BTU (เฉพาะที่เลือก)' : 'BTU ขั้นต่ำ'}
+                            </label>
                             <input
                                 type="range"
                                 min="0" max="36000" step="1000"
                                 value={minBtu}
-                                onChange={(e) => setMinBtu(parseInt(e.target.value))}
+                                onChange={(e) => {
+                                    setMinBtu(parseInt(e.target.value));
+                                    setIsExactBtu(false); // Switch to "Minimum" behavior when manually adjusted
+                                }}
                                 style={{ width: '100%', accentColor: 'var(--color-primary-blue)' }}
                             />
                             <div style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#64748b' }}>
-                                {minBtu > 0 ? `> ${minBtu.toLocaleString()} BTU` : 'ทั้งหมด'}
+                                {minBtu > 0
+                                    ? (isExactBtu ? `${minBtu.toLocaleString()} BTU` : `> ${minBtu.toLocaleString()} BTU`)
+                                    : 'ทั้งหมด'}
                             </div>
                         </div>
 
