@@ -319,21 +319,21 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                         <p style={{ margin: 0, fontSize: '10pt', color: 'black' }}>โทร: {adminPhone} | thanarin-air.com</p>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem', gap: '2rem' }}>
+                        <div style={{ flex: 1.2 }}>
                             <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลลูกค้า (Customer)</h3>
                             <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
                                 <strong>ชื่อลูกค้า:</strong> {booking.customer_name} <br />
                                 <strong>เบอร์โทรศัพท์:</strong> {booking.customer_phone} <br />
-                                <strong>สถานที่ติดตั้ง:</strong> {booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}
+                                <strong>สถานที่ติดตั้ง:</strong> <span style={{ wordBreak: 'break-word' }}>{booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}</span>
                             </div>
                         </div>
-                        <div style={{ width: '230px', textAlign: 'right' }}>
+                        <div style={{ flex: 0.8, textAlign: 'right', minWidth: '200px' }}>
                             <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลใบงาน (Job Info)</h3>
                             <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
                                 <strong>เลขที่ใบงาน:</strong> #{booking.id.slice(0, 8).toUpperCase()} <br />
                                 <strong>วันที่รับแจ้ง:</strong> {new Date(booking.created_at).toLocaleDateString('th-TH')} <br />
-                                <strong>วันนัดหมาย:</strong> {new Date(booking.date).toLocaleDateString('th-TH')} / {booking.time} น.
+                                <strong>วันนัดหมาย:</strong> <span style={{ whiteSpace: 'nowrap' }}>{new Date(booking.date).toLocaleDateString('th-TH')} / {booking.time} น.</span>
                             </div>
                         </div>
                     </div>
@@ -348,24 +348,24 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
 
                     <div style={{ marginBottom: '1.5rem' }}>
                         <h3 style={{ fontSize: '11pt', fontWeight: 700, borderBottom: '2px solid #000', marginBottom: '0.5rem', color: 'black' }}>รายการสินค้า/อุปกรณ์ (Product List)</h3>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: 'black' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: 'black', border: '1px solid #000' }}>
                             <thead>
-                                <tr style={{ background: '#f1f5f9', border: '1px solid #000' }}>
-                                    <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000' }}>รายการสินค้า</th>
-                                    <th style={{ textAlign: 'center', padding: '0.75rem', width: '90px', border: '1px solid #000' }}>จำนวน</th>
+                                <tr style={{ background: '#f1f5f9' }}>
+                                    <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000', fontWeight: 700 }}>รายการสินค้า</th>
+                                    <th style={{ textAlign: 'center', padding: '0.75rem', width: '90px', border: '1px solid #000', fontWeight: 700 }}>จำนวน</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {orderItems.length > 0 ? (
                                     orderItems.map((item, idx) => (
-                                        <tr key={idx} style={{ border: '1px solid #000' }}>
+                                        <tr key={idx}>
                                             <td style={{ padding: '0.75rem', border: '1px solid #000' }}>{item.product_name}</td>
                                             <td style={{ padding: '0.75rem', textAlign: 'center', border: '1px solid #000' }}>{item.quantity}</td>
                                         </tr>
                                     ))
                                 ) : (
-                                    <tr style={{ border: '1px solid #000' }}>
-                                        <td colSpan={2} style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>-- ไม่พบรายการสินค้าในระบบคำสั่งซื้อ (Service Only) --</td>
+                                    <tr>
+                                        <td colSpan={2} style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontStyle: 'italic', border: '1px solid #000' }}>-- ไม่พบรายการสินค้าในระบบคำสั่งซื้อ (Service Only) --</td>
                                     </tr>
                                 )}
                             </tbody>
