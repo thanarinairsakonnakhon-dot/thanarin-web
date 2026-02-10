@@ -123,8 +123,7 @@ export default function AdminDashboard() {
             .from('bookings')
             .select('*, order:orders(order_items(product_name, quantity))')
             .in('status', ['pending', 'confirmed'])
-            .order('date', { ascending: true })
-            .order('time', { ascending: true });
+            .order('created_at', { ascending: false });
 
         const { count: completedCount } = await supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'completed');
         const { count: pendingCount } = await supabase.from('bookings').select('*', { count: 'exact', head: true }).eq('status', 'pending');
