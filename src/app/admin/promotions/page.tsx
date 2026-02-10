@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Upload, Loader2, Image as ImageIcon, X } from 'lucide-react';
 
 interface Promotion {
     id: string;
@@ -22,6 +23,8 @@ export default function AdminPromotions() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingPromo, setEditingPromo] = useState<Promotion | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -103,12 +106,60 @@ export default function AdminPromotions() {
 
             setShowModal(false);
             loadPromotions();
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error('Error saving promotion:', error);
-            const errorMessage = error && typeof error === 'object' && 'message' in error
-                ? (error as { message: string }).message
-                : 'Unknown error';
-            alert(`บันทึกไม่สำเร็จ: ${errorMessage}\n\nกรุณาตรวจสอบว่าได้สร้างตาราง promotions ใน Supabase แล้ว`);
+            alert(`บันทึกไม่สำเร็จ: ${error.message}\n\nกรุณาตรวจสอบว่าได้สร้างตาราง promotions ใน Supabase แล้ว`);
+        }
+    };
+
+    const resizeImage = (file: File, maxWidth: number, maxHeight: number, quality: number): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) { reject(new Error('No context')); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('No blob')), 'image/jpeg', quality);
+                URL.revokeObjectURL(url);
+            };
+            img.onerror = () => reject(new Error('Failed to load'));
+            img.src = url;
+        });
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const resizedBlob = await resizeImage(file, 1200, 600, 0.8);
+            const fileName = `promo_${Date.now()}.jpg`;
+            const filePath = `promotions/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('images')
+                .upload(filePath, resizedBlob, { contentType: 'image/jpeg' });
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+            setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('อัปโหลดรูปภาพไม่สำเร็จ');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -159,6 +210,21 @@ export default function AdminPromotions() {
                         }}>
                             {/* Order Handle */}
                             <div style={{ color: '#94a3b8', fontSize: '1.5rem' }}>⋮⋮</div>
+
+                            {/* Promo Image Preview */}
+                            <div style={{
+                                width: '120px', height: '60px',
+                                borderRadius: '8px', overflow: 'hidden',
+                                background: '#f1f5f9', display: 'flex',
+                                alignItems: 'center', justifyContent: 'center',
+                                border: '1px solid #e2e8f0'
+                            }}>
+                                {promo.image_url ? (
+                                    <img src={promo.image_url} alt={promo.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <ImageIcon size={20} color="#cbd5e1" />
+                                )}
+                            </div>
 
                             {/* Promo Info */}
                             <div style={{ flex: 1, minWidth: '200px' }}>
@@ -227,6 +293,57 @@ export default function AdminPromotions() {
                         </h2>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {/* Image Upload Area */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: 600, color: '#334155' }}>รูปภาพโปรโมชั่น</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    onChange={handleImageUpload}
+                                    style={{ display: 'none' }}
+                                />
+                                <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    style={{
+                                        width: '100%', height: '180px',
+                                        border: '2px dashed #cbd5e1', borderRadius: '16px',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        cursor: 'pointer', background: '#f8fafc',
+                                        overflow: 'hidden', position: 'relative', transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {uploading ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', color: '#0A84FF' }}>
+                                            <Loader2 size={32} className="animate-spin" />
+                                            <span>กำลังอัปโหลด...</span>
+                                        </div>
+                                    ) : formData.image_url ? (
+                                        <>
+                                            <img src={formData.image_url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <div style={{
+                                                position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                opacity: 0, transition: 'opacity 0.2s', color: 'white'
+                                            }}
+                                                onMouseOver={(e) => e.currentTarget.style.opacity = '1'}
+                                                onMouseOut={(e) => e.currentTarget.style.opacity = '0'}
+                                            >
+                                                <div style={{ background: 'rgba(0,0,0,0.6)', padding: '0.5rem 1rem', borderRadius: '8px' }}>คลิกเพื่อเปลี่ยนรูป</div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div style={{ textAlign: 'center', color: '#64748b' }}>
+                                            <div style={{ marginBottom: '1rem', background: '#e0f2fe', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem auto' }}>
+                                                <Upload size={24} color="#0A84FF" />
+                                            </div>
+                                            <div style={{ fontWeight: 500 }}>คลิกเพื่ออัปโหลดรูปภาพ</div>
+                                            <div style={{ fontSize: '0.8rem', marginTop: '0.2rem', color: '#94a3b8' }}>แนะนำรูปแนวนอน 2:1</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             <div>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>ชื่อโปรโมชั่น *</label>
                                 <input

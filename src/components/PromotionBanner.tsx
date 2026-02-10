@@ -10,6 +10,7 @@ interface Promotion {
     description: string;
     discount_text: string;
     link_url: string;
+    image_url?: string;
 }
 
 export default function PromotionBanner() {
@@ -100,19 +101,46 @@ export default function PromotionBanner() {
                                 e.currentTarget.style.boxShadow = '0 10px 30px -10px rgba(0,0,0,0.05)';
                             }}
                         >
-                            {/* Card Header (Brand Blue Gradient) */}
+                            {/* Card Header (Image or Brand Blue Gradient) */}
                             <div style={{
-                                background: 'linear-gradient(135deg, #0A84FF 0%, #0070E0 100%)',
-                                padding: '1.5rem',
-                                textAlign: 'center',
-                                color: 'white'
+                                width: '100%',
+                                height: '180px',
+                                background: promo.image_url
+                                    ? 'white'
+                                    : 'linear-gradient(135deg, #0A84FF 0%, #0070E0 100%)',
+                                overflow: 'hidden',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'relative'
                             }}>
-                                <h4 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{promo.title}</h4>
+                                {promo.image_url ? (
+                                    <img
+                                        src={promo.image_url}
+                                        alt={promo.title}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <div style={{ padding: '1.5rem', textAlign: 'center', color: 'white' }}>
+                                        <h4 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>{promo.title}</h4>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Card Content */}
-                            <div style={{ padding: '2.5rem 2rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                                <div style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                                {promo.image_url && (
+                                    <h4 style={{
+                                        margin: '0 0 1rem 0',
+                                        fontSize: '1.2rem',
+                                        fontWeight: 800,
+                                        color: '#1e293b',
+                                        lineHeight: 1.4
+                                    }}>
+                                        {promo.title}
+                                    </h4>
+                                )}
+                                <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>
                                     พิเศษเพียง
                                 </div>
                                 <div style={{
