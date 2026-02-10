@@ -8,6 +8,7 @@ import Testimonials from '@/components/Testimonials';
 import ServiceBadges from '@/components/ServiceBadges';
 import PromotionBanner from '@/components/PromotionBanner';
 import ShopBanner from '@/components/ShopBanner';
+import PriceList from '@/components/PriceList';
 
 
 
