@@ -45,7 +45,7 @@ interface Booking {
     admin_notes?: string;
     technician?: string;
     order_id?: string;
-    order?: Order;
+    order?: Order | Order[]; // Can be single object or array depending on Supabase version/join
 }
 
 export default function AdminDashboard() {
@@ -285,7 +285,9 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
         ? `https://www.google.com/maps/search/?api=1&query=${booking.location_lat},${booking.location_lng}`
         : null;
 
-    const orderItems = booking.order?.order_items || [];
+    // Robust extraction of order items: handle both single object and array responses
+    const orderData = Array.isArray(booking.order) ? booking.order[0] : booking.order;
+    const orderItems = orderData?.order_items || [];
 
     return (
         <div className="modal-overlay" style={{
