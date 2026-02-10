@@ -1050,14 +1050,17 @@ h6 {
   }
 
   .printable-card,
-  .printable-card *,
   .summary-print-area,
+  .print-only-section {
+    visibility: visible !important;
+    display: block !important;
+  }
+
+  /* Target specific visible children but avoid breaking tables */
+  .printable-card *,
   .summary-print-area *,
-  .print-only-section,
   .print-only-section * {
     visibility: visible !important;
-    display: block;
-    /* Ensure they are visible if they were display:none */
   }
 
   /* Re-enable flex for containers that need it */
