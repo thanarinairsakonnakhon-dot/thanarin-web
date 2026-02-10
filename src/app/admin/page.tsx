@@ -182,13 +182,13 @@ export default function AdminDashboard() {
             }));
         }
 
-        if (bookings) {
-            setRecentBookings(bookings.slice(0, 5));
+        if (queueBookings) {
+            setRecentBookings(queueBookings); // Show ALL active jobs
             setStats(prev => ({
                 ...prev,
-                pendingBookings: bookings.filter(b => b.status?.toLowerCase() === 'pending').length,
-                confirmedBookings: bookings.filter(b => b.status?.toLowerCase() === 'confirmed').length,
-                completedBookings: bookings.filter(b => b.status?.toLowerCase() === 'completed').length
+                pendingBookings: pendingCount || 0,
+                confirmedBookings: confirmedCount || 0,
+                completedBookings: completedCount || 0
             }));
         }
 
