@@ -384,12 +384,12 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
             padding: '1rem'
         }}>
             <div className="modal-content printable-card" style={{
-                background: 'white', borderRadius: '20px', width: '100%', maxWidth: '600px',
+                background: 'white', borderRadius: '20px', width: '100%', maxWidth: '750px',
                 padding: '2rem', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                 maxHeight: '90vh', overflowY: 'auto'
             }}>
-                {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }} className="no-print">
+                {/* Header (Screen only) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }} className="no-print">
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <Clipboard size={24} color="#2563EB" /> รายละเอียดใบงาน
                     </h2>
@@ -407,89 +407,106 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                     </div>
                 </div>
 
-                {/* Content Area (Visible on Screen & Print) */}
-                <div style={{ padding: '1rem 0' }}>
-                    {/* Professional Header (Primarily for Print, but looks okay on screen) */}
-                    <div style={{ textAlign: 'center', marginBottom: '2rem', borderBottom: '2px solid #000', paddingBottom: '1rem' }}>
-                        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'black', marginBottom: '0.5rem' }}>TH.AIR - ใบสั่งงานช่าง</h1>
-                        <p style={{ fontSize: '1rem', color: 'black' }}>ร้านธนรินทร์แอร์ สกลนคร | โทร. {adminPhone}</p>
+                {/* Professional Job Sheet Content */}
+                <div style={{ padding: '0' }}>
+                    {/* Header */}
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2.5px solid #000', paddingBottom: '1rem' }}>
+                        <h1 style={{ margin: 0, fontSize: '24pt', fontWeight: 800, color: 'black' }}>THANARIN AIR</h1>
+                        <p style={{ margin: '4px 0', fontSize: '12pt', color: 'black', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
+                        <p style={{ margin: 0, fontSize: '10pt', color: 'black' }}>โทร: {adminPhone} | thanarin-air.com</p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-                        <div>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>ข้อมูลลูกค้า</h3>
-                            <div style={{ lineHeight: 1.6, color: '#1e293b' }}>
-                                <strong>ชื่อ:</strong> {booking.customer_name} <br />
-                                <strong>โทร:</strong> {booking.customer_phone} <br />
-                                <strong>ที่อยู่:</strong> {booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}
+                    {/* Customer & Job Info Grid */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลลูกค้า (Customer)</h3>
+                            <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
+                                <strong>ชื่อลูกค้า:</strong> {booking.customer_name} <br />
+                                <strong>เบอร์โทรศัพท์:</strong> {booking.customer_phone} <br />
+                                <strong>สถานที่ติดตั้ง:</strong> {booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}
                             </div>
                         </div>
-                        <div>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>นัดหมาย</h3>
-                            <div style={{ lineHeight: 1.6, color: '#1e293b' }}>
-                                <strong>วันที่:</strong> {new Date(booking.date).toLocaleDateString('th-TH', { dateStyle: 'long' })} <br />
-                                <strong>เวลา:</strong> {booking.time} น. <br />
-                                <strong>งาน:</strong> {booking.service_type === 'installation' ? 'ติดตั้งแอร์' : booking.service_type === 'cleaning' ? 'ล้างแอร์' : booking.service_type}
+                        <div style={{ width: '230px', textAlign: 'right' }}>
+                            <h3 style={{ fontSize: '11pt', fontWeight: 700, margin: '0 0 0.5rem 0', color: 'black', textDecoration: 'underline' }}>ข้อมูลใบงาน (Job Info)</h3>
+                            <div style={{ lineHeight: 1.6, color: 'black', fontSize: '10pt' }}>
+                                <strong>เลขที่ใบงาน:</strong> #{booking.id.slice(0, 8).toUpperCase()} <br />
+                                <strong>วันที่รับแจ้ง:</strong> {new Date(booking.created_at).toLocaleDateString('th-TH')} <br />
+                                <strong>วันนัดหมาย:</strong> {new Date(booking.date).toLocaleDateString('th-TH')} / {booking.time} น.
                             </div>
                         </div>
                     </div>
 
-                    {/* Product List Section */}
-                    {orderItems.length > 0 ? (
-                        <div style={{ marginBottom: '2rem' }}>
-                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>รายการสินค้า</h3>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '1px solid #ddd' }}>
-                                        <th style={{ textAlign: 'left', padding: '0.5rem' }}>สินค้า</th>
-                                        <th style={{ textAlign: 'center', padding: '0.5rem', width: '80px' }}>จำนวน</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orderItems.map((item, idx) => (
-                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '0.5rem', color: '#1e293b' }}>{item.product_name}</td>
-                                            <td style={{ padding: '0.5rem', textAlign: 'center', color: '#1e293b' }}>{item.quantity}</td>
+                    {/* Work Type Badge */}
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1rem' }}>
+                            <strong style={{ color: '#2563eb' }}>ประเภทงาน (Work Type):</strong> <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
+                                {booking.service_type === 'installation' ? '🛠️ ติดตั้งแอร์' : booking.service_type === 'cleaning' ? '🧼 ล้างแอร์' : booking.service_type}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Product List Table */}
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <h3 style={{ fontSize: '11pt', fontWeight: 700, borderBottom: '2px solid #000', marginBottom: '0.5rem', color: 'black' }}>รายการสินค้า/อุปกรณ์ (Product List)</h3>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: 'black' }}>
+                            <thead>
+                                <tr style={{ background: '#f1f5f9', border: '1px solid #000' }}>
+                                    <th style={{ textAlign: 'left', padding: '0.75rem', border: '1px solid #000' }}>รายการสินค้า</th>
+                                    <th style={{ textAlign: 'center', padding: '0.75rem', width: '90px', border: '1px solid #000' }}>จำนวน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orderItems.length > 0 ? (
+                                    orderItems.map((item, idx) => (
+                                        <tr key={idx} style={{ border: '1px solid #000' }}>
+                                            <td style={{ padding: '0.75rem', border: '1px solid #000' }}>{item.product_name}</td>
+                                            <td style={{ padding: '0.75rem', textAlign: 'center', border: '1px solid #000' }}>{item.quantity}</td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div style={{ marginBottom: '2rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                                <span style={{ fontWeight: 'bold' }}>ไม่พบรายการสินค้าที่เชื่อมโยง</span><br />
-                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                                    (Debug Info: BookingID={booking.id.slice(0, 6)}... | OrderID={booking.order_id || 'NULL'})
-                                </span>
-                            </p>
-                        </div>
-                    )}
+                                    ))
+                                ) : (
+                                    <tr style={{ border: '1px solid #000' }}>
+                                        <td colSpan={2} style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontStyle: 'italic' }}>
+                                            -- ไม่พบรายการสินค้าในระบบคำสั่งซื้อ (Service Only) --
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
-                    {booking.admin_notes && (
-                        <div style={{ marginTop: '2rem', border: '1px solid #000', padding: '1rem', borderRadius: '8px', color: '#1e293b' }}>
-                            <strong>หมายเหตุ:</strong> {booking.admin_notes}
+                    {/* Notes and QR Code */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: '1.5rem', marginBottom: '2rem' }}>
+                        <div style={{ border: '1px solid #000', padding: '1rem', borderRadius: '8px', minHeight: '100px', color: 'black' }}>
+                            <strong style={{ fontSize: '10pt', textDecoration: 'underline' }}>บันทึกเพิ่มเติม (Admin Notes):</strong> <br />
+                            <div style={{ fontSize: '10pt', marginTop: '0.5rem' }}>{booking.admin_notes || '- ไม่มีหมายเหตุเพิ่มเติม -'}</div>
                         </div>
-                    )}
-
-                    {googleMapsUrl && (
-                        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                            <div style={{ border: '1px solid #000', display: 'inline-block', padding: '1rem', borderRadius: '8px' }}>
-                                <QRCodeSVG value={googleMapsUrl} size={150} />
-                                <div style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'black' }}>สแกนเพื่อนำทาง</div>
+                        {googleMapsUrl && (
+                            <div style={{ textAlign: 'center', border: '1px solid #000', padding: '0.75rem', borderRadius: '8px' }}>
+                                <div style={{ fontSize: '9pt', fontWeight: 700, marginBottom: '0.5rem', color: 'black' }}>📍 แผนที่หน้างาน</div>
+                                <div style={{ background: 'white', padding: '5px', display: 'inline-block' }}>
+                                    <QRCodeSVG value={googleMapsUrl} size={120} />
+                                </div>
+                                <div style={{ fontSize: '7pt', color: '#666', marginTop: '0.3rem' }}>สแกนเพื่อนำทาง</div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
+                    {/* Signature Lines */}
                     <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'space-between' }}>
-                        <div style={{ textAlign: 'center', width: '200px', color: 'black' }}>
-                            <div style={{ borderBottom: '1px solid #000', marginBottom: '0.5rem', height: '50px' }}></div>
-                            <div>ลงชื่อช่างผู้ปฏิบัติงาน</div>
+                        <div style={{ textAlign: 'center', width: '230px', color: 'black' }}>
+                            <div style={{ borderBottom: '1.5px solid #000', marginBottom: '0.5rem', height: '40px' }}></div>
+                            <div style={{ fontSize: '10pt', fontWeight: 600 }}>ลงชื่อ......................................................</div>
+                            <div style={{ fontSize: '9pt' }}>ช่างผู้ปฏิบัติงาน (Technician)</div>
                         </div>
-                        <div style={{ textAlign: 'center', width: '200px', color: 'black' }}>
-                            <div style={{ borderBottom: '1px solid #000', marginBottom: '0.5rem', height: '50px' }}></div>
-                            <div>ลงชื่อลูกค้า</div>
+                        <div style={{ textAlign: 'center', width: '230px', color: 'black' }}>
+                            <div style={{ borderBottom: '1.5px solid #000', marginBottom: '0.5rem', height: '40px' }}></div>
+                            <div style={{ fontSize: '10pt', fontWeight: 600 }}>ลงชื่อ......................................................</div>
+                            <div style={{ fontSize: '9pt' }}>ลูกค้าผู้รับงาน (Customer)</div>
                         </div>
+                    </div>
+
+                    <div style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '9pt', color: '#444', borderTop: '1px dashed #ccc', paddingTop: '0.8rem' }}>
+                        ขอบคุณที่ใช้บริการ ธนรินทร์แอร์ สกลนคร | มั่นใจ ชัดเจน เป็นธรรม
                     </div>
                 </div>
             </div>
