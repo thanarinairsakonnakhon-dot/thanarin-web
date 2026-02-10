@@ -1022,8 +1022,23 @@ h6 {
   }
 
   /* Robust Visibility-based Print Logic */
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
+  }
+
+  /* Explicitly hide unwanted UI elements */
+  .no-print,
+  .no-print *,
+  button,
+  .btn-wow,
+  .lucide {
+    display: none !important;
   }
 
   .printable-card,
@@ -1033,17 +1048,28 @@ h6 {
   .print-only-section,
   .print-only-section * {
     visibility: visible !important;
+    display: block;
+    /* Ensure they are visible if they were display:none */
+  }
+
+  /* Re-enable flex for containers that need it */
+  .printable-card div[style*="display: flex"],
+  .summary-print-area div[style*="display: flex"],
+  .print-only-section div[style*="display: flex"] {
+    display: flex !important;
   }
 
   .printable-card,
   .summary-print-area,
   .print-only-section {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* Reset layout containers to avoid nested hiding */
