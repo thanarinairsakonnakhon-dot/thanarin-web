@@ -33,9 +33,10 @@ const brandColors: { [key: string]: string } = {
 
 interface PriceListProps {
     showConditions?: boolean;
+    selectedBrand?: string;
 }
 
-export default function PriceList({ showConditions = true }: PriceListProps) {
+export default function PriceList({ showConditions = true, selectedBrand }: PriceListProps) {
     const [brandGroups, setBrandGroups] = useState<BrandGroup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -98,6 +99,10 @@ export default function PriceList({ showConditions = true }: PriceListProps) {
         setIsLoading(false);
     };
 
+    const displayGroups = selectedBrand
+        ? brandGroups.filter(g => g.brand === selectedBrand)
+        : brandGroups;
+
     if (isLoading) {
         return (
             <div style={{ textAlign: "center", padding: "4rem", color: "#64748b" }}>
@@ -118,13 +123,39 @@ export default function PriceList({ showConditions = true }: PriceListProps) {
 
     return (
         <>
+            {/* Filter Status */}
+            {selectedBrand && (
+                <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "1rem", background: "white", padding: "1rem 2rem", borderRadius: "50px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+                        <span style={{ color: "#64748b" }}>แสดงเฉพาะแบรนด์:</span>
+                        <strong style={{ fontSize: "1.1rem", color: "var(--color-primary-blue)" }}>{selectedBrand}</strong>
+                        <Link
+                            href="/prices"
+                            style={{
+                                marginLeft: "1rem",
+                                padding: "0.4rem 1rem",
+                                background: "#f1f5f9",
+                                color: "#64748b",
+                                textDecoration: "none",
+                                borderRadius: "20px",
+                                fontSize: "0.9rem",
+                                transition: "all 0.2s"
+                            }}
+                            className="hover:bg-slate-200"
+                        >
+                            ✕ แสดงทั้งหมด
+                        </Link>
+                    </div>
+                </div>
+            )}
+
             {/* Price Cards Grid */}
             <div style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
                 gap: "2rem"
             }}>
-                {brandGroups.map((group) => (
+                {displayGroups.map((group) => (
                     <div
                         key={group.brand}
                         style={{
@@ -252,25 +283,27 @@ export default function PriceList({ showConditions = true }: PriceListProps) {
                             })}
 
                             {/* CTA Button */}
-                            <Link
-                                href={`/products?brand=${encodeURIComponent(group.brand)}`}
-                                style={{
-                                    display: "block",
-                                    width: "100%",
-                                    padding: "0.8rem",
-                                    background: `linear-gradient(135deg, ${group.color} 0%, ${group.color}CC 100%)`,
-                                    color: "white",
-                                    textAlign: "center",
-                                    borderRadius: "10px",
-                                    fontWeight: 600,
-                                    textDecoration: "none",
-                                    marginTop: "1rem",
-                                    transition: "opacity 0.3s"
-                                }}
-                                className="hover:opacity-90"
-                            >
-                                ดูสินค้า {group.brand} ทั้งหมด →
-                            </Link>
+                            {!selectedBrand && (
+                                <Link
+                                    href={`/prices?brand=${encodeURIComponent(group.brand)}`}
+                                    style={{
+                                        display: "block",
+                                        width: "100%",
+                                        padding: "0.8rem",
+                                        background: `linear-gradient(135deg, ${group.color} 0%, ${group.color}CC 100%)`,
+                                        color: "white",
+                                        textAlign: "center",
+                                        borderRadius: "10px",
+                                        fontWeight: 600,
+                                        textDecoration: "none",
+                                        marginTop: "1rem",
+                                        transition: "opacity 0.3s"
+                                    }}
+                                    className="hover:opacity-90"
+                                >
+                                    ดูสินค้า {group.brand} ทั้งหมด →
+                                </Link>
+                            )}
                         </div>
                     </div>
                 ))}

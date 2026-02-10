@@ -35,7 +35,12 @@ const brandColors: { [key: string]: string } = {
     'default': '#0A84FF'
 };
 
+import { useSearchParams } from "next/navigation";
+
 export default function PriceTablePage() {
+    const searchParams = useSearchParams();
+    const brand = searchParams.get('brand');
+
     return (
         <main className="bg-aurora" style={{ minHeight: "100vh" }}>
             <Navbar />
@@ -61,7 +66,7 @@ export default function PriceTablePage() {
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                     }}>
-                        ตารางราคาแอร์
+                        {brand ? `ตารางราคาแอร์ ${brand}` : 'ตารางราคาแอร์'}
                     </h1>
                     <p style={{ maxWidth: "600px", margin: "0 auto", color: "var(--color-text-sub)" }}>
                         ราคาพร้อมติดตั้ง รวมอุปกรณ์มาตรฐาน ท่อทองแดง 4 เมตร
@@ -73,7 +78,7 @@ export default function PriceTablePage() {
                 </div>
 
                 {/* Reusable Price List Component */}
-                <PriceList showConditions={true} />
+                <PriceList showConditions={true} selectedBrand={brand || undefined} />
 
                 {/* Calculator CTA */}
                 <div style={{
