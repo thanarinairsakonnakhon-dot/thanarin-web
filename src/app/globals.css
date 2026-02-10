@@ -1109,14 +1109,11 @@ h6 {
   .printable-card,
   .summary-print-area,
   .print-only-section {
-    position: absolute !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    margin: 0 !important;
+    position: relative !important;
+    margin: 0 auto !important;
     width: 180mm !important;
-    padding: 5mm 0 !important;
-    /* Managed top/bottom padding instead of @page margins */
+    padding: 0 !important;
+    /* Zero padding to keep it at the absolute top of the page area */
     border: none !important;
     box-shadow: none !important;
     background: white !important;
@@ -1128,9 +1125,7 @@ h6 {
   .modal-overlay {
     visibility: visible !important;
     background: white !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: relative !important;
     width: 100% !important;
     height: auto !important;
     display: block !important;
@@ -1163,7 +1158,7 @@ h6 {
   /* Page setup */
   @page {
     size: A4;
-    margin: 0;
-    /* Let CSS containers handle margins for absolute control */
+    margin: 4mm 10mm 10mm 10mm;
+    /* Minimal top margin for alignment without clipping */
   }
 }
