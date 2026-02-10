@@ -285,7 +285,7 @@ export default function PriceList({ showConditions = true, selectedBrand }: Pric
                             {/* CTA Button */}
                             {!selectedBrand && (
                                 <Link
-                                    href={`/prices?brand=${encodeURIComponent(group.brand)}`}
+                                    href={`/products?brand=${encodeURIComponent(group.brand)}`}
                                     style={{
                                         display: "block",
                                         width: "100%",

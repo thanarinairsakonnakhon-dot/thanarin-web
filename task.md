@@ -115,6 +115,7 @@
     - [x] Create `PriceList.tsx` reusable component
     - [x] Refactor `src/app/prices/page.tsx` to use `PriceList`
     - [x] Add `PriceList` to `src/app/page.tsx` (after Features section)
+    - [x] Link "View All [Brand]" to Products Page with filter
 
 - [x] **Dashboard Improvements**
     - [x] **Technician Job Queue**

@@ -9,13 +9,44 @@ import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 
 export default function ProductsPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-aurora flex items-center justify-center">Loading...</div>}>
+            <ProductsContent />
+        </Suspense>
+    );
+}
+
+function ProductsContent() {
     const { addToCart } = useCart();
+    const searchParams = useSearchParams();
+    const urlBrand = searchParams.get('brand');
+
+    // Normalize case for matching (e.g. "daikin" -> "Daikin" if possible, or just use as is)
+    // The existing brands array is: ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX']
+    const brands = ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX'];
+
+    // Initialize selectedBrand from URL if valid, otherwise 'All'
+    // We try to find a case-insensitive match from our known brands list
+    const initialBrand = useMemo(() => {
+        if (!urlBrand) return 'All';
+        const match = brands.find(b => b.toLowerCase() === urlBrand.toLowerCase());
+        return match || 'All';
+    }, [urlBrand]);
+
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedBrand, setSelectedBrand] = useState<string>('All');
+    const [selectedBrand, setSelectedBrand] = useState<string>(initialBrand);
     const [selectedType, setSelectedType] = useState<string>('All');
     const [minBtu, setMinBtu] = useState<number>(0);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    // Update selectedBrand if URL changes (e.g. nav updates)
+    useEffect(() => {
+        if (urlBrand) {
+            const match = brands.find(b => b.toLowerCase() === urlBrand.toLowerCase());
+            if (match) setSelectedBrand(match);
+        }
+    }, [urlBrand]);
 
     // Fetch Products
     useEffect(() => {
@@ -63,12 +94,11 @@ export default function ProductsPage() {
         return products.filter((p) => {
             const matchBrand = selectedBrand === 'All' || p.brand === selectedBrand;
             const matchType = selectedType === 'All' || p.type === selectedType;
+            // Allow a small buffer for match, or strict? strictly >= minBtu
             const matchBtu = p.btu >= minBtu;
             return matchBrand && matchType && matchBtu;
         });
     }, [products, selectedBrand, selectedType, minBtu]);
-
-    const brands = ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX'];
 
     // Mapping for Category Types to Thai
     const typeMapping: { [key: string]: string } = {
