@@ -45,6 +45,7 @@ interface Booking {
     admin_notes?: string;
     technician?: string;
     order_id?: string;
+    note?: string; // Standard note field from bookings table
     order?: Order | Order[]; // Can be single object or array depending on Supabase version/join
 }
 
@@ -287,7 +288,23 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
 
     // Robust extraction of order items: handle both single object and array responses
     const orderData = Array.isArray(booking.order) ? booking.order[0] : booking.order;
-    const orderItems = orderData?.order_items || [];
+    let orderItems = [...(orderData?.order_items || [])];
+
+    // Parser for booking notes: Extract product name if booking was direct from product page
+    // Pattern: "แอร์ที่เลือก: [Product Name]"
+    if (booking.note && booking.note.includes('แอร์ที่เลือก:')) {
+        const productFromNote = booking.note.split('แอร์ที่เลือก:')[1]?.trim();
+        if (productFromNote) {
+            // Check if it already exists in orderItems to avoid duplication
+            const exists = orderItems.some(item => item.product_name === productFromNote);
+            if (!exists) {
+                orderItems.push({
+                    product_name: productFromNote,
+                    quantity: 1
+                });
+            }
+        }
+    }
 
     return (
         <div className="modal-overlay" style={{
