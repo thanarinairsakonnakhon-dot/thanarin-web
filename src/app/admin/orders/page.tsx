@@ -277,9 +277,9 @@ export default function AdminOrdersPage() {
             {selectedOrder && (
                 <div className="print-only-section">
                     <div className="job-sheet" style={{ padding: '0', background: 'white', color: 'black', fontSize: '10pt' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2.5px solid #000', paddingBottom: '1rem' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2.5px solid #000', paddingBottom: '0.5rem' }}>
                             <h1 style={{ margin: 0, fontSize: '24pt', fontWeight: 800 }}>THANARIN AIR</h1>
-                            <p style={{ margin: '4px 0', fontSize: '12pt', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
+                            <p style={{ margin: '2px 0', fontSize: '11pt', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
                             <p style={{ margin: 0, fontSize: '10pt' }}>โทร: {settings.phone_number || '086-238-7571'} | thanarin-air.com</p>
                         </div>
 

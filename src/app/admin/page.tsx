@@ -340,9 +340,9 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                 </div>
 
                 <div style={{ padding: '0' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '1.5rem', borderBottom: '2.5px solid #000', paddingBottom: '1rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1rem', borderBottom: '2.5px solid #000', paddingBottom: '0.5rem' }}>
                         <h1 style={{ margin: 0, fontSize: '24pt', fontWeight: 800, color: 'black' }}>THANARIN AIR</h1>
-                        <p style={{ margin: '4px 0', fontSize: '12pt', color: 'black', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
+                        <p style={{ margin: '2px 0', fontSize: '11pt', color: 'black', fontWeight: 700 }}>ธนรินทร์แอร์ สกลนคร | ตัวแทนจำหน่ายและติดตั้งเครื่องปรับอากาศ</p>
                         <p style={{ margin: 0, fontSize: '10pt', color: 'black' }}>โทร: {adminPhone} | thanarin-air.com</p>
                     </div>
 
