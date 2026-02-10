@@ -21,33 +21,41 @@ function ProductsContent() {
     const { addToCart } = useCart();
     const searchParams = useSearchParams();
     const urlBrand = searchParams.get('brand');
+    const urlBtu = searchParams.get('btu');
 
-    // Normalize case for matching (e.g. "daikin" -> "Daikin" if possible, or just use as is)
-    // The existing brands array is: ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX']
+    // Normalize case for matching
     const brands = ['All', 'Daikin', 'Mitsubishi', 'Carrier', 'Haier', 'Samsung', 'Midea', 'LG', 'Panasonic', 'TCL', 'AUX'];
 
-    // Initialize selectedBrand from URL if valid, otherwise 'All'
-    // We try to find a case-insensitive match from our known brands list
     const initialBrand = useMemo(() => {
         if (!urlBrand) return 'All';
         const match = brands.find(b => b.toLowerCase() === urlBrand.toLowerCase());
         return match || 'All';
     }, [urlBrand]);
 
+    const initialBtu = useMemo(() => {
+        if (!urlBtu) return 0;
+        const parsed = parseInt(urlBtu);
+        return isNaN(parsed) ? 0 : parsed;
+    }, [urlBtu]);
+
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedBrand, setSelectedBrand] = useState<string>(initialBrand);
     const [selectedType, setSelectedType] = useState<string>('All');
-    const [minBtu, setMinBtu] = useState<number>(0);
+    const [minBtu, setMinBtu] = useState<number>(initialBtu);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // Update selectedBrand if URL changes (e.g. nav updates)
+    // Update state if URL changes
     useEffect(() => {
         if (urlBrand) {
             const match = brands.find(b => b.toLowerCase() === urlBrand.toLowerCase());
             if (match) setSelectedBrand(match);
         }
-    }, [urlBrand]);
+        if (urlBtu) {
+            const parsed = parseInt(urlBtu);
+            if (!isNaN(parsed)) setMinBtu(parsed);
+        }
+    }, [urlBrand, urlBtu]);
 
     // Fetch Products
     useEffect(() => {

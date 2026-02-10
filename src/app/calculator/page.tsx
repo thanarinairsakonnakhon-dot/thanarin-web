@@ -197,7 +197,7 @@ export default function CalculatorPage() {
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                                    <Link href="/products" className="btn-wow" style={{ textDecoration: 'none' }}>
+                                    <Link href={`/products?btu=${result.btu}`} className="btn-wow" style={{ textDecoration: 'none' }}>
                                         ดูแอร์ {result.btu.toLocaleString()} BTU
                                     </Link>
                                     <button
