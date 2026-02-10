@@ -291,9 +291,18 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
     let orderItems = [...(orderData?.order_items || [])];
 
     // Parser for booking notes: Extract product name if booking was direct from product page
-    // Pattern: "แอร์ที่เลือก: [Product Name]"
-    if (booking.note && booking.note.includes('แอร์ที่เลือก:')) {
-        const productFromNote = booking.note.split('แอร์ที่เลือก:')[1]?.trim();
+    // Patterns: "แอร์ที่เลือก: [Name]" or "จองติดตั้งแอร์รุ่น: [Name]"
+    if (booking.note) {
+        const prefixes = ['จองติดตั้งแอร์รุ่น:', 'แอร์ที่เลือก:'];
+        let productFromNote = null;
+
+        for (const prefix of prefixes) {
+            if (booking.note.includes(prefix)) {
+                productFromNote = booking.note.split(prefix)[1]?.trim();
+                break;
+            }
+        }
+
         if (productFromNote) {
             // Check if it already exists in orderItems to avoid duplication
             const exists = orderItems.some(item => item.product_name === productFromNote);
@@ -393,8 +402,10 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: '1.5rem', marginBottom: '2rem' }}>
                         <div style={{ border: '1px solid #000', padding: '1rem', borderRadius: '8px', minHeight: '100px', color: 'black' }}>
-                            <strong style={{ fontSize: '10pt', textDecoration: 'underline' }}>บันทึกเพิ่มเติม (Admin Notes):</strong> <br />
-                            <div style={{ fontSize: '10pt', marginTop: '0.5rem' }}>{booking.admin_notes || '- ไม่มีหมายเหตุเพิ่มเติม -'}</div>
+                            <strong style={{ fontSize: '10pt', textDecoration: 'underline' }}>บันทึกเพิ่มเติม (Note):</strong> <br />
+                            <div style={{ fontSize: '10pt', marginTop: '0.5rem', whiteSpace: 'pre-wrap' }}>
+                                {booking.note || booking.admin_notes || '- ไม่มีหมายเหตุเพิ่มเติม -'}
+                            </div>
                         </div>
                         {googleMapsUrl && (
                             <div style={{ textAlign: 'center', border: '1px solid #000', padding: '0.75rem', borderRadius: '8px' }}>
