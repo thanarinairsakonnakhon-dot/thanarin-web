@@ -147,6 +147,35 @@ export default function Home() {
             </section>
 
 
+            {/* Price List Section */}
+            <section style={{ padding: '4rem 0' }} id="price-list">
+                <div className="container">
+                    <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+                        <h2 style={{ fontSize: "2.5rem", fontWeight: 800, marginBottom: "0.5rem", color: "var(--color-text-main)" }}>
+                            ตารางราคาแอร์
+                        </h2>
+                        <p style={{ color: "var(--color-text-sub)", fontSize: "1.1rem" }}>
+                            ราคามาตรฐาน พร้อมติดตั้งฟรี และรับประกันงานติดตั้ง 1 ปี
+                        </p>
+                    </div>
+                    <PriceList showConditions={false} />
+
+                    <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                        <Link href="/prices" className="btn-wow" style={{
+                            padding: '1rem 2.5rem',
+                            borderRadius: '50px',
+                            fontSize: '1.1rem',
+                            textDecoration: 'none',
+                            background: 'white',
+                            color: 'var(--color-primary-blue)',
+                            border: '1px solid #e2e8f0'
+                        }}>
+                            ดูรายละเอียดเงื่อนไขทั้งหมด →
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
             {/* Service Badges */}
             <ServiceBadges />
 

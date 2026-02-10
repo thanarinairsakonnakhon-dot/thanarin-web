@@ -110,3 +110,8 @@
 - [x] Fix Job Sheet Print Blank Issue <!-- id: 59 -->
     - [x] Update globals.css with robust print styles (Fix blank page)
     - [x] Verify print visibility
+
+- [x] Add AC Price List to Homepage <!-- id: 60 -->
+    - [x] Create `PriceList.tsx` reusable component
+    - [x] Refactor `src/app/prices/page.tsx` to use `PriceList`
+    - [x] Add `PriceList` to `src/app/page.tsx` (after Features section)
