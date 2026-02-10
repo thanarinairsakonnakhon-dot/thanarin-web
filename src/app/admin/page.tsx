@@ -44,6 +44,7 @@ interface Booking {
     location_lng?: number;
     admin_notes?: string;
     technician?: string;
+    order_id?: string; // Foreign key
     order?: Order; // Linked order
 }
 
@@ -433,7 +434,7 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                     </div>
 
                     {/* Product List Section */}
-                    {orderItems.length > 0 && (
+                    {orderItems.length > 0 ? (
                         <div style={{ marginBottom: '2rem' }}>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>รายการสินค้า</h3>
                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
@@ -452,6 +453,15 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    ) : (
+                        <div style={{ marginBottom: '2rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
+                                <span style={{ fontWeight: 'bold' }}>ไม่พบรายการสินค้าที่เชื่อมโยง</span><br />
+                                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                                    (Debug Info: BookingID={booking.id.slice(0, 6)}... | OrderID={booking.order_id || 'NULL'})
+                                </span>
+                            </p>
                         </div>
                     )}
 

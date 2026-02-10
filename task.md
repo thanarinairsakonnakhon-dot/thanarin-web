@@ -127,3 +127,6 @@
         - [x] Fetch `order_items` for booking
         - [x] Display product list in `BookingDetailModal`
         - [x] Add "Product List" section to print view
+        - [x] Debug: Fix missing details for user
+            - [x] Verify backend data integrity (Script)
+            - [x] Add debug info to modal UI (Atomic Update)
