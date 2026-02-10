@@ -407,17 +407,18 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                     </div>
                 </div>
 
-                {/* Print Header (Only visible on paper) - Now handled by print-only-section visibility */}
-                <div className="print-only-section" style={{ padding: '2cm' }}>
+                {/* Content Area (Visible on Screen & Print) */}
+                <div style={{ padding: '1rem 0' }}>
+                    {/* Professional Header (Primarily for Print, but looks okay on screen) */}
                     <div style={{ textAlign: 'center', marginBottom: '2rem', borderBottom: '2px solid #000', paddingBottom: '1rem' }}>
-                        <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'black', marginBottom: '0.5rem' }}>TH.AIR - ใบสั่งงานช่าง</h1>
+                        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'black', marginBottom: '0.5rem' }}>TH.AIR - ใบสั่งงานช่าง</h1>
                         <p style={{ fontSize: '1rem', color: 'black' }}>ร้านธนรินทร์แอร์ สกลนคร | โทร. {adminPhone}</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>ข้อมูลลูกค้า</h3>
-                            <div style={{ lineHeight: 1.6 }}>
+                            <div style={{ lineHeight: 1.6, color: '#1e293b' }}>
                                 <strong>ชื่อ:</strong> {booking.customer_name} <br />
                                 <strong>โทร:</strong> {booking.customer_phone} <br />
                                 <strong>ที่อยู่:</strong> {booking.address_details?.houseNo} {booking.address_details?.subdistrict} {booking.address_details?.district} {booking.address_details?.province}
@@ -425,7 +426,7 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                         </div>
                         <div>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>นัดหมาย</h3>
-                            <div style={{ lineHeight: 1.6 }}>
+                            <div style={{ lineHeight: 1.6, color: '#1e293b' }}>
                                 <strong>วันที่:</strong> {new Date(booking.date).toLocaleDateString('th-TH', { dateStyle: 'long' })} <br />
                                 <strong>เวลา:</strong> {booking.time} น. <br />
                                 <strong>งาน:</strong> {booking.service_type === 'installation' ? 'ติดตั้งแอร์' : booking.service_type === 'cleaning' ? 'ล้างแอร์' : booking.service_type}
@@ -447,8 +448,8 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                                 <tbody>
                                     {orderItems.map((item, idx) => (
                                         <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '0.5rem' }}>{item.product_name}</td>
-                                            <td style={{ padding: '0.5rem', textAlign: 'center' }}>{item.quantity}</td>
+                                            <td style={{ padding: '0.5rem', color: '#1e293b' }}>{item.product_name}</td>
+                                            <td style={{ padding: '0.5rem', textAlign: 'center', color: '#1e293b' }}>{item.quantity}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -466,7 +467,7 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                     )}
 
                     {booking.admin_notes && (
-                        <div style={{ marginTop: '2rem', border: '1px solid #000', padding: '1rem', borderRadius: '8px' }}>
+                        <div style={{ marginTop: '2rem', border: '1px solid #000', padding: '1rem', borderRadius: '8px', color: '#1e293b' }}>
                             <strong>หมายเหตุ:</strong> {booking.admin_notes}
                         </div>
                     )}
@@ -475,17 +476,17 @@ function BookingDetailModal({ booking, onClose, adminPhone }: { booking: Booking
                         <div style={{ marginTop: '2rem', textAlign: 'center' }}>
                             <div style={{ border: '1px solid #000', display: 'inline-block', padding: '1rem', borderRadius: '8px' }}>
                                 <QRCodeSVG value={googleMapsUrl} size={150} />
-                                <div style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>สแกนเพื่อนำทาง</div>
+                                <div style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'black' }}>สแกนเพื่อนำทาง</div>
                             </div>
                         </div>
                     )}
 
                     <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'space-between' }}>
-                        <div style={{ textAlign: 'center', width: '200px' }}>
+                        <div style={{ textAlign: 'center', width: '200px', color: 'black' }}>
                             <div style={{ borderBottom: '1px solid #000', marginBottom: '0.5rem', height: '50px' }}></div>
                             <div>ลงชื่อช่างผู้ปฏิบัติงาน</div>
                         </div>
-                        <div style={{ textAlign: 'center', width: '200px' }}>
+                        <div style={{ textAlign: 'center', width: '200px', color: 'black' }}>
                             <div style={{ borderBottom: '1px solid #000', marginBottom: '0.5rem', height: '50px' }}></div>
                             <div>ลงชื่อลูกค้า</div>
                         </div>
