@@ -176,16 +176,6 @@ export default function PromotionBanner() {
                                     {promo.title}
                                 </h4>
 
-                                <div style={{
-                                    color: '#94a3b8',
-                                    fontSize: '0.7rem',
-                                    marginBottom: '0.3rem',
-                                    fontWeight: 700,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px'
-                                }}>
-                                    ราคาพิเศษเริ่มเพียง
-                                </div>
 
                                 <div style={{
                                     fontSize: '2.2rem', // More compact price
