@@ -372,6 +372,7 @@ function BookingContent() {
                                                         <button
                                                             key={time}
                                                             disabled={isBooked}
+                                                            title={isBooked ? "มีนัดหมายแล้ว" : "คิวช่างว่างอยู่"}
                                                             onClick={() => handleSelectSlot(date, time)}
                                                             style={{
                                                                 padding: '0.8rem 1.5rem',
