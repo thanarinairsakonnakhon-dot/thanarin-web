@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import PriceList from "@/components/PriceList";
 
 import { Product } from '@/types';
 
