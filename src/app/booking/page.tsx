@@ -476,8 +476,27 @@ function BookingContent() {
 
                                     {/* Address ... (Lines 383-438 unchanged) ... */}
                                     <div>
-                                        <div style={{ marginBottom: '0.5rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '0.5rem' }}>
                                             <label style={{ fontWeight: 600 }}>ที่อยู่หน้างาน</label>
+                                            <button
+                                                type="button"
+                                                onClick={handleGetLocation}
+                                                style={{
+                                                    background: formData.addressDetails.lat ? '#10b981' : '#f8fafc',
+                                                    color: formData.addressDetails.lat ? 'white' : '#64748b',
+                                                    border: `1px solid ${formData.addressDetails.lat ? '#10b981' : '#e2e8f0'}`,
+                                                    padding: '4px 10px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '0.75rem',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                {formData.addressDetails.lat ? '📍 ระบุตำแหน่งแล้ว' : '📍 ระบุตำแหน่งปัจจุบัน'}
+                                            </button>
                                         </div>
 
                                         <div style={{ display: 'grid', gap: '1rem' }}>

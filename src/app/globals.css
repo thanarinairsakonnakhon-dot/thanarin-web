@@ -1063,6 +1063,42 @@ h6 {
     visibility: visible !important;
   }
 
+  /* Explicit table resets for print to avoid stacked layouts */
+  .printable-card table,
+  .summary-print-area table,
+  .print-only-section table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .printable-card thead,
+  .summary-print-area thead,
+  .print-only-section thead {
+    display: table-header-group !important;
+  }
+
+  .printable-card tbody,
+  .summary-print-area tbody,
+  .print-only-section tbody {
+    display: table-row-group !important;
+  }
+
+  .printable-card tr,
+  .summary-print-area tr,
+  .print-only-section tr {
+    display: table-row !important;
+  }
+
+  .printable-card th,
+  .printable-card td,
+  .summary-print-area th,
+  .summary-print-area td,
+  .print-only-section th,
+  .print-only-section td {
+    display: table-cell !important;
+  }
+
   /* Re-enable flex for containers that need it */
   .printable-card div[style*="display: flex"],
   .summary-print-area div[style*="display: flex"],
